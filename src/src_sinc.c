@@ -251,7 +251,7 @@ sinc_reset (SRC_PRIVATE *psrc)
 static int
 sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	SINC_FILTER *filter ;
-	double		input_index, src_ratio, count, float_increment, terminate ;
+	double		input_index, src_ratio, count, float_increment, terminate, rem ;
 	increment_t	increment, start_filter_index ;
 	int			half_filter_chan_len, samples_in_hand, ch ;
 
@@ -331,9 +331,11 @@ sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
+		rem = fmod (input_index, 1.0) ;
+		input_index -= rem ;
 
-		filter->b_current = (filter->b_current + filter->channels * lrint (floor (input_index))) % filter->b_len ;
-		input_index -= floor (input_index) ;
+		filter->b_current = (filter->b_current + filter->channels * lrint (round (input_index))) % filter->b_len ;
+		input_index = rem ;
 		} ;
 
 	psrc->last_position = input_index ;

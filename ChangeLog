@@ -1,6 +1,12 @@
 2004-06-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/src_sinc.c
+    Use fmod() to calculate input_index. This is more resitant to rounding
+    errors than input_index -= floor (input_index).
+
+2004-06-25  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/src_sinc.c
     Removed redundant field in SINC_FILTER struct.
 
 2004-06-15  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
