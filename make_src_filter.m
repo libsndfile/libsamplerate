@@ -4,7 +4,7 @@ function f = make_src_filter (cycles, increment, atten, filename)
 # 
 # f = make_filter (67, 128, 100.3) ;
 # f = make_filter (13, 128, 100.5) ;
-
+# f = make_filter (185, 4, 157.0) ;
 
 
 #=======================================================================
@@ -86,7 +86,7 @@ else
 printf ("# f = make_filter (%d, %d, %4.1f) ;\n", cycles, increment, atten) ;
 printf ("#   Coeff. count     : %d\n", N) ;
 printf ("#   Fudge factor     : %9.7f\n", fudge_factor) ;
-printf ("#   Pass band width  : %10.8f (should be %10.8f)\n", stop_band_start, 0.5 / increment) ;
+printf ("#   Pass band width  : %12.10f (should be %12.10f)\n", stop_band_start, 0.5 / increment) ;
 printf ("#   Stop band atten. : %5.2f dB\n", abs (stop_atten)) ;
 printf ("#   -3dB band Width  : %5.3f\n", 0.5 / increment / minus_3db) ;
 printf ("#   half length      : %d\n", length (half_f)) ;
