@@ -5,7 +5,7 @@
 
     * configure.ac 
     Bump version to 0.1.2.
-    Add --enable-gg-werror configure option.
+    Add --enable-gcc-werror configure option.
 
     * examples/sndfile-resample.c tests/src-evaluate.c
     Use ISO C standard function remove instead of unlink.
