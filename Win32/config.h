@@ -68,6 +68,9 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef HAVE_DLFCN_H */
 
+/* Set to 1 if you have libfftw3. */
+/* #undef HAVE_FFTW3 */
+
 /* Define to 1 if you have the `floor' function. */
 #define HAVE_FLOOR 1
 
@@ -83,14 +86,8 @@
 /* Define to 1 if you have the `efence' library (-lefence). */
 /* #undef HAVE_LIBEFENCE */
 
-/* Define to 1 if you have the `fftw' library (-lfftw). */
-/* #undef HAVE_LIBFFTW */
-
 /* Define to 1 if you have the `m' library (-lm). */
 /* #undef HAVE_LIBM */
-
-/* Define to 1 if you have the `rfftw' library (-lrfftw). */
-/* #undef HAVE_LIBRFFTW */
 
 /* Define if you have C99's lrint function. */
 /* #undef HAVE_LRINT */
@@ -171,8 +168,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.1.0"
-
+#define VERSION "0.1.1"
 
 /*
 ** Do not edit or modify anything in this comment block.
@@ -181,4 +177,3 @@
 **
 ** arch-tag: 7c5a8910-8149-4e89-98ce-be92835e435b
 */
-

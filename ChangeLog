@@ -3,6 +3,9 @@
     * configure.ac
     Bump version to 0.1.1.
 
+    * doc/*.html Win32/config.h
+    Changes for new version.
+
     * Makefile.am src/Makefile.am
     Add "make check-asm" target which is not used by default.
 
