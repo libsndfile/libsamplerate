@@ -237,6 +237,18 @@ calc_window (FIR_INTERP *interp, double * returned_error)
 		return 1 ;
 		} ;
 
+	error = 0.0 ;
+	for (k = 0 ; k < interp->total_len ; k++)
+	{	temp = fabs (interp->window [k] - 0.5) ;
+		if (temp > 0.5 && temp > error)
+			error = temp ;
+		} ;
+
+	if (error > 0.0)
+	{	*returned_error = 1e16 * error ;
+		return 1 ;
+		} ;
+
 	return 0 ;
 } /* calc_window */
 
