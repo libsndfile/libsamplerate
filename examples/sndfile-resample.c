@@ -233,6 +233,8 @@ sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double sr
 	if (max > 1.0)
 	{	*gain = 1.0 / max ;
 		printf ("\nOutput has clipped. Restarting conversion to prevent clipping.\n\n") ;
+		output_count = 0 ;
+		sf_command (outfile, SFC_FILE_TRUNCATE, &output_count, sizeof (output_count)) ;
 		return -1 ;
 		} ;
 
