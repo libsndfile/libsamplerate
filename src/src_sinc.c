@@ -148,7 +148,7 @@ sinc_get_description (int src_enum)
 int
 sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 {	SINC_FILTER *filter, temp_filter ;
-	int count ;
+	int count, bits ;
 
 	/* Quick sanity check. */
 	if (SHIFT_BITS >= sizeof (increment_t) * 8 - 1)
@@ -217,9 +217,11 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 
 	sinc_reset (psrc) ;
 
-	count = lrint ((filter->coeff_half_len * INT_TO_FP (1)) / FP_ONE) ;
+	count = filter->coeff_half_len ;
+	for (bits = 0 ; (1 << bits) < count ; bits++)
+		count |= (1 << bits) ;
 
-	if (abs (count - filter->coeff_half_len) >= 1)
+	if (bits + SHIFT_BITS - 1 >= (int) (sizeof (increment_t) * 8))
 		return SRC_ERR_FILTER_LEN ;
 
 	return SRC_ERR_NO_ERROR ;
