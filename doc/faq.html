@@ -166,14 +166,15 @@ The long answer is that for some signals, with some converters, you will
 get very, very close.
 </P>
 <P>
-In order to resample correctly (ie using the <B>SRC_SINC_*</B> converters,
+In order to resample correctly (ie using the <B>SRC_SINC_*</B> converters),
 filtering needs to be applied, regardless of whether its upsampling or 
 downsampling.
 This filter needs to attenuate all frequencis above 0.5 times the minimum of
 the source and desination sample rate (call this fshmin).
-Since the filter is has to achieve full attemuation at this point, it has to
-start rolling off a some point before this point. Its this rolloff of the very
-highest frequencies which causes some of the loss.
+Since the filter needed to achieve full attemuation at this point, it has to
+start rolling off a some frequency below this point.
+It is this rolloff of the very highest frequencies which causes some of the
+loss.
 </P>
 <P>
 The other factor is that the filter itself can introduce transient artifacts
