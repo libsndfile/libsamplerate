@@ -305,7 +305,7 @@ main (void)
 		"\n"
 		"****************************************************************\n"
 		"  This example program was compiled without libsndfile \n"
-		"  (http://www.zip.com.au/~erikd/libsndfile/).\n"
+		"  (http://www.mega-nerd.com/libsndfile/).\n"
 		"  It is therefore completely broken and non-functional.\n"
 		"****************************************************************\n"
 		"\n"
