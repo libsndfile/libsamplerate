@@ -380,7 +380,6 @@ macosx_audio_out_callback (AudioDeviceID device, const AudioTimeStamp* current_t
 
 #include <windows.h>
 #include <mmsystem.h>
-#include <mmreg.h>
 
 #define	WIN32_BUFFER_LEN	(1<<15)
 #define	WIN32_MAGIC			MAKE_MAGIC ('W', 'i', 'n', '3', '2', 's', 'u', 'x')
