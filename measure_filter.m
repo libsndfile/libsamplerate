@@ -1,7 +1,7 @@
 function [stop_atten stop_band_start minus_3db] = measure_filter (f, atten)
 
 
-spec_len = 200000 ;
+spec_len = 400000 ;
 
 # Calculate the spectrum.
 

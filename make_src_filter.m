@@ -22,12 +22,12 @@ elseif (isstr (filename) == 0),
 fudge_factor1 = 1.0 ;
 f1 = generate_filter (cycles, fudge_factor1, increment, atten) ;
 [stop_atten stop_band_start1 minus_3db] = measure_filter (f1, atten) ;
-printf ("    fudge_factor : %10.8f   stop_band_start : %10.8f   1\n", fudge_factor1, stop_band_start1) ;
+printf ("    fudge_factor : %15.13f   stop_band_start : %15.13f   1\n", fudge_factor1, stop_band_start1) ;
 
 fudge_factor2 = 1.25 ;
 f2 = generate_filter (cycles, fudge_factor2, increment, atten) ;
 [stop_atten stop_band_start2 minus_3db] = measure_filter (f2, atten) ;
-printf ("    fudge_factor : %10.8f   stop_band_start : %10.8f   2\n", fudge_factor2, stop_band_start2) ;
+printf ("    fudge_factor : %15.13f   stop_band_start : %15.13f   2\n", fudge_factor2, stop_band_start2) ;
 
 f = f1 ;
 fudge_factor = fudge_factor1 ;
@@ -35,7 +35,7 @@ stop_band_start = stop_band_start1 ;
 
 while ((stop_band_start1 - stop_band_start2) > 0.00000001)
 	if (stop_band_start1 < stop_band_start2)
-		printf ("stop_band_start1 < stop_band_start2") ;
+		printf ("stop_band_start1 < stop_band_start2\n") ;
 		break ;
 		endif
 
@@ -44,7 +44,7 @@ while ((stop_band_start1 - stop_band_start2) > 0.00000001)
 	[stop_atten stop_band_start minus_3db] = measure_filter (f, atten) ;
 	
 	if (stop_band_start > 1.0)
-		printf ("%10.8f   %10.8f   %10.8f\n", fudge_factor1, fudge_factor, fudge_factor2) ;
+		printf ("A %10.8f   %10.8f   %10.8f\n", fudge_factor1, fudge_factor, fudge_factor2) ;
 		continue ;
 		endif
 
@@ -60,7 +60,7 @@ while ((stop_band_start1 - stop_band_start2) > 0.00000001)
 		choice = 1 ;
 		endif
 
-	printf ("    fudge_factor : %10.8f   stop_band_start : %10.8f   %d\n", fudge_factor, stop_band_start, choice) ;
+	printf ("    fudge_factor : %15.13f   stop_band_start : %15.13f   %d\n", fudge_factor, stop_band_start, choice) ;
 	endwhile
 
 printf ("\n") ;
