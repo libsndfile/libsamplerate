@@ -75,18 +75,23 @@ enum
 typedef struct SRC_PRIVATE_tag
 {	double	last_ratio, last_position ;
 
+	int		error ;
+	int		channels ;
+
+	/* SRC_MODE_PROCESS or SRC_MODE_CALLBACK */
+	int		mode ;
+
+	/* Pointer to data to converter specific data. */
 	void	*private_data ;
 
 	int		(*process) (struct SRC_PRIVATE_tag *psrc, SRC_DATA *data) ;
 	void	(*reset) (struct SRC_PRIVATE_tag *psrc) ;
 
-	int		error ;
-	int		channels ;
-
-	int		mode ;	/* SRC_MODE_PROCESS or SRC_MODE_CALLBACK */
-
+	/* Data specific to SRC_MODE_CALLBACK. */
 	src_callback_t	callback_func ;
 	void			*user_callback_data ;
+	long			saved_frames ;
+	float			*saved_data ;
 } SRC_PRIVATE ;
 
 /* In src_sinc.c */

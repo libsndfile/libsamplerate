@@ -205,6 +205,9 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 	src_data.data_out = data ;
 	src_data.output_frames = frames ;
 
+	src_data.data_in = psrc->saved_data ;
+	src_data.input_frames = psrc->saved_frames ;
+
 	output_frames_gen = 0 ;
 	while (output_frames_gen < frames)
 	{
@@ -218,17 +221,17 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 				src_data.end_of_input = 1 ;
 			} ;
 
-		/* Now call process function. However, we need to set the mode to
-		** SRC_MODE_PROCESS first and when we return set it back to SRC_MODE_CALLBACK.
+		/*
+		** Now call process function. However, we need to set the mode
+		** to SRC_MODE_PROCESS first and when we return set it back to
+		** SRC_MODE_CALLBACK.
 		*/
 		psrc->mode = SRC_MODE_PROCESS ;
 		error = src_process (state, &src_data) ;
 		psrc->mode = SRC_MODE_CALLBACK ;
 
 		if (error != 0)
-		{	psrc->error = error ;
-		 	return 0 ;
-			} ;
+			break ;
 
 		src_data.data_in += src_data.input_frames_used * psrc->channels ;
 		src_data.input_frames -= src_data.input_frames_used ;
@@ -240,6 +243,14 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 
 		if (src_data.end_of_input == SRC_TRUE && src_data.output_frames_gen == 0)
 			break ;
+		} ;
+
+	psrc->saved_data = src_data.data_in ;
+	psrc->saved_frames = src_data.input_frames ;
+
+	if (error != 0)
+	{	psrc->error = error ;
+	 	return 0 ;
 		} ;
 
 	return output_frames_gen ;

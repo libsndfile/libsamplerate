@@ -51,7 +51,7 @@ typedef struct
 } SRC_CB_DATA ;
 
 /*
-** User supplied callback function type for use with src_callback_new() 
+** User supplied callback function type for use with src_callback_new()
 ** and src_callback_read(). First parameter is the same pointer that was
 ** passed into src_callback_new(). Second parameter is pointer to a
 ** pointer. The user supplied callback function must modify *data to
@@ -62,16 +62,16 @@ typedef struct
 typedef long (*src_callback_t) (void *cb_data, float **data) ;
 
 /*
-**	Standard initialisation function : return an anonymous pointer to the 
-**	internal state of the converter. Choose a converter from the enums below. 
+**	Standard initialisation function : return an anonymous pointer to the
+**	internal state of the converter. Choose a converter from the enums below.
 **	Error returned in *error.
 */
 
 SRC_STATE* src_new (int converter_type, int channels, int *error) ;
 
 /*
-**	Initilisation for callback based API : return an anonymous pointer to the  
-**	internal state of the converter. Choose a converter from the enums below. 
+**	Initilisation for callback based API : return an anonymous pointer to the
+**	internal state of the converter. Choose a converter from the enums below.
 **	The cb_data pointer can point to any data or be set to NULL. Whatever the
 **	value, when processing, user supplied function "func" gets called with
 **	cb_data as first parameter.
@@ -188,7 +188,7 @@ void src_float_to_short_array (const float *in, short *out, int len) ;
 
 /*
 ** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
+** The arch-tag line is a file identity tag for the GNU Arch
 ** revision control system.
 **
 ** arch-tag: 5421ef3e-c898-4ec3-8671-ea03d943ee00
