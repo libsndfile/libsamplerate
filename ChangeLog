@@ -1,3 +1,8 @@
+2004-03-20  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * configure.ac
+    Use AC_HELP_STRING in AC_ARG_ENABLE statements.
+
 2004-03-14  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * Win32/config.h Win32/sndfile.h

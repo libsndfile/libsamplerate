@@ -48,23 +48,23 @@ SHLIB_VERSION_ARG=""
 # Finished checking, handle options.
 
 AC_ARG_ENABLE(gcc-pipe,
-		[  --disable-gcc-pipe           disable gcc -pipe option ],
+		AC_HELP_STRING([--disable-gcc-pipe], [disable gcc -pipe option ]),
 		ac_arg_gcc_pipe="N", ac_arg_gcc_pipe="Y")
 
 AC_ARG_ENABLE(gcc-opt,
-		[  --disable-gcc-opt            disable gcc optimisations ],
+		AC_HELP_STRING([--disable-gcc-opt], [disable gcc optimisations ]),
 		ac_arg_gcc_opt="N", ac_arg_gcc_opt="Y")
 
 AC_ARG_ENABLE(fftw,
-		[  --disable-fftw               disable usage of FFTW ],
+		AC_HELP_STRING([--disable-fftw], [disable usage of FFTW ]),
 		ac_arg_fftw="N", ac_arg_fftw="Y")
 
 AC_ARG_ENABLE(debug,
-		[  --enable-debug               enable debugging ],
+		AC_HELP_STRING([--enable-debug], [enable debugging ]),
 		ac_arg_debug=yes, ac_arg_debug=no)
 
-AC_ARG_ENABLE(cpu-clip,  
-		[  --disable-cpu-clip           disable tricky cpu specific clipper],
+AC_ARG_ENABLE(cpu-clip,
+		AC_HELP_STRING([--disable-cpu-clip], [disable tricky cpu specific clipper]),
 		ac_arg_cpu_clip="N", ac_arg_cpu_clip="Y")
 
 if test x$ac_arg_debug = xyes ; then
