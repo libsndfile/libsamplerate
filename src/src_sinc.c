@@ -205,6 +205,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	*/
 
 	temp_filter.b_len = 1000 + 2 * lrint (0.5 + temp_filter.coeff_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO) ;
+	temp_filter.b_len = MIN (temp_filter.b_len, 2048) ;
 	temp_filter.b_len *= temp_filter.channels ;
 
 	if ((filter = calloc (1, sizeof (SINC_FILTER) + sizeof (filter->buffer [0]) * (temp_filter.b_len + temp_filter.channels))) == NULL)
