@@ -82,7 +82,6 @@ typedef struct
 	coeff_t const	*coeffs ;
 
 	int		b_current, b_end, b_real_end, b_len ;
-	float	*pdata ;
 	float	buffer [1] ;
 } SINC_FILTER ;
 
