@@ -288,6 +288,9 @@ src_reset (SRC_STATE *state)
 	psrc->last_position = 0.0 ;
 	psrc->last_ratio = 0.0 ;
 
+	psrc->saved_data = NULL ;
+	psrc->saved_frames = 0 ;
+
 	psrc->error = SRC_ERR_NO_ERROR ;
 
 	return SRC_ERR_NO_ERROR ;
