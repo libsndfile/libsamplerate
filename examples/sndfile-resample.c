@@ -315,6 +315,7 @@ main (void)
 } /* main */
 
 #endif
+
 /*
 ** Do not edit or modify anything in this comment block.
 ** The arch-tag line is a file identity tag for the GNU Arch 
@@ -322,4 +323,3 @@ main (void)
 **
 ** arch-tag: 4bb75515-3b00-4e31-bc37-35f3659e61cb
 */
-

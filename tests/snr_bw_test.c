@@ -239,7 +239,7 @@ snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose, double
 	memset (output, 0, sizeof (output)) ;
 
 	/* Generate input data array. */
-	gen_windowed_sines (data, input_len, test_data->freqs, test_data->freq_count) ;
+	gen_windowed_sines (test_data->freq_count, test_data->freqs, 1.0, data, input_len) ;
 
 	/* Perform sample rate conversion. */
 	if ((src_state = src_new (converter, 1, &error)) == NULL)
@@ -344,7 +344,7 @@ find_attenuation (double freq, int converter, int verbose)
 	double 		output_peak ;
 	int			error ;
 
-	gen_windowed_sines (input, BUFFER_LEN, &freq, 1) ;
+	gen_windowed_sines (1, &freq, 1.0, input, BUFFER_LEN) ;
 
 	src_data.end_of_input = 1 ; /* Only one buffer worth of input. */
 

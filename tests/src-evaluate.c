@@ -276,7 +276,7 @@ generate_source_wav (char *filename, double *freqs, int freq_count, int format)
 
 	sf_command (sndfile, SFC_SET_ADD_PEAK_CHUNK, NULL, SF_FALSE) ;
 
-	gen_windowed_sines (buffer, ARRAY_LEN (buffer), freqs, freq_count) ;
+	gen_windowed_sines (freq_count, freqs, 1.0, buffer, ARRAY_LEN (buffer)) ;
 
 	if (sf_write_float (sndfile, buffer, ARRAY_LEN (buffer)) != ARRAY_LEN (buffer))
 	{	printf ("Line %d : sf_write_float short write.\n", __LINE__) ;

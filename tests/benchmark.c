@@ -24,7 +24,7 @@ main (void)
 
 	memset (input, 0, sizeof (input)) ;
 	freq = 0.01 ;
-	gen_windowed_sines (input, SNR_LEN, &freq, 1) ;
+	gen_windowed_sines (1, &freq, 1.0, input, SNR_LEN) ;
 
 
 	src_data.data_in = input ;

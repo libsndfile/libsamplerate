@@ -106,7 +106,7 @@ simple_test (int converter, int channel_count, double target_snr)
 	/* Calculate channel_count separate windowed sine waves. */
 	for (ch = 0 ; ch < channel_count ; ch++)
 	{	freq = (200.0 + 33.333333333 * ch) / 44100.0 ;
-		gen_windowed_sines (input_serial + ch * frames, frames, &freq, 1) ;
+		gen_windowed_sines (1, &freq, 1.0, input_serial + ch * frames, frames) ;
 		} ;
 
 	/* Interleave the data in preparation for SRC. */
@@ -176,7 +176,7 @@ process_test (int converter, int channel_count, double target_snr)
 	/* Calculate channel_count separate windowed sine waves. */
 	for (ch = 0 ; ch < channel_count ; ch++)
 	{	freq = (200.0 + 33.333333333 * ch) / 44100.0 ;
-		gen_windowed_sines (input_serial + ch * frames, frames, &freq, 1) ;
+		gen_windowed_sines (1, &freq, 1.0, input_serial + ch * frames, frames) ;
 		} ;
 
 	/* Interleave the data in preparation for SRC. */
@@ -303,7 +303,7 @@ callback_test (int converter, int channel_count, double target_snr)
 	/* Calculate channel_count separate windowed sine waves. */
 	for (ch = 0 ; ch < channel_count ; ch++)
 	{	freq = (200.0 + 33.333333333 * ch) / 44100.0 ;
-		gen_windowed_sines (input_serial + ch * frames, frames, &freq, 1) ;
+		gen_windowed_sines (1, &freq, 1.0, input_serial + ch * frames, frames) ;
 		} ;
 
 	/* Interleave the data in preparation for SRC. */
