@@ -332,9 +332,9 @@ sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
 		rem = fmod (input_index, 1.0) ;
-		input_index -= rem ;
+		input_index = round (input_index - rem) ;
 
-		filter->b_current = (filter->b_current + filter->channels * lrint (round (input_index))) % filter->b_len ;
+		filter->b_current = (filter->b_current + filter->channels * lrint (input_index)) % filter->b_len ;
 		input_index = rem ;
 		} ;
 
