@@ -46,14 +46,14 @@ src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
 check: $(noinst_PROGRAMS)
 	date
 	uname -a
-	./misc_test
-	./termination_test
-	./simple_test
-	./callback_test
-	./reset_test
-	./multi_channel_test
-	./float_short_test
-	./snr_bw_test
+	./misc_test$(EXEEXT)
+	./termination_test$(EXEEXT)
+	./simple_test$(EXEEXT)
+	./callback_test$(EXEEXT)
+	./reset_test$(EXEEXT)
+	./multi_channel_test$(EXEEXT)
+	./float_short_test$(EXEEXT)
+	./snr_bw_test$(EXEEXT)
 	@echo "-----------------------------------------------------------------"
 	@echo "  ${PACKAGE}-${VERSION} passed all tests."
 	@echo "-----------------------------------------------------------------"
