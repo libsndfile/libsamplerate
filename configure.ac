@@ -35,6 +35,12 @@ AC_PROG_LN_S
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
 
+if test "x-$build_os-$host_os-$target_os" = x-mingw32-mingw32-mingw32 ; then
+	AC_CHECK_PROG(DLLTOOL, dlltool, dlltool)
+	AC_CHECK_PROG(DLLWRAP, dllwrap, dllwrap)
+	AC_CHECK_PROG(PEXPORTS, pexports, pexports)
+	fi
+
 AC_HEADER_STDC
 
 AC_CHECK_HEADERS(stdint.h sys/times.h)
@@ -210,17 +216,8 @@ case "$target_os" in
 		OS_SPECIFIC_INCLUDES="-fpascal-strings -I/Developer/Headers/FlatCarbon"
 		OS_SPECIFIC_LINKS="-framework CoreAudio"
 		;;
-	mingw32msvc)
-		AC_CHECK_HEADERS(mmreg.h)
-		if test "x$ac_cv_header_mmreg_h" = xno ; then
-			AC_MSG_WARN([[******************************************************************]])
-			AC_MSG_WARN([[*** Can't find mmreg.h which means that we can't build one of     ]])
-			AC_MSG_WARN([[*** the example programs. The library can however be built.       ]])
-			AC_MSG_WARN([[*** To correct this, you can grab the mmreg.h file from the       ]])
-			AC_MSG_WARN([[*** WINE project (http://www.winehq.com/) and placing it in a     ]])
-			AC_MSG_WARN([[*** directory where the cross compiler can find it.               ]])
-			AC_MSG_WARN([[******************************************************************]])
-			fi
+	mingw32*)
+		OS_SPECIFIC_LINKS="-lwinmm"
 		;;
 	*)
 		OS_SPECIFIC_INCLUDES=""
@@ -256,10 +253,24 @@ AC_SUBST(HAVE_SNDFILE)
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
-AC_CONFIG_FILES([Makefile src/Version_script Win32/Makefile \
+AC_CONFIG_FILES([Makefile src/Version_script Win32/Makefile Win32/Makefile.mingw \
 			src/Makefile examples/Makefile tests/Makefile doc/Makefile \
 			libsamplerate.spec samplerate.pc])
 AC_OUTPUT
+
+#====================================================================================
+# Special case for MinGW32.
+
+if test "x-$build_os-$host_os-$target_os" = x-mingw32-mingw32-mingw32 ; then
+	cp -f Win32/Makefile.mingw Makefile
+	echo
+	echo "Now run \"make\" and \"make check\"."
+	echo
+	echo "There is no automatic install script on this platform."
+	echo
+	
+	exit 0
+	fi
 
 #====================================================================================
 

@@ -1,0 +1,107 @@
+TARGETS = libsamplerate.dll sndfile-resample.exe varispeed-play.exe
+
+AR = @AR@
+CC = @CC@
+CFLAGS = @CFLAGS@ -Isrc
+COMPILER_IS_GCC = @COMPILER_IS_GCC@
+CPP = @CPP@
+CPPFLAGS = @CPPFLAGS@
+CXX = @CXX@
+DLLTOOL = @DLLTOOL@
+DLLWRAP = @DLLWRAP@
+LDFLAGS = @LDFLAGS@
+LN_S = @LN_S@
+OS_SPECIFIC_CFLAGS = @OS_SPECIFIC_CFLAGS@
+OS_SPECIFIC_LINKS = @OS_SPECIFIC_LINKS@
+PEXPORTS = @PEXPORTS@
+PACKAGE = @PACKAGE@
+PACKAGE_BUGREPORT = @PACKAGE_BUGREPORT@
+PACKAGE_NAME = @PACKAGE_NAME@
+PACKAGE_STRING = @PACKAGE_STRING@
+PACKAGE_TARNAME = @PACKAGE_TARNAME@
+PACKAGE_VERSION = @PACKAGE_VERSION@
+RANLIB = @RANLIB@
+STRIP = @STRIP@
+
+#====================================================================
+# Targets
+
+all : $(TARGETS)
+
+clean :
+	rm -f  $(TARGETS) *.del *.lib src/*.o tests/*.o tests/*.exe
+
+#====================================================================
+
+LINK_OBJS = \
+	src/src_linear.o \
+	src/src_sinc.o \
+	src/src_zoh.o \
+	src/samplerate.o
+
+libsamplerate.dll libsamplerate.lib : $(LINK_OBJS)
+	$(DLLWRAP) --def Win32/libsamplerate.def $(LINK_OBJS) --output-lib libsamplerate.lib -o libsamplerate.dll
+	$(STRIP) libsamplerate.dll
+
+sndfile-resample.exe : examples/sndfile-resample.o libsamplerate.lib
+	$(CC) $+ -o $@
+
+varispeed-play.exe : examples/varispeed-play.o libsamplerate.lib
+	$(CC) $+ -lwinmm -o $@
+
+#====================================================================
+# Testing programs.
+
+TEST_PROGS = \
+     tests/misc_test.exe \
+     tests/termination_test.exe \
+     tests/simple_test.exe \
+	 tests/callback_test.exe \
+     tests/reset_test.exe \
+     tests/multi_channel_test.exe \
+	 tests/float_short_test.exe \
+     tests/snr_bw_test.exe
+
+
+check : $(TEST_PROGS)
+	tests/misc_test.exe
+	tests/termination_test.exe
+	tests/simple_test.exe
+	tests/callback_test.exe
+	tests/reset_test.exe
+	tests/multi_channel_test.exe
+	tests/float_short_test.exe
+	tests/snr_bw_test.exe
+	@echo ----------------------------------------------------------------------
+	@echo libsamplerate passed all tests
+	@echo ----------------------------------------------------------------------
+
+#====================================================================
+# Test programs.
+
+tests/misc_test.exe : tests/misc_test.o tests/util.o libsamplerate.lib
+	$(CC) $+ -o $@
+
+tests/termination_test.exe : tests/termination_test.o tests/util.o libsamplerate.lib
+	$(CC) $+ -o $@
+
+tests/simple_test.exe : tests/simple_test.o tests/util.o libsamplerate.lib
+	$(CC) $+ -o $@
+
+tests/callback_test.exe : tests/callback_test.o tests/util.o libsamplerate.lib
+	$(CC) $+ -o $@
+
+tests/reset_test.exe : tests/reset_test.o tests/util.o libsamplerate.lib
+	$(CC) $+ -o $@
+
+tests/multi_channel_test.exe : tests/multi_channel_test.o tests/util.o tests/calc_snr.o libsamplerate.lib
+	$(CC) $+ -o $@
+
+tests/float_short_test.exe : tests/float_short_test.o tests/util.o libsamplerate.lib
+	$(CC) $+ -o $@
+
+tests/snr_bw_test.exe : tests/snr_bw_test.o tests/util.o tests/calc_snr.o libsamplerate.lib
+	$(CC) $+ -o $@
+
+# End of Makefile
+#====================================================================
