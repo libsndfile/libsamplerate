@@ -81,6 +81,8 @@ MinDiffEvol (MinFunc Function, GMatrix& start, double Ftol, double range, u_long
 	u_int		dimensions ;
 
 	dimensions = start.GetElements () ;
+	if (dimensions < 20)
+		dimensions = 20 ;
 
 	pfmin = new DEmin ;
 
