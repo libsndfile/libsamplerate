@@ -18,3 +18,9 @@ src_strerror			@31
 src_simple				@40
 
 src_is_valid_ratio		@50
+
+src_callback_new		@60
+src_callback_read		@61
+
+src_short_to_float_array	@70
+src_float_to_short_array	@71

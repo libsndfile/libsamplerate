@@ -4,7 +4,7 @@ libdir=@libdir@
 includedir=@includedir@
 
 Name: samplerate
-Description: A library for performing Sample Rate Conversion on audio files.
+Description: An audio Sample Rate Conversion library
 Requires: 
 Version: @VERSION@
 Libs: -L${libdir} -lsamplerate

@@ -83,6 +83,9 @@ CHECK: $(TEST_PROGS)
 ".\tests\util.obj" : ".\tests\util.c"
     $(CPP) $(CFLAGS) /Fo".\tests\util.obj" /c ".\tests\util.c"
 
+".\tests\calc_snr.obj" : ".\tests\calc_snr.c"
+    $(CPP) $(CFLAGS) /Fo".\tests\calc_snr.obj" /c ".\tests\calc_snr.c"
+
 ".\tests\dft_cmp.obj" : ".\tests\dft_cmp.c"
     $(CPP) $(CFLAGS) /Fo".\tests\dft_cmp.obj" /c ".\tests\dft_cmp.c"
 
@@ -109,9 +112,9 @@ CHECK: $(TEST_PROGS)
     $(CPP) $(CFLAGS) /Fo".\tests\reset_test.obj" /c ".\tests\reset_test.c"
     $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\reset_test.exe" ".\tests\reset_test.obj" ".\tests\util.obj" libsamplerate.lib
 
-".\tests\multi_channel_test.exe" : ".\tests\multi_channel_test.c" ".\tests\util.obj"
+".\tests\multi_channel_test.exe" : ".\tests\multi_channel_test.c" ".\tests\util.obj" ".\tests\calc_snr.obj"
     $(CPP) $(CFLAGS) /Fo".\tests\multi_channel_test.obj" /c ".\tests\multi_channel_test.c"
-    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\multi_channel_test.exe" ".\tests\multi_channel_test.obj" ".\tests\util.obj" libsamplerate.lib
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\multi_channel_test.exe" ".\tests\multi_channel_test.obj" ".\tests\util.obj" ".\tests\calc_snr.obj" libsamplerate.lib
 
 ".\tests\snr_bw_test.exe" : ".\tests\snr_bw_test.c" ".\tests\util.obj"
     $(CPP) $(CFLAGS) /Fo".\tests\snr_bw_test.obj" /c ".\tests\snr_bw_test.c"
