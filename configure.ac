@@ -217,7 +217,8 @@ case "$target_os" in
 			AC_MSG_WARN([[*** Can't find mmreg.h which means that we can't build one of     ]])
 			AC_MSG_WARN([[*** the example programs. The library can however be built.       ]])
 			AC_MSG_WARN([[*** To correct this, you can grab the mmmreg.h file from the      ]])
-			AC_MSG_WARN([[*** WINE project : http://www.winehq.com/.                        ]])
+			AC_MSG_WARN([[*** WINE project (http://www.winehq.com/) and placing it in a     ]])
+			AC_MSG_WARN([[*** directory where the cross compiler can find it.               ]])
 			AC_MSG_WARN([[******************************************************************]])
 			fi
 		;;
