@@ -173,26 +173,26 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	switch (src_enum)
 	{	case SRC_SINC_BEST_QUALITY :
 				temp_filter.coeffs = high_qual_coeffs ;
-				temp_filter.coeff_half_len = (sizeof (high_qual_coeffs) / sizeof (coeff_t)) - 1 ;
+				temp_filter.coeff_half_len = ARRAY_LEN (high_qual_coeffs) - 1 ;
 				temp_filter.index_inc = 128 ;
 				temp_filter.has_diffs = SRC_FALSE ;
-				temp_filter.coeff_len = sizeof (high_qual_coeffs) / sizeof (coeff_t) ;
+				temp_filter.coeff_len = ARRAY_LEN (high_qual_coeffs) ;
 				break ;
 
 		case SRC_SINC_MEDIUM_QUALITY :
 				temp_filter.coeffs = mid_qual_coeffs ;
-				temp_filter.coeff_half_len = (sizeof (mid_qual_coeffs) / sizeof (coeff_t)) - 1 ;
+				temp_filter.coeff_half_len = ARRAY_LEN (mid_qual_coeffs) - 1 ;
 				temp_filter.index_inc = 128 ;
 				temp_filter.has_diffs = SRC_FALSE ;
-				temp_filter.coeff_len = sizeof (mid_qual_coeffs) / sizeof (coeff_t) ;
+				temp_filter.coeff_len = ARRAY_LEN (mid_qual_coeffs) ;
 				break ;
 
 		case SRC_SINC_FASTEST :
 				temp_filter.coeffs = fastest_coeffs ;
-				temp_filter.coeff_half_len = (sizeof (fastest_coeffs) / sizeof (coeff_t)) - 1 ;
+				temp_filter.coeff_half_len = ARRAY_LEN (fastest_coeffs) - 1 ;
 				temp_filter.index_inc = 128 ;
 				temp_filter.has_diffs = SRC_FALSE ;
-				temp_filter.coeff_len = sizeof (fastest_coeffs) / sizeof (coeff_t) ;
+				temp_filter.coeff_len = ARRAY_LEN (fastest_coeffs) ;
 				break ;
 
 		default :
