@@ -130,7 +130,7 @@ main (int argc, char *argv [])
 	truncate (argv [argc - 1], 0) ;
 #endif
 
-	if ((outfile = sf_open (argv [argc - 1], SFM_RDWR, &sfinfo)) == NULL)
+	if ((outfile = sf_open (argv [argc - 1], SFM_WRITE, &sfinfo)) == NULL)
 	{	printf ("Error : Not able to open output file '%s'\n", argv [argc - 1]) ;
 		sf_close (infile) ;
 		exit (1) ;
