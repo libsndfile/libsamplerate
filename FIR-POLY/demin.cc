@@ -197,17 +197,17 @@ DEmin::Minimize (double Ftol, u_int maxgen)
 		for (k = 0 ; k < PopSize ; k++)
 		{	do
 				a = u_int (double (PopSize) * Rand.UDDouble ()) ;
-			while 	(a == k) ;
+			while 	(a == k || a >= PopSize) ;
 			do
 				b = u_int (double (PopSize) * Rand.UDDouble ()) ;
-			while	(b == k || b == a) ;
+			while	(b == k || b == a || b >= PopSize) ;
 			do
 				c = u_int (double (PopSize) * Rand.UDDouble ()) ;
-			while	(c == k || c == a || c == b) ;
+			while	(c == k || c == a || c == b || c >= PopSize) ;
 
-if (a >= PopSize)	{	printf ("a - very bad.\n") ;	exit (0) ; } ;
-if (b >= PopSize)	{	printf ("b - very bad.\n") ;	exit (0) ; } ;
-if (c >= PopSize)	{	printf ("c - very bad.\n") ;	exit (0) ; } ;
+if (a >= PopSize)	{	printf ("a - very bad (%u, %u).\n", a, PopSize) ;	exit (0) ; } ;
+if (b >= PopSize)	{	printf ("b - very bad (%u, %u).\n", b, PopSize) ;	exit (0) ; } ;
+if (c >= PopSize)	{	printf ("c - very bad (%u, %u).\n", c, PopSize) ;	exit (0) ; } ;
 
 			scalefactor = 0.5 * (ScaleFactor2 [b] + ScaleFactor2 [c]) ;
 
