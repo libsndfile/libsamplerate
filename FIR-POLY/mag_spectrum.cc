@@ -32,7 +32,7 @@ mag_spectrum (double *input, int len, double *magnitude, double *phase)
 	static double *fft_data = NULL ;
 
 	double	maxval ;
-	int		k ;
+	int		k, pi_factor ;
 
 	if (input == NULL || magnitude == NULL || phase == NULL)
 	{	printf ("%s %d : input == NULL || magnitude == NULL || phase == NULL\n", __func__, __LINE__) ;
@@ -62,6 +62,15 @@ mag_spectrum (double *input, int len, double *magnitude, double *phase)
 	for (k = 0 ; k < len / 2 ; k++)
 	{	magnitude [k] = sqrt (fft_data [k] * fft_data [k] + fft_data [len - k - 1] * fft_data [len - k - 1]) ;
 		phase [k] = atan2 (fft_data [len - k - 1], fft_data [k]) ;
+		} ;
+
+	pi_factor = 0 ;
+	for (k = 1 ; k < len / 2 ; k++)
+	{	phase [k] -= pi_factor * M_PI ;
+		if (fabs (phase [k] - phase [k - 1]) > 3.0)
+		{	phase [k] -= 2 * M_PI ;
+			pi_factor += 2 ;
+			}
 		} ;
 
 	return ;
