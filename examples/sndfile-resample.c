@@ -32,7 +32,8 @@
 #define	BUFFER_LEN		4096	/*-(1<<16)-*/
 
 static void usage_exit (const char *progname) ;
-static sf_count_t sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double src_ratio, int channels) ;
+static sf_count_t sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double src_ratio, int channels, double * gain) ;
+static double apply_gain (float * data, long frames, int channels, double max, double gain) ;
 
 int
 main (int argc, char *argv [])
@@ -40,7 +41,7 @@ main (int argc, char *argv [])
 	SF_INFO sfinfo ;
 
 	sf_count_t	count ;
-	double		src_ratio = -1.0 ;
+	double		src_ratio = -1.0, gain = 1.0 ;
 	int			new_sample_rate = -1, k, converter, max_speed = SF_FALSE ;
 
 	if (argc == 2 && strcmp (argv [1], "--version") == 0)
@@ -150,7 +151,9 @@ main (int argc, char *argv [])
 	printf ("Output file   : %s\n", argv [argc - 1]) ;
 	printf ("Sample Rate   : %d\n", sfinfo.samplerate) ;
 
-	count = sample_rate_convert (infile, outfile, converter, src_ratio, sfinfo.channels) ;
+	do
+		count = sample_rate_convert (infile, outfile, converter, src_ratio, sfinfo.channels, &gain) ;
+	while (count < 0) ;
 
 	printf ("Output Frames : %ld\n\n", (long) count) ;
 
@@ -164,13 +167,14 @@ main (int argc, char *argv [])
 */
 
 static sf_count_t
-sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double src_ratio, int channels)
+sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double src_ratio, int channels, double * gain)
 {	static float input [BUFFER_LEN] ;
 	static float output [BUFFER_LEN] ;
 
 	SRC_STATE	*src_state ;
 	SRC_DATA	src_data ;
 	int			error ;
+	double		max = 0.0 ;
 	sf_count_t	output_count = 0 ;
 
 	sf_seek (infile, 0, SEEK_SET) ;
@@ -214,6 +218,8 @@ sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double sr
 		if (src_data.end_of_input && src_data.output_frames_gen == 0)
 			break ;
 
+		max = apply_gain (src_data.data_out, src_data.output_frames_gen, channels, max, *gain) ;
+
 		/* Write output. */
 		sf_writef_float (outfile, output, src_data.output_frames_gen) ;
 		output_count += src_data.output_frames_gen ;
@@ -224,9 +230,29 @@ sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double sr
 
 	src_state = src_delete (src_state) ;
 
+	if (max > 1.0)
+	{	*gain = 1.0 / max ;
+		printf ("\nOutput has clipped. Restarting conversion to prevent clipping.\n\n") ;
+		return -1 ;
+		} ;
+
 	return output_count ;
 } /* sample_rate_convert */
 
+static double
+apply_gain (float * data, long frames, int channels, double max, double gain)
+{
+	long k ;
+
+	for (k = 0 ; k < frames * channels ; k++)
+	{	data [k] *= gain ;
+
+		if (fabs (data [k]) > max)
+			max = fabs (data [k]) ;
+		} ;
+
+	return max ;
+} /* apply_gain */
 
 static void
 usage_exit (const char *progname)

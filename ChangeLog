@@ -1,3 +1,8 @@
+2004-06-15  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * examples/sndfile-resample.c
+    Modified to restart conversion if clipping has occurred.
+
 2004-06-09  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/benchmark.c
