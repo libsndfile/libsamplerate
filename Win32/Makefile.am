@@ -1,4 +1,4 @@
-EXTRA_DIST = Makefile.msvc config.h unistd.h libsamplerate.def
+EXTRA_DIST = Makefile.msvc config.h unistd.h unistd.h libsamplerate.def
   
 
 ## Do not edit or modify anything in this comment block.
