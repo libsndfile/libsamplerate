@@ -24,7 +24,7 @@
 
 #include "config.h"
 
-#if (HAVE_LIBFFTW && HAVE_LIBRFFTW)
+#if (HAVE_FFTW3)
 
 #include <samplerate.h>
 
@@ -407,7 +407,7 @@ bandwidth_test (int converter, int verbose)
 	return 200.0 * freq ;
 } /* bandwidth_test */
 
-#else /* (HAVE_LIBFFTW && HAVE_LIBRFFTW) == 0 */
+#else /* (HAVE_FFTW3) == 0 */
 
 /* Alternative main function when librfftw is not available. */
 

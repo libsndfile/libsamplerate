@@ -144,9 +144,9 @@ case "$target_os" in
 		# AC_C99_FUNC_LLRINT  Don't need this (yet?).
 
 		if test x$ac_cv_c99_lrint = xno || test x$ac_cv_c99_lrintf = xno ; then
-	AC_MSG_WARN([[*** Missing C99 standard functions lrint() and lrintf().]])
-	AC_MSG_WARN([[*** This may cause benign compiler warnings on some systems (ie Solaris).]])
-	fi
+			AC_MSG_WARN([[*** Missing C99 standard functions lrint() and lrintf().]])
+			AC_MSG_WARN([[*** This may cause benign compiler warnings on some systems (ie Solaris).]])
+			fi
 		;;
 	esac
 
@@ -172,50 +172,29 @@ AC_DEFINE_UNQUOTED(CPU_CLIPS_NEGATIVE, ${ac_cv_c_clip_negative},
 
 PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.6, ac_cv_sndfile=1, ac_cv_sndfile=0)
 
-AC_DEFINE_UNQUOTED([HAVE_SNDFILE],${ac_cv_sndfile},
-			[Set to 1 if you have libsndfile.])
+AC_DEFINE_UNQUOTED([HAVE_SNDFILE],$ac_cv_sndfile,[Set to 1 if you have libsndfile.])
 
 if test x$ac_cv_sndfile = x1 ; then
 	ac_cv_sndfile=yes
+	HAVE_SNDFILE=1
 else
 	ac_cv_sndfile=no
+	HAVE_SNDFILE=0
 	fi
 
 #====================================================================================
-# Check for libfftw and librfftw which are required for the test programs.
+# Check for libfftw3 which is required for the test and example programs.
 
-# Save $LIBS for later.
-src_save_LIBS=$LIBS
+PKG_CHECK_MODULES(FFTW3, fftw3 >= 0.15.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
 
-AC_CHECK_HEADER(fftw.h,
-	AC_CHECK_LIB([fftw], fftw_create_plan, , AC_MSG_WARN([*** Could not find libfftw. Test programs cannot be run.])),
-	AC_MSG_WARN([*** Header file fftw.h not found. Test programs cannot be run.])
-	)
+AC_DEFINE_UNQUOTED([HAVE_FFTW3],$ac_cv_fftw3,[Set to 1 if you have libfftw3.])
 
-AC_CHECK_HEADER(rfftw.h,
-	AC_CHECK_LIB([rfftw], rfftw_create_plan, , AC_MSG_WARN([*** Could not find librfftw. Test programs cannot be run.])),
-	AC_MSG_WARN([*** Header file rfftw.h not found. Test programs cannot be run.])
-	)
-
-# The above checks add libfftw and librfftw to $LIBS, so remove them and
-# create a separate FFTW_LIBS variable.
-
-if test "x$src_save_LIBS" = x ; then
-	FFTW_LIBS=$LIBS
+if test x$ac_cv_fftw3 = x1 ; then
+	ac_cv_fftw3=yes
+	HAVE_FFTW3=1
 else
-	FFTW_LIBS=`echo $LIBS | sed "s/${src_save_LIBS}//"`
-	fi
-
-# Restore $LIBS
-LIBS=$src_save_LIBS
-
-HAVE_FFTW=0
-ac_cv_have_fftw=no
-if test x$ac_cv_lib_fftw_fftw_create_plan = xyes ; then
-	if test x$ac_cv_lib_rfftw_rfftw_create_plan = xyes ; then
-		HAVE_FFTW=1
-		ac_cv_have_fftw=yes
-		fi
+	ac_cv_fftw3=no
+	HAVE_FFTW3=0
 	fi
 
 #====================================================================================
@@ -252,10 +231,13 @@ AC_SUBST(COMPILER_IS_GCC)
 AC_SUBST(GCC_MAJOR_VERSION)
 AC_SUBST(ENABLE_DEBUG)
 
-AC_SUBST(HAVE_FFTW)
-AC_SUBST(FFTW_LIBS)
+AC_SUBST(HAVE_FFTW3)
+AC_SUBST(FFTW3_CFLAGS)
+AC_SUBST(FFTW3_LIBS)
+
 AC_SUBST(EFENCE_LIB)
 
+AC_SUBST(HAVE_SNDFILE)
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
@@ -285,12 +267,12 @@ if test x$ac_cv_c_compiler_gnu = xyes ; then
 AC_MSG_RESULT([
   Extra tools required for testing and examples :
 
-    Have FFTW : ................... ${ac_cv_have_fftw}])
+    Have FFTW : ................... ${ac_cv_fftw3}])
 
-if test x$ac_cv_have_fftw = xno ; then
+if test x$ac_cv_fftw3 = xno ; then
 	echo
 	echo "      * FFTW is available from http://www.fftw.org/ or if you "
-	echo "      * are using Debian : \"apt-get install fftw2 fftw-dev\""
+	echo "      * are using Debian : \"apt-get install fftw3 fftw3-dev\""
 	echo
 	fi
 

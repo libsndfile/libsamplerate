@@ -21,12 +21,15 @@ reset_test_SOURCES = reset_test.c util.c util.h
 reset_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(EFENCE_LIB)
 
 multi_channel_test_SOURCES = multi_channel_test.c util.c calc_snr.c
-multi_channel_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW_LIBS) $(EFENCE_LIB)
+multi_channel_test_CFLAGS = @FFTW3_CFLAGS@
+multi_channel_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS) $(EFENCE_LIB)
 
 snr_bw_test_SOURCES = snr_bw_test.c calc_snr.c util.c util.h
-snr_bw_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW_LIBS) $(EFENCE_LIB)
+snr_bw_test_CFLAGS = @FFTW3_CFLAGS@
+snr_bw_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS) $(EFENCE_LIB)
 
 callback_test_SOURCES = callback_test.c util.c util.h
+callback_test_CFLAGS = @FFTW3_CFLAGS@
 callback_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(EFENCE_LIB)
 
 float_short_test_SOURCES = float_short_test.c util.c util.h
@@ -35,8 +38,8 @@ float_short_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(EFENCE_LIB)
 # This program is for evaluating other sample rate converters.
 
 src_evaluate_SOURCES = src-evaluate.c calc_snr.c util.c
-src_evaluate_CFLAGS = @SNDFILE_CFLAGS@
-src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW_LIBS)
+src_evaluate_CFLAGS = @SNDFILE_CFLAGS@ @FFTW3_CFLAGS@
+src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
 
 #===============================================================================
 
