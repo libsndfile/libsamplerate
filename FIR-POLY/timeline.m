@@ -21,7 +21,7 @@ return
 mt = ((1 - stretch) * t + stretch  * t.^2) - 0.5 ;
 
 
-# Basically a Nuttall indow
+# Basically a Nuttall window
 ak = [0.42323 0.49755 0.07922] ;
 
 w = zeros (1, len) ;
