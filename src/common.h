@@ -95,24 +95,18 @@ typedef struct SRC_PRIVATE_tag
 } SRC_PRIVATE ;
 
 /* In src_sinc.c */
-int sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
-
 const char* sinc_get_name (int src_enum) ;
 const char* sinc_get_description (int src_enum) ;
 
 int sinc_set_converter (SRC_PRIVATE *psrc, int src_enum) ;
 
 /* In src_linear.c */
-int linear_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
-
 const char* linear_get_name (int src_enum) ;
 const char* linear_get_description (int src_enum) ;
 
 int linear_set_converter (SRC_PRIVATE *psrc, int src_enum) ;
 
 /* In src_zoh.c */
-int zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
-
 const char* zoh_get_name (int src_enum) ;
 const char* zoh_get_description (int src_enum) ;
 

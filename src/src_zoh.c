@@ -24,6 +24,7 @@
 #include "float_cast.h"
 #include "common.h"
 
+static int zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static void zoh_reset (SRC_PRIVATE *psrc) ;
 
 /*========================================================================================
@@ -42,7 +43,7 @@ typedef struct
 /*----------------------------------------------------------------------------------------
 */
 
-int
+static int
 zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	ZOH_DATA 	*zoh ;
 	double		src_ratio, input_index ;

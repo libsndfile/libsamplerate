@@ -86,6 +86,8 @@ typedef struct
 	float	buffer [1] ;
 } SINC_FILTER ;
 
+static int sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
+
 static double calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index, int ch) ;
 
 static void prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len) ;
@@ -247,7 +249,7 @@ sinc_reset (SRC_PRIVATE *psrc)
 **	Beware all ye who dare pass this point. There be dragons here.
 */
 
-int
+static int
 sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	SINC_FILTER *filter ;
 	double		input_index, src_ratio, count, float_increment, terminate ;

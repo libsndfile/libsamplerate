@@ -24,6 +24,7 @@
 #include "float_cast.h"
 #include "common.h"
 
+static int linear_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static void linear_reset (SRC_PRIVATE *psrc) ;
 
 /*========================================================================================
@@ -43,7 +44,8 @@ typedef struct
 
 /*----------------------------------------------------------------------------------------
 */
-int
+
+static int
 linear_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	LINEAR_DATA *linear ;
 	double		src_ratio, input_index ;
