@@ -46,7 +46,7 @@ Author :<BR>Erik de Castro Lopo
 
 </DIV>
 	<IMG SRC=
-	"/cgi-bin/Count.cgi?ft=6|frgb=55;55;55|tr=0|md=6|dd=B|st=1|sh=1|df=src_api.dat" 
+	"/cgi-bin/Count.cgi?ft=6|frgb=55;55;55|tr=0|md=6|dd=B|st=1|sh=1|df=src_api.dat"
 	HEIGHT=30 WIDTH=100 ALT="counter.gif">
 </DIV>
 
@@ -59,7 +59,7 @@ Author :<BR>Erik de Castro Lopo
 
 <H1><B>Frequently Asked Questions</B></H1>
 <P>
-<A HREF="#Q001">Q1 : Is it normal for the output of libsamplerate to be louder 
+<A HREF="#Q001">Q1 : Is it normal for the output of libsamplerate to be louder
 	than its input?</A><BR><BR>
 <A HREF="#Q002">Q2 : On Unix/Linux/MacOSX, what is the best way of detecting
 	the presence and location of libsamplerate and its header file using
@@ -67,22 +67,24 @@ Author :<BR>Erik de Castro Lopo
 <A HREF="#Q003">Q3 : If I upsample and downsample to the original rate, for
 	example 44.1->96->44.1, do I get an identical signal as the one before the
 	up/down resampling?</A><BR><BR>
+<A HREF="#Q004">Q4 : If I ran src_simple (libsamplerate) on small chunks (160
+	frames) would that sound bad?</A><BR><BR>
 </P>
 <HR>
 <!-- ========================================================================= -->
 <A NAME="Q001"></A>
-<H2><BR><B>Q1 : Is it normal for the output of libsamplerate to be louder 
+<H2><BR><B>Q1 : Is it normal for the output of libsamplerate to be louder
 	than its input?</B></H2>
 <P>
-The output of libsamplerate will be roughly the same volume as the input. 
-However, even if the input is strictly in the range (-1.0, 1.0), it is still 
+The output of libsamplerate will be roughly the same volume as the input.
+However, even if the input is strictly in the range (-1.0, 1.0), it is still
 possible for the output to contain peak values outside this range.
 </P>
 <P>
-Consider four consecutive samples of [0.5 0.999 0.999 0.5]. 
-If we are up sampling by a factor of two we need to insert samples between 
-each of the existing samples. 
-Its pretty obvious then, that the sample between the two 0.999 values should 
+Consider four consecutive samples of [0.5 0.999 0.999 0.5].
+If we are up sampling by a factor of two we need to insert samples between
+each of the existing samples.
+Its pretty obvious then, that the sample between the two 0.999 values should
 and will be bigger than 0.999.
 </P>
 <P>
@@ -105,7 +107,7 @@ The best way of detecting its presence is using something like this in configure
 </p>
 
 <pre>
-    PKG_CHECK_MODULES(SAMPLERATE, samplerate >= 0.0.15, 
+    PKG_CHECK_MODULES(SAMPLERATE, samplerate >= 0.0.15,
             ac_cv_samplerate=1, ac_cv_samplerate=0)
 
     AC_DEFINE_UNQUOTED([HAVE_SAMPLERATE],${ac_cv_samplerate},
@@ -130,25 +132,25 @@ libsamplerate configure process. For instance on my system I get this:
 </p>
 <pre>
     -=-=-=-=-=-=-=-=-=-= Configuration Complete =-=-=-=-=-=-=-=-=-=-=-
-    
+
       Configuration summary :
-    
+
         Version : ..................... 0.1.0
         Enable debugging : ............ no
-    
+
       Tools :
-    
+
         Compiler is GCC : ............. yes
         GCC major version : ........... 3
-    
+
       Extra tools required for testing and examples :
-    
+
         Have FFTW : ................... yes
         Have libsndfile : ............. yes
         Have libefence : .............. no
-    
+
       Installation directories :
-    
+
         Library directory : ........... /usr/local/lib
         Program directory : ........... /usr/local/bin
         Pkgconfig directory : ......... /usr/local/lib/pkgconfig
@@ -167,7 +169,7 @@ get very, very close.
 </P>
 <P>
 In order to resample correctly (ie using the <B>SRC_SINC_*</B> converters),
-filtering needs to be applied, regardless of whether its upsampling or 
+filtering needs to be applied, regardless of whether its upsampling or
 downsampling.
 This filter needs to attenuate all frequencis above 0.5 times the minimum of
 the source and desination sample rate (call this fshmin).
@@ -181,6 +183,19 @@ The other factor is that the filter itself can introduce transient artifacts
 which causes the output to be different to the input.
 </P>
 
+<!-- ========================================================================= -->
+<A NAME="Q004"></A>
+<H2><BR><B>Q4 : If I ran src_simple on small chunks (say 160 frames) would that
+sound bad?</B></H2>
+<P>
+Well if you are after odd sound effects, it might sound OK.
+If you are after high quality sample rate conversion you will be disappointed.
+</P>
+<P>
+The src_simple() was designed to provide a simple to use interface for people
+who wanted to do sample rate conversion on say, a whole file all at once.
+</P>
+
 <!-- <A HREF="mailto:aldel@mega-nerd.com">For the spam bots</A> -->
 
 </DIV>
@@ -192,9 +207,9 @@ which causes the output to be different to the input.
 
 <!--
   Do not edit or modify anything in this comment block.
-  The arch-tag line is a file identity tag for the GNU Arch 
+  The arch-tag line is a file identity tag for the GNU Arch
   revision control system.
- 
+
   arch-tag: b9c78eee-3492-4a4b-9810-495732975145
 -->
 
