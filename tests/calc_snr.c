@@ -26,10 +26,6 @@
 #include <string.h>
 #include <math.h>
 
-#if (HAVE_FFTW3 == 1)
-
-#include <fftw3.h>
-
 #define	MAX_SPEC_LEN	(1<<18)
 #define	MAX_PEAKS		10
 
@@ -74,109 +70,6 @@ calculate_snr (float *data, int len)
 
 	return snr ;
 } /* calculate_snr */
-
-
-
-
-/*-
-
-The analogues to 
-
-	rfftw_create_plan
-	rfftw_one 
-
-with 
-
-	FFTW_REAL_TO_COMPLEX 
-	FFTW_COMPLEX_TO_REAL
-
-directions are 
-
-	fftw_plan_r2r_1d
-
-with kind
-
-	FFTW_R2HC or
-	FFTW_HC2R
-
-followed by fftw_execute. The stride etcetera arguments of 
-rfftw are now in fftw_plan_many_r2r.
-
-Instead of
-
-	rfftwnd_create_plan or
-	rfftw2d_create_plan or 
-	rfftw3d_create_plan
-
-followed by
-
-	rfftwnd_one_real_to_complex or
-	rfftwnd_one_complex_to_real
-
-you now use
-
-	fftw_plan_dft_r2c or
-	fftw_plan_dft_r2c_2d or
-	fftw_plan_dft_r2c_3d or
-	fftw_plan_dft_c2r or
-	fftw_plan_dft_c2r_2d or
-	fftw_plan_dft_c2r_3d
-
-respectively, followed by fftw_execute. As usual, the 
-strides etcetera of
-
-	rfftwnd_real_to_complex or
-	rfftwnd_complex_to_real 
-
-are no specified in the advanced planner routines,
-
-	fftw_plan_many_dft_r2c or 
-	fftw_plan_many_dft_c2r
-
-
--*/
-
-
-
-
-static void
-log_mag_spectrum (double *input, int len, double *magnitude)
-{	fftw_plan plan = NULL ;
-
-	double	maxval ;
-	int		k ;
-
-	if (input == NULL || magnitude == NULL)
-		return ;
-
-	plan = fftw_plan_r2r_1d (len, input, magnitude, FFTW_R2HC, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT) ;
-	if (plan == NULL)
-	{	printf ("%s : line %d : create plan failed.\n", __FILE__, __LINE__) ;
-		exit (1) ;
-		} ;
-
-	fftw_execute (plan) ;
-
-	/* (k < N/2 rounded up) */
-	maxval = 0.0 ;
-	for (k = 1 ; k < len / 2 ; k++)
-	{	magnitude [k] = sqrt (magnitude [k] * magnitude [k] + magnitude [len - k - 1] * magnitude [len - k - 1]) ;
-		maxval = (maxval < magnitude [k]) ? magnitude [k] : maxval ;
-		} ;
-
-	memset (magnitude + len / 2, 0, len / 2 * sizeof (magnitude [0])) ;
-
-	/* Don't care about DC component. Make it zero. */
-	magnitude [0] = 0.0 ;
-
-	/* log magnitude. */
-	for (k = 0 ; k < len ; k++)
-	{	magnitude [k] = magnitude [k] / maxval ;
-		magnitude [k] = (magnitude [k] < 1e-15) ? -200.0 : 20.0 * log10 (magnitude [k]) ;
-		} ;
-
-	return ;
-} /* log_mag_spectrum */
 
 /*==============================================================================
 ** There is a slight problem with trying to measure SNR with the method used
@@ -290,17 +183,94 @@ find_snr (const double *magnitude, int len)
 	return snr ;
 } /* find_snr */
 
+/*==============================================================================
+*/
+
+#if (HAVE_FFTW3 == 1)
+
+#include <fftw3.h>
+
+static void
+log_mag_spectrum (double *input, int len, double *magnitude)
+{	fftw_plan plan = NULL ;
+
+	double	maxval ;
+	int		k ;
+
+	if (input == NULL || magnitude == NULL)
+		return ;
+
+	plan = fftw_plan_r2r_1d (len, input, magnitude, FFTW_R2HC, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT) ;
+	if (plan == NULL)
+	{	printf ("%s : line %d : create plan failed.\n", __FILE__, __LINE__) ;
+		exit (1) ;
+		} ;
+
+	fftw_execute (plan) ;
+
+	/* (k < N/2 rounded up) */
+	maxval = 0.0 ;
+	for (k = 1 ; k < len / 2 ; k++)
+	{	magnitude [k] = sqrt (magnitude [k] * magnitude [k] + magnitude [len - k - 1] * magnitude [len - k - 1]) ;
+		maxval = (maxval < magnitude [k]) ? magnitude [k] : maxval ;
+		} ;
+
+	memset (magnitude + len / 2, 0, len / 2 * sizeof (magnitude [0])) ;
+
+	/* Don't care about DC component. Make it zero. */
+	magnitude [0] = 0.0 ;
+
+	/* log magnitude. */
+	for (k = 0 ; k < len ; k++)
+	{	magnitude [k] = magnitude [k] / maxval ;
+		magnitude [k] = (magnitude [k] < 1e-15) ? -200.0 : 20.0 * log10 (magnitude [k]) ;
+		} ;
+
+	return ;
+} /* log_mag_spectrum */
+
 #else /* (! HAVE_FFTW3) */
 
-double
-calculate_snr (float *data, int len)
-{	double snr = 200.0 ;
+#include "kiss_fft.h"
 
-	data = data ;
-	len = len ;
+static void
+log_mag_spectrum (double *input, int len, double *magnitude)
+{	fftw_plan plan = NULL ;
 
-	return snr ;
-} /* calculate_snr */
+	double	maxval ;
+	int		k ;
+
+	if (input == NULL || magnitude == NULL)
+		return ;
+
+	plan = fftw_plan_r2r_1d (len, input, magnitude, FFTW_R2HC, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT) ;
+	if (plan == NULL)
+	{	printf ("%s : line %d : create plan failed.\n", __FILE__, __LINE__) ;
+		exit (1) ;
+		} ;
+
+	fftw_execute (plan) ;
+
+	/* (k < N/2 rounded up) */
+	maxval = 0.0 ;
+	for (k = 1 ; k < len / 2 ; k++)
+	{	magnitude [k] = sqrt (magnitude [k] * magnitude [k] + magnitude [len - k - 1] * magnitude [len - k - 1]) ;
+		maxval = (maxval < magnitude [k]) ? magnitude [k] : maxval ;
+		} ;
+
+	memset (magnitude + len / 2, 0, len / 2 * sizeof (magnitude [0])) ;
+
+	/* Don't care about DC component. Make it zero. */
+	magnitude [0] = 0.0 ;
+
+	/* log magnitude. */
+	for (k = 0 ; k < len ; k++)
+	{	magnitude [k] = magnitude [k] / maxval ;
+		magnitude [k] = (magnitude [k] < 1e-15) ? -200.0 : 20.0 * log10 (magnitude [k]) ;
+		} ;
+
+	return ;
+} /* log_mag_spectrum */
 
 #endif
 
@@ -311,4 +281,3 @@ calculate_snr (float *data, int len)
 **
 ** arch-tag: 7ae937c5-53a5-45d8-8aa2-793de9c35f0a
 */
-
