@@ -99,6 +99,8 @@ main (int argc, char *argv [])
 		exit (1) ;
 		} ;
 
+	printf ("Version       : %s\n", src_get_version ()) ;
+	
 	printf ("Input File    : %s\n", argv [argc - 2]) ;
 	printf ("Sample Rate   : %d\n", sfinfo.samplerate) ;
 	printf ("Input Frames  : %ld\n\n", (long) sfinfo.frames) ;
@@ -128,8 +130,6 @@ main (int argc, char *argv [])
 	/* Fix the output file length to zero if already exists. */
 	truncate (argv [argc - 1], 0) ;
 #endif
-
-	/*-sfinfo.format = (sfinfo.format & SF_FORMAT_TYPEMASK) | SF_FORMAT_FLOAT ;-*/
 
 	if ((outfile = sf_open (argv [argc - 1], SFM_RDWR, &sfinfo)) == NULL)
 	{	printf ("Error : Not able to open output file '%s'\n", argv [argc - 1]) ;
