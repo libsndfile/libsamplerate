@@ -47,7 +47,7 @@ static int right_half_cycles = 20 ;
 typedef struct
 {
 	/* Window coefficients (all in range [0, 1]). */
-	double left_ak [5], right_ak [5] ;
+	double y_left [3], y_right [3] ;
 
 	double sinc_time_fudge ;
 
@@ -61,6 +61,9 @@ typedef struct
 	} ;
 
 	unsigned middle, total_len ;
+
+	double left_window_poly [5] ;
+	double right_window_poly [5] ;
 
 	double sinc [1024] ;
 	double window [1024] ;
@@ -101,6 +104,23 @@ main (void)
 
 /*==============================================================================
 */
+
+static inline double
+poly_evaluate (int order, const double *coeff, double x)
+{	double result ;
+	int	k ;
+
+	/*
+	** Use Horner's Rule for evaluating the value of
+	** the polynomial at x.
+	*/
+	result = coeff [order] ;
+	for (k = order - 1 ; k >= 0 ; k--)
+		result = result * x + coeff [k] ;
+
+	return result ;
+} /* poly_evaluate */
+
 
 static double
 fir_error (const GMatrix& gm)
@@ -153,62 +173,14 @@ fir_error (const GMatrix& gm)
 
 static int
 calc_window (FIR_INTERP *interp, double * returned_error)
-{	unsigned k, coeff ;
-	double x, sum, error ;
+{	unsigned k ;
+	double error, temp, x ;
 
-	/* Check left zeroth coefficient. */
-	if (interp->fir_params.left_ak [0] < 0.0)
-	{	*returned_error = 1e20 * fabs (interp->fir_params.left_ak [0]) ;
-		return 1 ;
-		} ;
-
-	if (interp->fir_params.left_ak [0] > 0.5)
-	{	*returned_error = 1e20 * (interp->fir_params.left_ak [0] - 0.5) ;
-		return 1 ;
-		} ;
-
-	/* Check right zeroth coefficient. */
-	if (interp->fir_params.right_ak [0] < 0.0)
-	{	*returned_error = 1e20 * fabs (interp->fir_params.right_ak [0]) ;
-		return 1 ;
-		} ;
-
-	if (interp->fir_params.right_ak [0] > 0.5)
-	{	*returned_error = 1e20 * (interp->fir_params.right_ak [0] - 0.5) ;
-		return 1 ;
-		} ;
-
-	/* Massage left coefficients. */
-	sum = 0.0 ;
-	for (k = 0 ; k < ARRAY_LEN (interp->fir_params.left_ak) ; k++)
-	{	if (sum > 1.0)
-			interp->fir_params.left_ak [k] = 0.0 ;
-		interp->fir_params.left_ak [k] = fabs (interp->fir_params.left_ak [k]) ;
-		if (sum + interp->fir_params.left_ak [k] > 1.0)
-			interp->fir_params.left_ak [k] = 1.0 - sum ;
-		sum += interp->fir_params.left_ak [k] ;
-		} ;
-
-	/* Massage right coefficients. */
-	sum = 0.0 ;
-	for (k = 0 ; k < ARRAY_LEN (interp->fir_params.right_ak) ; k++)
-	{	if (sum > 1.0)
-			interp->fir_params.right_ak [k] = 0.0 ;
-		interp->fir_params.right_ak [k] = fabs (interp->fir_params.right_ak [k]) ;
-		if (sum + interp->fir_params.right_ak [k] > 1.0)
-			interp->fir_params.right_ak [k] = 1.0 - sum ;
-		sum += interp->fir_params.right_ak [k] ;
-		} ;
-
-	/* Generate left side of window. */
-	error = 0.0 ;
-	for (k = 0 ; k <= interp->middle ; k++)
-	{	interp->window [k] = interp->fir_params.left_ak [0] ;
-		x = M_PI * (interp->middle - k) / (1.0 * interp->middle) ;
-		for (coeff = 1 ; coeff < ARRAY_LEN (interp->fir_params.left_ak) ; coeff ++)
-			interp->window [k] += interp->fir_params.left_ak [coeff] * cos (coeff * x) ;
-		if (fabs (interp->window [k] - 0.5) > 0.5)
-			error = fabs (interp->window [k] - 0.5) ;
+	error = 0 ;
+	for (k = 0 ; k < ARRAY_LEN (interp->fir_params.y_left) ; k++)
+	{	temp = fabs (interp->fir_params.y_left [k] - 0.5) ;
+		if (temp > 0.5 && temp > error)
+			error = temp ;
 		} ;
 
 	if (error > 0.0)
@@ -216,13 +188,54 @@ calc_window (FIR_INTERP *interp, double * returned_error)
 		return 1 ;
 		} ;
 
-	if (interp->window [0] > 0.25)
-	{	*returned_error = 1e18 * interp->window [0] ;
+	error = 0 ;
+	for (k = 0 ; k < ARRAY_LEN (interp->fir_params.y_right) ; k++)
+	{	temp = fabs (interp->fir_params.y_right [k] - 0.5) ;
+		if (temp > 0.5 && temp > error)
+			error = temp ;
+		} ;
+
+	if (error > 0.0)
+	{	*returned_error = 1e18 * error ;
 		return 1 ;
 		} ;
 
+    interp->left_window_poly [0] = interp->fir_params.y_left [0] ;
+    interp->left_window_poly [1] = 13.0/2 - 13.0/2 * interp->fir_params.y_left [0] + 27.0/2 * interp->fir_params.y_left [1] - 27.0/2 * interp->fir_params.y_left [2] ;
+    interp->left_window_poly [2] = -139.0/4 + 29.0/2 * interp->fir_params.y_left [0] - 189.0/4 * interp->fir_params.y_left [1] + 135.0/2 * interp->fir_params.y_left [2] ;
+    interp->left_window_poly [3] = 54 - 27.0/2 * interp->fir_params.y_left [0] + 54 * interp->fir_params.y_left [1] - 189.0/2 * interp->fir_params.y_left [2] ;
+    interp->left_window_poly [4] = -99.0/4 + 9.0/2 * interp->fir_params.y_left [0] - 81.0/4 * interp->fir_params.y_left [1] + 81.0/2 * interp->fir_params.y_left [2] ;
 
-// 	for (k = interp->middle + 1 ; k < interp->total_len ; k++)
+	/* Generate left side of window. */
+	error = 0.0 ;
+	for (k = 0 ; k < interp->middle ; k++)
+	{	x = k / (interp->middle * 1.0) ;
+		interp->window [k] = poly_evaluate (ARRAY_LEN (interp->left_window_poly) - 1, interp->left_window_poly, x) ;
+		} ;
+
+	if (fabs (interp->window [0] - 0.2) > 0.2)
+	{	*returned_error = 1e16 * fabs (interp->window [0] - 0.1) ;
+		return 1 ;
+		} ;
+
+    interp->right_window_poly [0] = 1 ;
+    interp->right_window_poly [1] = 0 ;
+    interp->right_window_poly [2] = -85.0/4 + 27 * interp->fir_params.y_right [0] - 27.0/4 * interp->fir_params.y_right [1] + interp->fir_params.y_right [2] ;
+    interp->right_window_poly [3] = 45 - 135.0/2 * interp->fir_params.y_right [0] + 27 * interp->fir_params.y_right [1] - 9.0/2 * interp->fir_params.y_right [2] ;
+    interp->right_window_poly [4] = -99.0/4 + 81.0/2 * interp->fir_params.y_right [0] - 81.0/4 * interp->fir_params.y_right [1] + 9.0/2 * interp->fir_params.y_right [2] ;
+
+	/* Generate right side of window. */
+	error = 0.0 ;
+	for (k = interp->middle ; k < interp->total_len ; k++)
+	{	x = (k - interp->middle) / (1.0 * (interp->total_len - interp->middle)) ;
+		interp->window [k] = poly_evaluate (ARRAY_LEN (interp->right_window_poly) - 1, interp->right_window_poly, x) ;
+		} ;
+
+	k = interp->total_len - 1 ;
+	if (fabs (interp->window [k] - 0.2) > 0.2)
+	{	*returned_error = 1e16 * fabs (interp->window [k] - 0.1) ;
+		return 1 ;
+		} ;
 
 	return 0 ;
 } /* calc_window */
