@@ -1,3 +1,8 @@
+2004-03-14  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * Win32/config.h Win32/sndfile.h
+    Updates for Win32.
+
 2004-02-19  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * NEWS README

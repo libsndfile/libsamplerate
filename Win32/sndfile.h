@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 1999-2002 Erik de Castro Lopo <erikd@zip.com.au>
+** Copyright (C) 1999-2004 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU Lesser General Public License as published by
@@ -16,7 +16,12 @@
 ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-/* sndfile.h -- system-wide definitions */
+/*
+** sndfile.h -- system-wide definitions
+**
+** API documentation is in the doc/ directory of the source code tarball
+** and at http://www.mega-nerd.com/libsndfile/api.html.
+*/
 
 #ifndef SNDFILE_H
 #define SNDFILE_H
@@ -25,7 +30,6 @@
 #define	SNDFILE_1
 
 #include <stdio.h>
-#include <stdlib.h>
 
 /* For the Metrowerks CodeWarrior Pro Compiler (mainly MacOS) */
 
@@ -61,6 +65,9 @@ enum
 	SF_FORMAT_MAT4			= 0x0C0000,		/* Matlab (tm) V4.2 / GNU Octave 2.0 */
 	SF_FORMAT_MAT5			= 0x0D0000,		/* Matlab (tm) V5.0 / GNU Octave 2.1 */
 	SF_FORMAT_PVF			= 0x0E0000,		/* Portable Voice Format */
+	SF_FORMAT_XI			= 0x0F0000,		/* Fasttracker 2 Extended Instrument */
+	SF_FORMAT_HTK			= 0x100000,		/* HMM Tool Kit format */
+	SF_FORMAT_SDS			= 0x110000,		/* Midi Sample Dump Standard */
 	
 	/* Subtypes from here on. */
 
@@ -91,6 +98,9 @@ enum
 	SF_FORMAT_DWVW_24		= 0x0042, 		/* 24 bit Delta Width Variable Word encoding. */
 	SF_FORMAT_DWVW_N		= 0x0043, 		/* N bit Delta Width Variable Word encoding. */
 
+	SF_FORMAT_DPCM_8		= 0x0050,		/* 8 bit differential PCM (XI only) */
+	SF_FORMAT_DPCM_16		= 0x0051,		/* 16 bit differential PCM (XI only) */
+	
 
 	/* Endian-ness options. */
 
@@ -139,16 +149,51 @@ enum
 	SFC_UPDATE_HEADER_NOW			= 0x1060,
 	SFC_SET_UPDATE_HEADER_AUTO		= 0x1061,
 
-	SFC_SET_ADD_DITHER_ON_WRITE		= 0x1070,
-	SFC_SET_ADD_DITHER_ON_READ		= 0x1071,
-	
 	SFC_FILE_TRUNCATE				= 0x1080,
 	
 	SFC_SET_RAW_START_OFFSET		= 0x1090,
 
+	SFC_SET_DITHER_ON_WRITE			= 0x10A0,
+	SFC_SET_DITHER_ON_READ			= 0x10A1,
+
+	SFC_GET_DITHER_INFO_COUNT		= 0x10A2,
+	SFC_GET_DITHER_INFO				= 0x10A3,
+
+	SFC_GET_EMBED_FILE_INFO			= 0x10B0,
+	
+	SFC_SET_CLIPPING				= 0x10C0,
+	SFC_GET_CLIPPING				= 0x10C1,
+
+	SFC_GET_INSTRUMENT				= 0x10D0,
+	SFC_SET_INSTRUMENT				= 0x10D1,
+
 	/* Following commands for testing only. */
-	SFC_TEST_ADD_TRAILING_DATA		= 0x6000,
-	SFC_TEST_IEEE_FLOAT_REPLACE		= 0x6001
+	SFC_TEST_IEEE_FLOAT_REPLACE		= 0x6001,
+
+	/*
+	** SFC_SET_ADD_* values are deprecated and will disappear at some
+	** time in the future. They are guaranteed to be here up to and 
+	** including version 1.0.8 to avoid breakage of existng software. 
+	** They currently do nothing and will continue to do nothing. 
+	*/
+	SFC_SET_ADD_DITHER_ON_WRITE		= 0x1070,
+	SFC_SET_ADD_DITHER_ON_READ		= 0x1071
+} ;
+
+
+/*
+** String types that can be set and read from files. Not all file types
+** support this and even the file types which support one, may not support
+** all string types.
+*/
+
+enum
+{	SF_STR_TITLE					= 0x01,
+	SF_STR_COPYRIGHT				= 0x02,
+	SF_STR_SOFTWARE					= 0x03,
+	SF_STR_ARTIST					= 0x04,
+	SF_STR_COMMENT					= 0x05,
+	SF_STR_DATE						= 0x06
 } ;
 
 enum
@@ -176,9 +221,16 @@ enum
 
 /* A SNDFILE* pointer can be passed around much like stdio.h's FILE* pointer. */
 
-typedef	void	SNDFILE ;
+typedef	struct SNDFILE_tag	SNDFILE ;
+
+/* The following typedef is system specific and is defined when libsndfile is.
+** compiled. sf_count_t can be one of loff_t (Linux), off_t (*BSD), 
+** off64_t (Solaris), __int64_t (Win32) etc.
+*/
 
 typedef __int64	sf_count_t ;
+
+#define SF_COUNT_MAX		0x7FFFFFFFFFFFFFFFi64
 
 /* A pointer to a SF_INFO structure is passed to sf_open_read () and filled in.
 ** On write, the SF_INFO structure is filled in by the user and passed into
@@ -213,6 +265,56 @@ typedef struct
 	const char  *extension ;
 } SF_FORMAT_INFO ;
 
+/*
+** Enums and typedefs for adding dither on read and write. 
+** See the html documentation for sf_command(), SFC_SET_DITHER_ON_WRITE 
+** and SFC_SET_DITHER_ON_READ.
+*/
+
+enum
+{	SFD_DEFAULT_LEVEL	= 0,
+	SFD_CUSTOM_LEVEL	= 0x40000000,
+
+	SFD_NO_DITHER		= 500,
+	SFD_WHITE			= 501,
+	SFD_TRIANGULAR_PDF	= 502
+} ;
+
+typedef struct
+{	int			type ;
+	double		level ;
+	const char	*name ;
+} SF_DITHER_INFO ;
+
+/* Struct used to retrieve information about a file embedded within a
+** larger file. See SFC_GET_EMBED_FILE_INFO.
+*/
+
+typedef struct
+{	sf_count_t	offset ;
+	sf_count_t	length ;
+} SF_EMBED_FILE_INFO ;
+
+/* Struct used to retrieve music sample information from a file.
+*/
+
+typedef struct
+{	int basenote ;
+	int gain ;
+	int	sustain_mode ;
+	int sustain_start, sustain_end;
+	int release_mode ;
+	int release_start, reslease_end ;
+} SF_INSTRUMENT ;
+
+/* sustain_mode and release_mode will be one of the following. */
+
+enum
+{	SF_LOOP_NONE = 800,
+	SF_LOOP_FORWARD,
+	SF_LOOP_BACKWARD,
+} ;
+
 /* Open the specified file for read, write or both. On error, this will
 ** return a NULL pointer. To find the error number, pass a NULL SNDFILE
 ** to sf_perror () or sf_error_str ().
@@ -220,6 +322,20 @@ typedef struct
 */
 
 SNDFILE* 	sf_open		(const char *path, int mode, SF_INFO *sfinfo) ;
+
+/* Use the existing file descriptor to create a SNDFILE object. If close_desc
+** is TRUE, the file descriptor will be closed when sf_close() is called. If
+** it is FALSE, the descritor will not be closed.
+** When passed a descriptor like this, the library will assume that the start
+** of file header is at the current file offset. This allows sound files within
+** larger container files to be read and/or written.
+** On error, this will return a NULL pointer. To find the error number, pass a 
+** NULL SNDFILE to sf_perror () or sf_error_str ().
+** All calls to sf_open_fd() should be matched with a call to sf_close().
+
+*/
+
+SNDFILE* 	sf_open_fd	(int fd, int mode, SF_INFO *sfinfo, int close_desc) ;
 
 /* sf_error () returns a error number which can be translated to a text 
 ** string using sf_error_number().
@@ -271,6 +387,18 @@ int		sf_format_check	(const SF_INFO *info) ;
 
 sf_count_t	sf_seek 		(SNDFILE *sndfile, sf_count_t frames, int whence) ;
 
+/* Functions for retrieving and setting string data within sound files.
+** Not all file types support this features; AIFF and WAV do. For both
+** functions, the str_type parameter must be one of the SF_STR_* values
+** defined above.
+** On error, sf_set_string() returns non-zero while sf_get_string()
+** returns NULL.
+*/
+
+int sf_set_string (SNDFILE *sndfile, int str_type, const char* str) ;
+
+const char* sf_get_string (SNDFILE *sndfile, int str_type) ;
+
 /* Functions for reading/writing the waveform data of a sound file.
 */
 
@@ -296,8 +424,8 @@ sf_count_t	sf_writef_int 	(SNDFILE *sndfile, int *ptr, sf_count_t frames) ;
 sf_count_t	sf_readf_float	(SNDFILE *sndfile, float *ptr, sf_count_t frames) ;
 sf_count_t	sf_writef_float	(SNDFILE *sndfile, float *ptr, sf_count_t frames) ;
 
-sf_count_t	sf_readf_double	(SNDFILE *sndfile, double *ptr, sf_count_t frames) ;
-sf_count_t	sf_writef_double(SNDFILE *sndfile, double *ptr, sf_count_t frames) ;
+sf_count_t	sf_readf_double		(SNDFILE *sndfile, double *ptr, sf_count_t frames) ;
+sf_count_t	sf_writef_double	(SNDFILE *sndfile, double *ptr, sf_count_t frames) ;
 
 /* Functions for reading and writing the data chunk in terms of items.
 ** Otherwise similar to above.
@@ -317,8 +445,8 @@ sf_count_t	sf_read_double	(SNDFILE *sndfile, double *ptr, sf_count_t items) ;
 sf_count_t	sf_write_double	(SNDFILE *sndfile, double *ptr, sf_count_t items) ;
 
 /* Close the SNDFILE and clean up all memory allocations associated with this
-** file. 
-** Returns 0 on success, or an error number. 
+** file.
+** Returns 0 on success, or an error number.
 */
 
 int		sf_close		(SNDFILE *sndfile) ;
@@ -328,3 +456,12 @@ int		sf_close		(SNDFILE *sndfile) ;
 #endif	/* __cplusplus */
 
 #endif	/* SNDFILE_H */
+
+/*
+** Do not edit or modify anything in this comment block.
+** The arch-tag line is a file identity tag for the GNU Arch 
+** revision control system.
+**
+** arch-tag: 906bb197-18f2-4f66-a395-b4722bab5114
+*/
+

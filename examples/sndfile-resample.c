@@ -131,7 +131,7 @@ main (int argc, char *argv [])
 
 	/*-sfinfo.format = (sfinfo.format & SF_FORMAT_TYPEMASK) | SF_FORMAT_FLOAT ;-*/
 
-	if (! (outfile = sf_open (argv [argc - 1], SFM_RDWR, &sfinfo)))
+	if ((outfile = sf_open (argv [argc - 1], SFM_RDWR, &sfinfo)) == NULL)
 	{	printf ("Error : Not able to open output file '%s'\n", argv [argc - 1]) ;
 		sf_close (infile) ;
 		exit (1) ;
