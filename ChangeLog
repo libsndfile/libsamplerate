@@ -10,6 +10,9 @@
     * examples/sndfile-resample.c tests/src-evaluate.c
     Use ISO C standard function remove instead of unlink.
 
+    * Win32/Makefile.msvc
+    Add the top level directory to the include path (for sndfile.h).
+
 2004-09-10  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/util.h tests/*.c
