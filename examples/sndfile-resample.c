@@ -44,15 +44,16 @@ main (int argc, char *argv [])
 	int			new_sample_rate = -1, k, converter, max_speed = SF_FALSE ;
 
 	if (argc == 2 && strcmp (argv [1], "--version") == 0)
-	{	char *progname, *cptr ;
+	{	char  buffer [64], *cptr ;
 
-		progname = argv [0] ;
-		if ((cptr = strrchr (progname, '/')) != NULL)
-			progname = cptr + 1 ;
-		if ((cptr = strrchr (progname, '\\')) != NULL)
-			progname = cptr + 1 ;
+		if ((cptr = strrchr (argv [0], '/')) != NULL)
+			argv [0] = cptr + 1 ;
+		if ((cptr = strrchr (argv [0], '\\')) != NULL)
+			argv [0] = cptr + 1 ;
 
-		printf ("%s (%s)\n", progname, src_get_version ()) ;
+		sf_command (NULL, SFC_GET_LIB_VERSION, buffer, sizeof (buffer)) ;
+
+		printf ("%s (%s,%s)\n", argv [0], src_get_version (), buffer) ;
 		exit (0) ;
 		} ;
 
@@ -99,8 +100,6 @@ main (int argc, char *argv [])
 		exit (1) ;
 		} ;
 
-	printf ("Version       : %s\n", src_get_version ()) ;
-	
 	printf ("Input File    : %s\n", argv [argc - 2]) ;
 	printf ("Sample Rate   : %d\n", sfinfo.samplerate) ;
 	printf ("Input Frames  : %ld\n\n", (long) sfinfo.frames) ;
