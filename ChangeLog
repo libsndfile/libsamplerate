@@ -1,3 +1,11 @@
+2004-09-30  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * configure.ac Win32/Makefile.mingw.in
+    More support for compiling on Win32 using MinGW. Now uses FFTW3.
+
+    * examples/audio_out.c
+    Remove include of <mmreg.h> on win32.
+
 2004-09-12  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac Win32/Makefile.mingw.in

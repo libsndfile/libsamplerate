@@ -6,7 +6,7 @@ AC_PREREQ(2.54)
 AC_INIT
 AC_CONFIG_SRCDIR([src/samplerate.c])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(libsamplerate,0.1.2)
+AM_INIT_AUTOMAKE(libsamplerate,0.1.3pre1)
 AM_CONFIG_HEADER(src/config.h)
 
 #------------------------------------------------------------------------------------
@@ -218,6 +218,7 @@ if test x$ac_cv_fftw3 != xyes ; then
 # Find known target OS.
 
 OS_SPECIFIC_INCLUDES=""
+os_is_win32=0
 
 case "$target_os" in
 	darwin* | rhapsody*)
@@ -226,6 +227,7 @@ case "$target_os" in
 		;;
 	mingw32*)
 		OS_SPECIFIC_LINKS="-lwinmm"
+		os_is_win32=1
 		;;
 	*)
 		OS_SPECIFIC_INCLUDES=""
@@ -239,7 +241,7 @@ case "$target_os" in
 # Need to make examples directory before tests directory.
 subdirs="src doc examples tests"
 
-AC_DEFINE([OS_IS_WIN32],0, [Set to 1 if compiling for Win32])
+AC_DEFINE_UNQUOTED(OS_IS_WIN32, ${os_is_win32}, [Set to 1 if compiling for Win32])
 
 AC_SUBST(subdirs)
 AC_SUBST(SHLIB_VERSION_ARG)
@@ -265,20 +267,6 @@ AC_CONFIG_FILES([Makefile src/Version_script Win32/Makefile Win32/Makefile.mingw
 			src/Makefile examples/Makefile tests/Makefile doc/Makefile \
 			libsamplerate.spec samplerate.pc])
 AC_OUTPUT
-
-#====================================================================================
-# Special case for MinGW32.
-
-if test "x-$build_os-$host_os-$target_os" = x-mingw32-mingw32-mingw32 ; then
-	cp -f Win32/Makefile.mingw Makefile
-	echo
-	echo "Now run \"make\" and \"make check\"."
-	echo
-	echo "There is no automatic install script on this platform."
-	echo
-	
-	exit 0
-	fi
 
 #====================================================================================
 
@@ -313,6 +301,12 @@ AC_MSG_RESULT([  Installation directories :
     Program directory : ........... ${prefix}/bin
     Pkgconfig directory : ......... ${prefix}/lib/pkgconfig
 ])
+
+if test "x-$build_os-$host_os-$target_os" = x-mingw32-mingw32-mingw32 ; then
+	echo "Using a Win32 specific Makefile."
+	cp -f Win32/Makefile.mingw Makefile
+	exit 0
+	fi
 
 if test x$prefix != "x/usr" ; then
 	echo "Compiling some other packages against ${PACKAGE} may require "
