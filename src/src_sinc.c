@@ -56,14 +56,6 @@
 typedef int32_t increment_t ;
 typedef float	coeff_t ;
 
-enum
-{
-	STATE_BUFFER_START	= 101,
-	STATE_DATA_CONTINUE	= 102,
-	STATE_BUFFER_END	= 103,
-	STATE_FINISHED
-} ;
-
 typedef struct
 {	int		sinc_magic_marker ;
 
