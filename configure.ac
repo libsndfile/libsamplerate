@@ -92,24 +92,6 @@ AC_CHECK_SIZEOF(float,4)
 AC_CHECK_SIZEOF(double,8)
 
 #====================================================================================
-# Want to find libefence if it exists, but only want to link it to the test
-# programs. Therefore, save $LIBS, check for libefence and then reset $LIBS
-# to the previously saved value.
-
-ac_cv_lib_efence_memalign=no
-EFENCE_LIB=""
-
-if test x$ac_arg_debug = xyes ; then
-	saved_LIBS=$LIBS
-	AC_CHECK_LIB([efence],memalign)
-	LIBS=$saved_LIBS
-
-	if test x$ac_cv_lib_efence_memalign = xyes ; then
-		EFENCE_LIB="-lefence"
-		fi
-	fi
-
-#====================================================================================
 # Check for functions.
 
 AC_CHECK_FUNCS(malloc calloc free memcpy memmove)
@@ -260,8 +242,6 @@ AC_SUBST(HAVE_FFTW3)
 AC_SUBST(FFTW3_CFLAGS)
 AC_SUBST(FFTW3_LIBS)
 
-AC_SUBST(EFENCE_LIB)
-
 AC_SUBST(HAVE_SNDFILE)
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
@@ -294,8 +274,7 @@ AC_MSG_RESULT([
 
     Use FFTW : .................... ${ac_cv_fftw3}])
 
-AC_MSG_RESULT([    Have libsndfile : ............. ${ac_cv_sndfile}])
-AC_MSG_RESULT([    Have libefence : .............. ${ac_cv_lib_efence_memalign}
+AC_MSG_RESULT([    Have libsndfile : ............. ${ac_cv_sndfile}
 ])
 
 AC_MSG_RESULT([  Installation directories :

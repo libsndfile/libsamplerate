@@ -37,9 +37,6 @@ static void callback_test (int converter, int channel_count, double target_snr) 
 int
 main (void)
 {
-	/* Force output of the Electric Fence banner message. */
-	force_efence_banner () ;
-
 	puts ("\n    Zero Order Hold interpolator :") ;
 	simple_test		(SRC_ZERO_ORDER_HOLD, 1, 45.0) ;
 	process_test	(SRC_ZERO_ORDER_HOLD, 1, 45.0) ;

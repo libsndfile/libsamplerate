@@ -31,9 +31,6 @@ static void src_ratio_test (void) ;
 int
 main (void)
 {
-	/* Force output of the Electric Fence banner message. */
-	force_efence_banner () ;
-
 	puts ("") ;
 
 	printf ("    version : %s\n\n", src_get_version ()) ;

@@ -27,8 +27,6 @@ void gen_windowed_sines (int freq_count, const double *freqs, double max, float 
 void save_oct_float (char *filename, float *input, int in_len, float *output, int out_len) ;
 void save_oct_double (char *filename, double *input, int in_len, double *output, int out_len) ;
 
-void force_efence_banner (void) ;
-
 void interleave_data (const float *in, float *out, int frames, int channels) ;
 
 void deinterleave_data (const float *in, float *out, int frames, int channels) ;

@@ -1,3 +1,12 @@
+2004-12-04  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * configure.ac tests/Makefile.am tests/*.c
+    Ditch detection and use of libefence. Valgrind is a far better debugging
+    tool.
+
+    * INSTALL
+    Write complete libsamplerate specific install instructions.
+
 2004-10-06  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/configure.ac src/makefile.am

@@ -37,9 +37,6 @@ main (void)
 
 	int k ;
 
-	/* Force output of the Electric Fence banner message. */
-	force_efence_banner () ;
-
 	puts ("") ;
 
 	puts ("    Zero Order Hold interpolator :") ;

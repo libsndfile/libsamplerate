@@ -35,9 +35,7 @@ static float data_zero [BUFFER_LEN] ;
 
 int
 main (void)
-{	/* Force output of the Electric Fence banner message. */
-	force_efence_banner () ;
-
+{
 	puts ("") ;
 
 	process_reset_test (SRC_ZERO_ORDER_HOLD) ;

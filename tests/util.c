@@ -146,14 +146,6 @@ deinterleave_data (const float *in, float *out, int frames, int channels)
 	return ;
 } /* deinterleave_data */
 
-void
-force_efence_banner (void)
-{	void *dummy ;
-
-	dummy = malloc (1) ;
-	free (dummy) ;
-} /* force_efence_banner */
-
 /*
 ** Do not edit or modify anything in this comment block.
 ** The arch-tag line is a file identity tag for the GNU Arch 

@@ -149,9 +149,6 @@ main (int argc, char *argv [])
 	double	best_snr, snr, freq3dB, conversion_rate, worst_conv_rate ;
 	int 	j, k, converter, verbose = 0 ;
 
-	/* Force output of the Electric Fence banner message. */
-	force_efence_banner () ;
-
 	if (argc == 2 && strcmp (argv [1], "--verbose") == 0)
 		verbose = 1 ;
 

@@ -33,9 +33,6 @@ static void short_to_float_test (void) ;
 int
 main (void)
 {
-	/* Force output of the Electric Fence banner message. */
-	force_efence_banner () ;
-
 	puts ("") ;
 
 	float_to_short_test () ;
