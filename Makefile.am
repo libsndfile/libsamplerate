@@ -12,6 +12,9 @@ m4datadir = $(datadir)/aclocal
 test:
 	make check
 
+check-asm :
+	(cd src && make check-asm)
+
 ## Do not edit or modify anything in this comment block.
 ## The arch-tag line is a file identity tag for the GNU Arch 
 ## revision control system.
