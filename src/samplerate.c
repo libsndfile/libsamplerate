@@ -401,6 +401,8 @@ src_strerror (int error)
 				return "Calling mode differs from initialisation mode (ie process v callback)." ;
 		case SRC_ERR_NULL_CALLBACK :
 				return "Callback function pointer is NULL in src_callback_read ()." ;
+		case SRC_ERR_NO_VARIABLE_RATIO :
+				return "This converter only allows constant conversion ratios." ;
 
 		case SRC_ERR_MAX_ERROR :
 				return "Placeholder. No error defined for this error number." ;

@@ -71,6 +71,7 @@ enum
 	SRC_ERR_BAD_CALLBACK,
 	SRC_ERR_BAD_MODE,
 	SRC_ERR_NULL_CALLBACK,
+	SRC_ERR_NO_VARIABLE_RATIO,
 
 	/* This must be the last error number. */
 	SRC_ERR_MAX_ERROR
