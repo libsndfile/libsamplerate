@@ -27,7 +27,7 @@
 
 #include "config.h"
 
-#if (HAVE_LIBFFTW && HAVE_LIBRFFTW && HAVE_SNDFILE)
+#if (HAVE_FFTW3 && HAVE_SNDFILE)
 
 #include <sndfile.h>
 #include <math.h>
@@ -532,7 +532,8 @@ main (void)
 	return 0 ;
 } /* main */
 
-#endif /* (HAVE_LIBFFTW && HAVE_LIBRFFTW && HAVE_SNDFILE) */
+#endif /* (HAVE_FFTW3 && HAVE_SNDFILE) */
+
 /*
 ** Do not edit or modify anything in this comment block.
 ** The arch-tag line is a file identity tag for the GNU Arch 

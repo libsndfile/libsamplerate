@@ -45,7 +45,6 @@
 */
 
 /* Set to 1 if the compile is GNU GCC. */
-<<<<<<< diff from left file
 #define COMPILER_IS_GCC 0
 ========
 #define COMPILER_IS_GCC 1

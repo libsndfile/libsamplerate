@@ -18,3 +18,10 @@ libsamplerate_la_LIBADD  = -lm
 
 # Disable autoheader. 
 AUTOHEADER=echo
+
+## Do not edit or modify anything in this comment block.
+## The arch-tag line is a file identity tag for the GNU Arch 
+## revision control system.
+##
+## arch-tag: 62db1d8d-493b-4874-afb0-e421d3dbb868
+

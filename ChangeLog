@@ -1,3 +1,11 @@
+2004-01-26  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/common.h
+    Changed allowed SRC ration to range [1/256, 256].
+
+    * configure.ac tests/snr_bw_test.c tests/src-evaluate.c tests/Makefile.am
+    Use FFTW3 instead of version 2.
+
 2003-12-14  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/api.html doc/api_misc.html

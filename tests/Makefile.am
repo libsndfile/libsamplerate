@@ -58,3 +58,8 @@ check: $(noinst_PROGRAMS)
 	@echo "  ${PACKAGE}-${VERSION} passed all tests."
 	@echo "-----------------------------------------------------------------"
 
+# Do not edit or modify anything in this comment block.
+# The arch-tag line is a file identity tag for the GNU Arch 
+# revision control system.
+#
+# arch-tag: ec9d19f8-523c-48e5-8929-809c2641a8dc

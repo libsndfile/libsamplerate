@@ -23,3 +23,10 @@ varispeed_play_CFLAGS = @SNDFILE_CFLAGS@
 varispeed_play_LDADD = $(SAMPLERATEDIR)/libsamplerate.la $(SNDFILE_LIBS) $(OS_SPECIFIC_LINKS)
 
 
+
+## Do not edit or modify anything in this comment block.
+## The arch-tag line is a file identity tag for the GNU Arch 
+## revision control system.
+##
+## arch-tag: 25f669d6-3eeb-4093-8c16-2b03df642795
+
