@@ -430,7 +430,7 @@ calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filte
 	filter_index = start_filter_index ;
 	coeff_count = (max_filter_index - filter_index) / increment ;
 	filter_index = filter_index + coeff_count * increment ;
-	data_index = filter->b_current - filter->channels * coeff_count ;
+	data_index = filter->b_current - filter->channels * coeff_count + ch ;
 
 	left = 0.0 ;
 	do
@@ -439,7 +439,7 @@ calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filte
 
 		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
 
-		left += icoeff * filter->buffer [data_index + ch] ;
+		left += icoeff * filter->buffer [data_index] ;
 
 		filter_index -= increment ;
 		data_index = data_index + filter->channels ;
@@ -450,7 +450,7 @@ calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filte
 	filter_index = increment - start_filter_index ;
 	coeff_count = (max_filter_index - filter_index) / increment ;
 	filter_index = filter_index + coeff_count * increment ;
-	data_index = filter->b_current + filter->channels * (1 + coeff_count) ;
+	data_index = filter->b_current + filter->channels * (1 + coeff_count) + ch ;
 
 	right = 0.0 ;
 	do
@@ -459,7 +459,7 @@ calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filte
 
 		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
 
-		right += icoeff * filter->buffer [data_index + ch] ;
+		right += icoeff * filter->buffer [data_index] ;
 
 		filter_index -= increment ;
 		data_index = data_index - filter->channels ;
