@@ -22,7 +22,7 @@
 
 #define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
 
-void gen_windowed_sines (int freq_count, double *freqs, double max, float *output, int output_len) ;
+void gen_windowed_sines (int freq_count, const double *freqs, double max, float *output, int output_len) ;
 
 void save_oct_float (char *filename, float *input, int in_len, float *output, int out_len) ;
 void save_oct_double (char *filename, double *input, int in_len, double *output, int out_len) ;

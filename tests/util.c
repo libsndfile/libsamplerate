@@ -27,7 +27,7 @@
 #endif
 
 void
-gen_windowed_sines (int freq_count, double *freqs, double max, float *output, int output_len)
+gen_windowed_sines (int freq_count, const double *freqs, double max, float *output, int output_len)
 {	int 	k, freq ;
 	double	amplitude, phase ;
 
