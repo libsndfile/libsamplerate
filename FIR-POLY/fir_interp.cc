@@ -65,9 +65,11 @@ typedef struct
 	double left_window_poly [5] ;
 	double right_window_poly [5] ;
 
-	double sinc [1024] ;
-	double window [1024] ;
-	double filter [1024] ;
+	double sinc [2048] ;
+	double window [2048] ;
+	double filter [2048] ;
+	double mag [1024] ;
+	double phase [1024] ;
 } FIR_INTERP ;
 
 static double fir_error (const GMatrix& gm) ;
@@ -77,6 +79,8 @@ static void calc_filter (FIR_INTERP *interp) ;
 
 static void oct_save (const FIR_INTERP *interp) ;
 static void randomize_data (FIR_INTERP *interp) ;
+
+static double evaluate_filter (FIR_INTERP *interp) ;
 
 int
 main (void)
@@ -121,10 +125,18 @@ poly_evaluate (int order, const double *coeff, double x)
 	return result ;
 } /* poly_evaluate */
 
+static double
+evaluate_filter (FIR_INTERP *interp)
+{
+	mag_spectrum (interp->filter, ARRAY_LEN (interp->filter), interp->mag, interp->phase) ;
+
+	return 1.0 ;
+} /* evaluate_filter */
 
 static double
 fir_error (const GMatrix& gm)
 {	static FIR_INTERP interp ;
+	static double best_error = 1e200 ;
 	double error = 0.0 ;
 	unsigned param_count ;
 
@@ -161,12 +173,18 @@ fir_error (const GMatrix& gm)
 		return error ;
 
 	calc_sinc (&interp) ;
-
 	calc_filter (&interp) ;
 
+	error = evaluate_filter (&interp) ;
+
 	oct_save (&interp) ;
-	printf ("%s %d\n", __func__, __LINE__) ;
+	printf ("%s %d : exit\n", __func__, __LINE__) ;
 	exit (1) ;
+
+	if (error < best_error)
+	{	oct_save (&interp) ;
+		best_error = error ;
+		} ;
 
 	return error ;
 } /* fir_error */
@@ -273,11 +291,18 @@ calc_sinc (FIR_INTERP *interp)
 static void
 calc_filter (FIR_INTERP *interp)
 {	unsigned k ;
+	double sum = 0.0 ;
 
 	for (k = 0 ; k < interp->total_len ; k++)
-		interp->filter [k] = interp->sinc [k] * interp->window [k] ;
+	{	interp->filter [k] = interp->sinc [k] * interp->window [k] ;
+		sum += interp->filter [k] ;
+		} ;
 
-} /* calc_sinc */
+	/* Now normalize. */
+	for (k = 0 ; k < interp->total_len ; k++)
+		interp->filter [k] /= sum ;
+
+} /* calc_filter */
 
 static void
 oct_save (const FIR_INTERP *interp)
@@ -311,13 +336,37 @@ oct_save (const FIR_INTERP *interp)
 	for (k = 0 ; k < interp->total_len ; k++)
 		fprintf (file, "% f\n", interp->sinc [k]) ;
 
-	fprintf (file, "# name: window\n") ;
+	fprintf (file, "# name: win\n") ;
 	fprintf (file, "# type: matrix\n") ;
 	fprintf (file, "# rows: %d\n", interp->total_len) ;
 	fprintf (file, "# columns: 1\n") ;
 
 	for (k = 0 ; k < interp->total_len ; k++)
 		fprintf (file, "% f\n", interp->window [k]) ;
+
+	fprintf (file, "# name: filt\n") ;
+	fprintf (file, "# type: matrix\n") ;
+	fprintf (file, "# rows: %d\n", interp->total_len) ;
+	fprintf (file, "# columns: 1\n") ;
+
+	for (k = 0 ; k < interp->total_len ; k++)
+		fprintf (file, "% f\n", interp->filter [k] * UPSAMPLE_RATIO) ;
+
+	fprintf (file, "# name: mag\n") ;
+	fprintf (file, "# type: matrix\n") ;
+	fprintf (file, "# rows: %d\n", ARRAY_LEN (interp->mag)) ;
+	fprintf (file, "# columns: 1\n") ;
+
+	for (k = 0 ; k < ARRAY_LEN (interp->mag) ; k++)
+		fprintf (file, "% f\n", interp->mag [k]) ;
+
+	fprintf (file, "# name: phase\n") ;
+	fprintf (file, "# type: matrix\n") ;
+	fprintf (file, "# rows: %d\n", ARRAY_LEN (interp->phase)) ;
+	fprintf (file, "# columns: 1\n") ;
+
+	for (k = 0 ; k < ARRAY_LEN (interp->phase) ; k++)
+		fprintf (file, "% f\n", interp->phase [k]) ;
 
 	fclose (file) ;
 } /* oct_save */
