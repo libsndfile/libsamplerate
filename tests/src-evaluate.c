@@ -346,8 +346,8 @@ measure_snr (RESAMPLE_PROG *prog, int *output_samples, int verbose)
 	*output_samples = 0 ;
 
 	for (k = 0 ; k < ARRAY_LEN (snr_test) ; k++)
-	{	unlink ("source.wav") ;
-		unlink ("destination.wav") ;
+	{	remove ("source.wav") ;
+		remove ("destination.wav") ;
 
 		if (verbose)
 			printf ("       SNR test #%d : ", k) ;
@@ -424,7 +424,7 @@ find_attenuation (double freq, RESAMPLE_PROG *prog, int verbose)
 
 	generate_source_wav ("source.wav", &freq, 1, prog->format) ;
 
-	unlink (filename) ;
+	remove (filename) ;
 
 	snprintf (command, sizeof (command), prog->convert_cmd, 88189) ;
 	SAFE_STRNCAT (command, " >/dev/null", sizeof (command)) ;

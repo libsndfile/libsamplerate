@@ -16,13 +16,13 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
 #include <math.h>
-
-#include "config.h"
 
 #if (HAVE_SNDFILE)
 
@@ -126,10 +126,8 @@ main (int argc, char *argv [])
 		exit (1) ;
 		} ;
 
-#if ((defined (WIN32) || defined (_WIN32)) == 0)
-	/* Fix the output file length to zero if already exists. */
-	truncate (argv [argc - 1], 0) ;
-#endif
+	/* Delete the output file length to zero if already exists. */
+	remove (argv [argc - 1]) ;
 
 	if ((outfile = sf_open (argv [argc - 1], SFM_WRITE, &sfinfo)) == NULL)
 	{	printf ("Error : Not able to open output file '%s'\n", argv [argc - 1]) ;

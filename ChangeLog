@@ -2,7 +2,13 @@
 
     * configure.ac Win32/Makefile.mingw.in
     Add preliminary support for compiling on Win32 using MinGW.
-	Bump version to 0.1.2.
+
+    * configure.ac 
+    Bump version to 0.1.2.
+    Add --enable-gg-werror configure option.
+
+    * examples/sndfile-resample.c tests/src-evaluate.c
+    Use ISO C standard function remove instead of unlink.
 
 2004-09-10  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
