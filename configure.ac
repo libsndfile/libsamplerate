@@ -6,7 +6,7 @@ AC_PREREQ(2.54)
 AC_INIT
 AC_CONFIG_SRCDIR([src/samplerate.c])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(libsamplerate,0.1.3pre1)
+AM_INIT_AUTOMAKE(libsamplerate,0.1.3pre2)
 AM_CONFIG_HEADER(src/config.h)
 
 #------------------------------------------------------------------------------------
@@ -302,19 +302,11 @@ AC_MSG_RESULT([  Installation directories :
     Pkgconfig directory : ......... ${prefix}/lib/pkgconfig
 ])
 
-if test "x-$build_os-$host_os-$target_os" = x-mingw32-mingw32-mingw32 ; then
-	echo "Using a Win32 specific Makefile."
-	cp -f Win32/Makefile.mingw Makefile
-	exit 0
-	fi
-
 if test x$prefix != "x/usr" ; then
 	echo "Compiling some other packages against ${PACKAGE} may require "
 	echo -e "the addition of \"${prefix}/lib/pkgconfig\" to the "
 	echo -e "PKG_CONFIG_PATH environment variable.\n"
 	fi
-
-
 
 ifelse(dnl	
 
