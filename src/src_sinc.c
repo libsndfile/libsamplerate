@@ -204,7 +204,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	** a better way. Need to look at prepare_data () at the same time.
 	*/
 
-	temp_filter.b_len = 1000 + 2 * lrint (ceil (temp_filter.coeff_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO)) ;
+	temp_filter.b_len = 1000 + 2 * lrint (0.5 + temp_filter.coeff_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO) ;
 	temp_filter.b_len *= temp_filter.channels ;
 
 	if ((filter = calloc (1, sizeof (SINC_FILTER) + sizeof (filter->buffer [0]) * (temp_filter.b_len + temp_filter.channels))) == NULL)
@@ -217,7 +217,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 
 	sinc_reset (psrc) ;
 
-	count = (filter->coeff_half_len * INT_TO_FP (1)) / FP_ONE ;
+	count = lrint ((filter->coeff_half_len * INT_TO_FP (1)) / FP_ONE) ;
 
 	if (abs (count - filter->coeff_half_len) >= 1)
 		return SRC_ERR_FILTER_LEN ;
@@ -274,21 +274,16 @@ sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	count = (filter->coeff_half_len + 2.0) / filter->index_inc ;
 	if (MIN (psrc->last_ratio, data->src_ratio) < 1.0)
 		count /= MIN (psrc->last_ratio, data->src_ratio) ;
-	count = lrint (ceil (count)) ;
 
 	/* Maximum coefficientson either side of center point. */
 	half_filter_chan_len = filter->channels * (lrint (count) + 1) ;
 
 	input_index = psrc->last_position ;
-	if (input_index >= 1.0)
-	{	filter->b_current = (filter->b_current + filter->channels * lrint (floor (input_index))) % filter->b_len ;
-		input_index -= floor (input_index) ;
-		} ;
-
 	float_increment = filter->index_inc ;
 
-	filter->b_current = (filter->b_current + filter->channels * lrint (floor (input_index))) % filter->b_len ;
-	input_index -= floor (input_index) ;
+	rem = fmod (input_index, 1.0) ;
+	filter->b_current = (filter->b_current + filter->channels * lrint (input_index - rem)) % filter->b_len ;
+	input_index = rem ;
 
 	terminate = 1.0 / src_ratio + 1e-20 ;
 
@@ -332,9 +327,8 @@ sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
 		rem = fmod (input_index, 1.0) ;
-		input_index = round (input_index - rem) ;
 
-		filter->b_current = (filter->b_current + filter->channels * lrint (input_index)) % filter->b_len ;
+		filter->b_current = (filter->b_current + filter->channels * lrint (input_index - rem)) % filter->b_len ;
 		input_index = rem ;
 		} ;
 
