@@ -21,10 +21,14 @@
 #include "calc_snr.h"
 #include "util.h"
 
+#if (HAVE_FFTW3 == 1)
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
+#include <fftw3.h>
 
 #define	MAX_SPEC_LEN	(1<<18)
 #define	MAX_PEAKS		10
@@ -183,13 +187,6 @@ find_snr (const double *magnitude, int len)
 	return snr ;
 } /* find_snr */
 
-/*==============================================================================
-*/
-
-#if (HAVE_FFTW3 == 1)
-
-#include <fftw3.h>
-
 static void
 log_mag_spectrum (double *input, int len, double *magnitude)
 {	fftw_plan plan = NULL ;
@@ -207,6 +204,8 @@ log_mag_spectrum (double *input, int len, double *magnitude)
 		} ;
 
 	fftw_execute (plan) ;
+	
+	fftw_destroy_plan (plan) ;
 
 	/* (k < N/2 rounded up) */
 	maxval = 0.0 ;
@@ -229,48 +228,17 @@ log_mag_spectrum (double *input, int len, double *magnitude)
 	return ;
 } /* log_mag_spectrum */
 
-#else /* (! HAVE_FFTW3) */
+#else /* ! (HAVE_LIBFFTW && HAVE_LIBRFFTW) */
 
-#include "kiss_fft.h"
+double
+calculate_snr (float *data, int len)
+{	double snr = 200.0 ;
 
-static void
-log_mag_spectrum (double *input, int len, double *magnitude)
-{	fftw_plan plan = NULL ;
+	data = data ;
+	len = len ;
 
-	double	maxval ;
-	int		k ;
-
-	if (input == NULL || magnitude == NULL)
-		return ;
-
-	plan = fftw_plan_r2r_1d (len, input, magnitude, FFTW_R2HC, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT) ;
-	if (plan == NULL)
-	{	printf ("%s : line %d : create plan failed.\n", __FILE__, __LINE__) ;
-		exit (1) ;
-		} ;
-
-	fftw_execute (plan) ;
-
-	/* (k < N/2 rounded up) */
-	maxval = 0.0 ;
-	for (k = 1 ; k < len / 2 ; k++)
-	{	magnitude [k] = sqrt (magnitude [k] * magnitude [k] + magnitude [len - k - 1] * magnitude [len - k - 1]) ;
-		maxval = (maxval < magnitude [k]) ? magnitude [k] : maxval ;
-		} ;
-
-	memset (magnitude + len / 2, 0, len / 2 * sizeof (magnitude [0])) ;
-
-	/* Don't care about DC component. Make it zero. */
-	magnitude [0] = 0.0 ;
-
-	/* log magnitude. */
-	for (k = 0 ; k < len ; k++)
-	{	magnitude [k] = magnitude [k] / maxval ;
-		magnitude [k] = (magnitude [k] < 1e-15) ? -200.0 : 20.0 * log10 (magnitude [k]) ;
-		} ;
-
-	return ;
-} /* log_mag_spectrum */
+	return snr ;
+} /* calculate_snr */
 
 #endif
 
@@ -281,3 +249,4 @@ log_mag_spectrum (double *input, int len, double *magnitude)
 **
 ** arch-tag: 7ae937c5-53a5-45d8-8aa2-793de9c35f0a
 */
+

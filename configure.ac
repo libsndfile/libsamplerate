@@ -55,6 +55,10 @@ AC_ARG_ENABLE(gcc-opt,
 		[  --disable-gcc-opt            disable gcc optimisations ],
 		ac_arg_gcc_opt="N", ac_arg_gcc_opt="Y")
 
+AC_ARG_ENABLE(fftw,
+		[  --disable-fftw               disable usage of FFTW ],
+		ac_arg_fftw="N", ac_arg_fftw="Y")
+
 AC_ARG_ENABLE(debug,
 		[  --enable-debug               enable debugging ],
 		ac_arg_debug=yes, ac_arg_debug=no)
@@ -185,14 +189,17 @@ else
 #====================================================================================
 # Check for libfftw3 which is required for the test and example programs.
 
-PKG_CHECK_MODULES(FFTW3, fftw3 >= 0.15.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
+if test $ac_arg_fftw = "Y" ; then
+	PKG_CHECK_MODULES(FFTW3, fftw3 >= 0.15.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
+	AC_DEFINE_UNQUOTED([HAVE_FFTW3],$ac_cv_fftw3,[Set to 1 if you have libfftw3.])
 
-AC_DEFINE_UNQUOTED([HAVE_FFTW3],$ac_cv_fftw3,[Set to 1 if you have libfftw3.])
+	if test x$ac_cv_fftw3 = x1 ; then
+		ac_cv_fftw3=yes
+		HAVE_FFTW3=1
+		fi
+	fi
 
-if test x$ac_cv_fftw3 = x1 ; then
-	ac_cv_fftw3=yes
-	HAVE_FFTW3=1
-else
+if test x$ac_cv_fftw3 != xyes ; then
 	ac_cv_fftw3=no
 	HAVE_FFTW3=0
 	fi
@@ -267,14 +274,7 @@ if test x$ac_cv_c_compiler_gnu = xyes ; then
 AC_MSG_RESULT([
   Extra tools required for testing and examples :
 
-    Have FFTW : ................... ${ac_cv_fftw3}])
-
-if test x$ac_cv_fftw3 = xno ; then
-	echo
-	echo "      * FFTW is available from http://www.fftw.org/ or if you "
-	echo "      * are using Debian : \"apt-get install fftw3 fftw3-dev\""
-	echo
-	fi
+    Use FFTW : .................... ${ac_cv_fftw3}])
 
 AC_MSG_RESULT([    Have libsndfile : ............. ${ac_cv_sndfile}])
 AC_MSG_RESULT([    Have libefence : .............. ${ac_cv_lib_efence_memalign}
