@@ -80,19 +80,19 @@ typedef struct
 } RATIO_TEST ;
 
 static RATIO_TEST ratio_test [] =
-{	{	1.0 / 12.1,	0 },
-	{	1.0 / 12.0, 1 },
-	{	1.0,		1 },
-	{	12.0, 		1 },
-	{	12.1,		0 },
-	{	-1.0,		0 }
+{	{	1.0 / 256.1,	0 },
+	{	1.0 / 256.0,	1 },
+	{	1.0,			1 },
+	{	256.0, 			1 },
+	{	256.1,			0 },
+	{	-1.0,			0 }
 } ;
 
 static void
 src_ratio_test (void)
 {	int k ;
 
-	puts ("    src_ratio_test (SRC ratio must be in range [1/12, 12]):" ) ;
+	puts ("    src_ratio_test (SRC ratio must be in range [1/256, 256]):" ) ;
 
 
 	for (k = 0 ; k < ARRAY_LEN (ratio_test) ; k++)

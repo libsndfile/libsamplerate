@@ -27,7 +27,7 @@ typedef	int		int32_t ;
 typedef	long	int32_t ;
 #endif
 
-#define	SRC_MAX_RATIO			12
+#define	SRC_MAX_RATIO			256
 #define	SRC_MIN_RATIO_DIFF		(1e-20)
 
 #define	MAX(a,b)	(((a) > (b)) ? (a) : (b))
@@ -114,6 +114,7 @@ const char* zoh_get_description (int src_enum) ;
 int zoh_set_converter (SRC_PRIVATE *psrc, int src_enum) ;
 
 #endif	/* COMMON_H_INCLUDED */
+
 /*
 ** Do not edit or modify anything in this comment block.
 ** The arch-tag line is a file identity tag for the GNU Arch 
