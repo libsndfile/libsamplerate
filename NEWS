@@ -4,7 +4,7 @@ Version 0.1.2 (2004-09-12)
 
 Version 0.1.1 (2004-07-17)
   * Fixed bug in callback based API.
-  * Fixed a bug brought tp light by agressive optimisations of gcc-3.4.
+  * Fixed a bug brought to light by aggressive optimisations of gcc-3.4.
   * Minor bug fixes.
 
 Version 0.1.0 (2004-03-14)
