@@ -1,3 +1,15 @@
+2004-09-10  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/util.h tests/*.c
+    Move macros for ABS, MIN, MAX and ARRAY_LEN to util.h.
+
+    * tests/reset_test.c
+    Add test function callback_reset_test() to test for the problem below.
+
+    * src/samplerate.c
+    Reset SRC_PRIVATE fields saved_data and saved_frames in src_reset(). Thanks
+    to Justin Drury for pointing this out.
+
 2004-08-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/src_sinc.c
