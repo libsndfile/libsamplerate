@@ -11,7 +11,8 @@ COEFF_HDRS = high_qual_coeffs.h mid_qual_coeffs.h fastest_coeffs.h
 
 noinst_HEADERS = common.h float_cast.h $(COEFF_HDRS)
 
-SRC_SOURCES = samplerate.c src_sinc.c $(COEFF_HDRS) src_zoh.c src_linear.c
+SRC_SOURCES = samplerate.c src_sinc.c $(COEFF_HDRS) src_zoh.c src_linear.c \
+		src_fir_iir_poly.c
 
 # MinGW requires -no-undefined if a DLL is to be built.
 libsamplerate_la_LDFLAGS = -no-undefined version-info @SHARED_VERSION_INFO@ @SHLIB_VERSION_ARG@
