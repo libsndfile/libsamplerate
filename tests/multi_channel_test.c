@@ -139,7 +139,7 @@ simple_test (int converter, int channel_count, double target_snr)
 	deinterleave_data (output_interleaved, output_serial, frames, channel_count) ;
 
 	for (ch = 0 ; ch < channel_count ; ch++)
-	{	snr = calculate_snr (output_serial + ch * frames, frames) ;
+	{	snr = calculate_snr (output_serial + ch * frames, frames, 1) ;
 		if (snr < target_snr)
 		{	printf ("\n\nLine %d: channel %d snr %f should be %f\n", __LINE__, ch, snr, target_snr) ;
 			save_oct_float ("output.dat", input_serial, channel_count * frames, output_serial, channel_count * frames) ;
@@ -234,7 +234,7 @@ process_test (int converter, int channel_count, double target_snr)
 	deinterleave_data (output_interleaved, output_serial, frames, channel_count) ;
 
 	for (ch = 0 ; ch < channel_count ; ch++)
-	{	snr = calculate_snr (output_serial + ch * frames, frames) ;
+	{	snr = calculate_snr (output_serial + ch * frames, frames, 1) ;
 		if (snr < target_snr)
 		{	printf ("\n\nLine %d: channel %d snr %f should be %f\n", __LINE__, ch, snr, target_snr) ;
 			save_oct_float ("output.dat", input_serial, channel_count * frames, output_serial, channel_count * frames) ;
@@ -351,7 +351,7 @@ callback_test (int converter, int channel_count, double target_snr)
 	deinterleave_data (output_interleaved, output_serial, frames, channel_count) ;
 
 	for (ch = 0 ; ch < channel_count ; ch++)
-	{	snr = calculate_snr (output_serial + ch * frames, frames) ;
+	{	snr = calculate_snr (output_serial + ch * frames, frames, 1) ;
 		if (snr < target_snr)
 		{	printf ("\n\nLine %d: channel %d snr %f should be %f\n", __LINE__, ch, snr, target_snr) ;
 			save_oct_float ("output.dat", input_serial, channel_count * frames, output_serial, channel_count * frames) ;

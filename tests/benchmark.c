@@ -59,7 +59,7 @@ main (void)
 
 	printf ("Time       : %5.2f secs.\n", (1.0 * clock_time) / CLOCKS_PER_SEC) ;
 	printf ("Throughput : %d samples/sec\n", (int) floor (src_data.output_frames_gen / ((1.0 * clock_time) / CLOCKS_PER_SEC))) ;
-	printf ("SNR        : %6.2f dB\n", calculate_snr (output, SNR_LEN)) ;
+	printf ("SNR        : %6.2f dB\n", calculate_snr (output, SNR_LEN, 1)) ;
 
 	return 0 ;
 } /* main */

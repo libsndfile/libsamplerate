@@ -35,7 +35,7 @@
 
 static void log_mag_spectrum (double *input, int len, double *magnitude) ;
 static void smooth_mag_spectrum (double *magnitude, int len) ;
-static double find_snr (const double *magnitude, int len) ;
+static double find_snr (const double *magnitude, int len, int expected_peaks) ;
 
 typedef struct
 {	double	peak ;
@@ -43,7 +43,7 @@ typedef struct
 } PEAK_DATA ;
 
 double
-calculate_snr (float *data, int len)
+calculate_snr (float *data, int len, int expected_peaks)
 {	static double magnitude [MAX_SPEC_LEN] ;
 	static double datacopy [MAX_SPEC_LEN] ;
 
@@ -67,7 +67,7 @@ calculate_snr (float *data, int len)
 	log_mag_spectrum (datacopy, len, magnitude) ;
 	smooth_mag_spectrum (magnitude, len / 2) ;
 
-	snr = find_snr (magnitude, len) ;
+	snr = find_snr (magnitude, len, expected_peaks) ;
 
 	return snr ;
 } /* calculate_snr */
@@ -144,7 +144,7 @@ peak_compare (const void *vp1, const void *vp2)
 } /* peak_compare */
 
 static double
-find_snr (const double *magnitude, int len)
+find_snr (const double *magnitude, int len, int expected_peaks)
 {	PEAK_DATA peaks [MAX_PEAKS] ;
 
 	int		k, peak_count = 0 ;
@@ -168,8 +168,8 @@ find_snr (const double *magnitude, int len)
 			} ;
 		} ;
 
-	if (peak_count < MAX_PEAKS / 2)
-	{	printf ("\n%s : line %d : bad peak_count (%d).\n\n", __FILE__, __LINE__, peak_count) ;
+	if (peak_count < expected_peaks)
+	{	printf ("\n%s : line %d : bad peak_count (%d), expected %d.\n\n", __FILE__, __LINE__, peak_count, expected_peaks) ;
 		return -1.0 ;
 		} ;
 

@@ -298,7 +298,7 @@ snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose, double
 		} ;
 
 	/* Calculate signal-to-noise ratio. */
-	snr = calculate_snr (output, src_data.output_frames_gen) ;
+	snr = calculate_snr (output, src_data.output_frames_gen, test_data->pass_band_peaks) ;
 
 	if (snr < 0.0)
 	{	/* An error occurred. */

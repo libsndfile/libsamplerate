@@ -16,7 +16,7 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 */
 
-double calculate_snr (float *data, int len) ;
+double calculate_snr (float *data, int len, int expected_peaks) ;
 /*
 ** Do not edit or modify anything in this comment block.
 ** The arch-tag line is a file identity tag for the GNU Arch 

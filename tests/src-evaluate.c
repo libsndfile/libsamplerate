@@ -287,7 +287,7 @@ generate_source_wav (char *filename, double *freqs, int freq_count, int format)
 } /* generate_source_wav */
 
 static double
-measure_destination_wav (char *filename, int *output_samples)
+measure_destination_wav (char *filename, int *output_samples, int expected_peaks)
 {	static float buffer [124000] ;
 
 	SNDFILE *sndfile ;
@@ -318,7 +318,7 @@ measure_destination_wav (char *filename, int *output_samples)
 
 	sf_close (sndfile) ;
 
-	snr = calculate_snr (buffer, sfinfo.frames) ;
+	snr = calculate_snr (buffer, sfinfo.frames, expected_peaks) ;
 
 	return snr ;
 } /* measure_desination_wav */
@@ -359,7 +359,7 @@ measure_snr (RESAMPLE_PROG *prog, int *output_samples, int verbose)
 		if ((retval = system (command)) != 0)
 			printf ("system returned %d\n", retval) ;
 
-		snr = measure_destination_wav ("destination.wav", &sample_count) ;
+		snr = measure_destination_wav ("destination.wav", &sample_count, snr_test->pass_band_peaks) ;
 
 		*output_samples += sample_count ;
 
@@ -394,8 +394,8 @@ measure_destination_peak (const char *filename)
 		exit (1) ;
 		} ;
 
-	if (sfinfo.frames > ARRAY_LEN (data) || sfinfo.frames < ARRAY_LEN (data) - 100)
-	{	printf ("Line %d : bad frame count.\n", __LINE__) ;
+	if (sfinfo.frames > ARRAY_LEN (data) + 4 || sfinfo.frames < ARRAY_LEN (data) - 100)
+	{	printf ("Line %d : bad frame count (got %d, expected %d).\n", __LINE__, (int) sfinfo.frames, ARRAY_LEN (data)) ;
 		exit (1) ;
 		} ;
 
