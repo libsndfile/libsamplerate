@@ -138,22 +138,18 @@ AC_CHECK_FUNCS(malloc calloc free memcpy memmove)
 AC_CHECK_LIB([m],floor)
 AC_CHECK_FUNCS(floor ceil fmod)
 
-case "$target_os" in
-	darwin* | rhapsody*)
-		AC_MSG_WARN([[Not using native lrint() and lrintf() because they are missing on 10.1.]])
+AC_C99_FUNC_LRINT
+AC_C99_FUNC_LRINTF
+# AC_C99_FUNC_LLRINT  Don't need this (yet?).
+
+case "x$ac_cv_c99_lrint$ac_cv_c99_lrintf" in
+	xyesyes)
 		;;
 	*)
-		AC_C99_FUNC_LRINT
-		AC_C99_FUNC_LRINTF
-		# AC_C99_FUNC_LLRINT  Don't need this (yet?).
-
-		if test x$ac_cv_c99_lrint = xno || test x$ac_cv_c99_lrintf = xno ; then
-			AC_MSG_WARN([[*** Missing C99 standard functions lrint() and lrintf().]])
-			AC_MSG_WARN([[*** This may cause benign compiler warnings on some systems (ie Solaris).]])
-			fi
+		AC_MSG_WARN([[*** Missing C99 standard functions lrint() and lrintf().]])
+		AC_MSG_WARN([[*** This may cause benign compiler warnings on some systems (ie Solaris).]])
 		;;
 	esac
-
 
 #====================================================================================
 # Determine if the processor can do clipping on float to int conversions.
@@ -213,6 +209,17 @@ case "$target_os" in
 	darwin* | rhapsody*)
 		OS_SPECIFIC_INCLUDES="-fpascal-strings -I/Developer/Headers/FlatCarbon"
 		OS_SPECIFIC_LINKS="-framework CoreAudio"
+		;;
+	mingw32msvc)
+		AC_CHECK_HEADERS(mmreg.h)
+		if test "x$ac_cv_header_mmreg_h" = xno ; then
+			AC_MSG_WARN([[******************************************************************]])
+			AC_MSG_WARN([[*** Can't find mmreg.h which means that we can't build one of     ]])
+			AC_MSG_WARN([[*** the example programs. The library can however be built.       ]])
+			AC_MSG_WARN([[*** To correct this, you can grab the mmmreg.h file from the      ]])
+			AC_MSG_WARN([[*** WINE project : http://www.winehq.com/.                        ]])
+			AC_MSG_WARN([[******************************************************************]])
+			fi
 		;;
 	*)
 		OS_SPECIFIC_INCLUDES=""
