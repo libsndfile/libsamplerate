@@ -53,6 +53,10 @@ SHLIB_VERSION_ARG=""
 #====================================================================================
 # Finished checking, handle options.
 
+AC_ARG_ENABLE(gcc-werror,
+	AC_HELP_STRING([--enable-gcc-werror], [enable -Werror in all Makefiles]),
+	ac_arg_gcc_werror=yes, ac_arg_gcc_werror=no)
+
 AC_ARG_ENABLE(gcc-pipe,
 		AC_HELP_STRING([--disable-gcc-pipe], [disable gcc -pipe option ]),
 		ac_arg_gcc_pipe="N", ac_arg_gcc_pipe="Y")
@@ -101,9 +105,13 @@ if test $ac_cv_c_compiler_gnu = yes ; then
 		*)
 			;;
 		esac
-	if test $ac_arg_gcc_pipe != "N" ; then
+	if test x$ac_arg_gcc_pipe != "xN" ; then
 	 	CFLAGS="$CFLAGS -pipe"
 	 	fi
+
+	if test x$ac_arg_gcc_werror = "xyes" ; then
+		CFLAGS="-Werror $CFLAGS"
+		fi
 
 	AC_DEFINE([COMPILER_IS_GCC],1, [Set to 1 if the compile is GNU GCC.])
 	GCC_MAJOR_VERSION=`$CC -dumpversion | sed "s/\..*//"`
