@@ -11,6 +11,9 @@ td {
 center {
 	font-family : arial, helvetica, sans-serif ;
 }
+div {
+	line-height: 1.3;
+}
 p {
 	font-family : arial, helvetica, sans-serif ;
 	text-align : left ;
