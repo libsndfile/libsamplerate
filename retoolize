@@ -1,0 +1,25 @@
+#!/bin/sh
+
+
+if test `uname` = "Darwin" ; then
+	echo "Don't run retoolize on this machine."
+	exit
+	fi
+	
+cp -f ltmain.sh ltmain.sh.temp
+
+libtoolize --copy --force
+
+# mgdiff ltmain.sh ltmain.sh.temp
+# rm -f ltmain.sh.temp
+
+rm -f missing config.guess config.sub
+
+echo "Now running ./reconf"
+./reconf
+
+# Do not edit or modify anything in this comment block.
+# The arch-tag line is a file identity tag for the GNU Arch
+# revision control system.
+#
+# arch-tag: b8bca924-8729-4cb4-bd0c-b7c3deea1524

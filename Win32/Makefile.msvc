@@ -1,0 +1,121 @@
+
+# Set the value of $(MSVCDir) for your installation.
+
+MSVCDir="C:\Progra~1\Micros~1\VC98"
+
+CPP=cl.exe
+LINK32=link.exe
+DLL_LINK_FLAGS=/nologo /dll /incremental:no /libpath:"$(MSVCDir)\Lib" /pdb:"libsamplerate.pdb" /implib:".\libsamplerate.lib" /machine:I386 /out:"libsamplerate.dll"
+PROG_LINK_FLAGS=/nologo /incremental:no /libpath:"$(MSVCDir)\Lib" /pdb:"libsamplerate.pdb" /machine:I386 /exetype:dynamic
+
+CFLAGS=/nologo /MD /W1 /GX /O2 /I "$(MSVCDir)\Include" /I "Win32" /I "src" /D "WIN32" /D "_USRDLL" /YX /FD
+
+#====================================================================
+# Targets
+
+ALL : libsamplerate.dll \
+	".\examples\sndfile-resample.exe" \
+	".\examples\varispeed-play.exe" 
+
+CLEAN :
+    -@erase "src\*.obj"
+    -@erase "tests\*.exe"
+
+#====================================================================
+
+LINK32_OBJS= \
+	".\src\samplerate.obj" \
+	".\src\src_linear.obj" \
+	".\src\src_zoh.obj" \
+	".\src\src_sinc.obj"
+
+libsamplerate.dll : $(LINK32_OBJS) ".\Win32\libsamplerate.def"
+    $(LINK32) $(DLL_LINK_FLAGS) /def:".\Win32\libsamplerate.def" $(LINK32_OBJS)
+
+".\examples\sndfile-resample.exe" : ".\examples\sndfile-resample.c"
+    $(CPP) $(CFLAGS) /Fo".\examples\sndfile-resample.obj" /c ".\examples\sndfile-resample.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\examples\sndfile-resample.exe" ".\examples\sndfile-resample.obj" libsamplerate.lib libsndfile.lib
+
+".\examples\varispeed-play.exe" : ".\examples\varispeed-play.c" ".\examples\audio_out.obj"
+    $(CPP) $(CFLAGS) /Fo".\examples\varispeed-play.obj" /c ".\examples\varispeed-play.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\examples\varispeed-play.exe" ".\examples\varispeed-play.obj" ".\examples\audio_out.obj" libsamplerate.lib libsndfile.lib winmm.lib
+
+".\examples\audio_out.obj" : ".\examples\audio_out.c"
+    $(CPP) $(CFLAGS) /Fo".\examples\audio_out.obj" /c ".\examples\audio_out.c"
+
+TEST_PROGS= \
+     ".\tests\misc_test.exe" \
+     ".\tests\termination_test.exe" \
+     ".\tests\simple_test.exe" \
+     ".\tests\reset_test.exe" \
+     ".\tests\multi_channel_test.exe" \
+     ".\tests\snr_bw_test.exe"
+
+CHECK: $(TEST_PROGS)
+     ".\tests\misc_test.exe"
+     ".\tests\termination_test.exe"
+     ".\tests\simple_test.exe"
+     ".\tests\reset_test.exe"
+     ".\tests\multi_channel_test.exe"
+     ".\tests\snr_bw_test.exe"
+    -@echo ----------------------------------------------------------------------
+    -@echo libsamplerate passed all tests
+    -@echo ----------------------------------------------------------------------
+
+#====================================================================
+# C files in src.
+
+".\src\samplerate.obj" : ".\src\samplerate.c"
+    $(CPP) $(CFLAGS) /Fo".\src\samplerate.obj" /c ".\src\samplerate.c"
+
+".\src\src_linear.obj" : ".\src\src_linear.c"
+    $(CPP) $(CFLAGS) /Fo".\src\src_linear.obj" /c ".\src\src_linear.c"
+
+".\src\src_zoh.obj" : ".\src\src_zoh.c"
+    $(CPP) $(CFLAGS) /Fo".\src\src_zoh.obj" /c ".\src\src_zoh.c"
+
+".\src\src_sinc.obj" : ".\src\src_sinc.c"
+    $(CPP) $(CFLAGS) /Fo".\src\src_sinc.obj" /c ".\src\src_sinc.c"
+
+#====================================================================
+# Object files for test programs.
+
+".\tests\util.obj" : ".\tests\util.c"
+    $(CPP) $(CFLAGS) /Fo".\tests\util.obj" /c ".\tests\util.c"
+
+".\tests\dft_cmp.obj" : ".\tests\dft_cmp.c"
+    $(CPP) $(CFLAGS) /Fo".\tests\dft_cmp.obj" /c ".\tests\dft_cmp.c"
+
+#====================================================================
+# Test programs.
+
+".\tests\misc_test.exe" : ".\tests\misc_test.c" ".\tests\util.obj"
+    $(CPP) $(CFLAGS) /Fo".\tests\misc_test.obj" /c ".\tests\misc_test.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\misc_test.exe" ".\tests\misc_test.obj" ".\tests\util.obj" libsamplerate.lib
+
+".\tests\termination_test.exe" : ".\tests\termination_test.c" ".\tests\util.obj"
+    $(CPP) $(CFLAGS) /Fo".\tests\termination_test.obj" /c ".\tests\termination_test.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\termination_test.exe" ".\tests\termination_test.obj" ".\tests\util.obj" libsamplerate.lib
+
+".\tests\streaming_test.exe" : ".\tests\streaming_test.c" ".\tests\util.obj"
+    $(CPP) $(CFLAGS) /Fo".\tests\streaming_test.obj" /c ".\tests\streaming_test.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\streaming_test.exe" ".\tests\streaming_test.obj" ".\tests\util.obj" libsamplerate.lib
+
+".\tests\simple_test.exe" : ".\tests\simple_test.c" ".\tests\util.obj"
+    $(CPP) $(CFLAGS) /Fo".\tests\simple_test.obj" /c ".\tests\simple_test.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\simple_test.exe" ".\tests\simple_test.obj" ".\tests\util.obj" libsamplerate.lib
+
+".\tests\reset_test.exe" : ".\tests\reset_test.c" ".\tests\util.obj"
+    $(CPP) $(CFLAGS) /Fo".\tests\reset_test.obj" /c ".\tests\reset_test.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\reset_test.exe" ".\tests\reset_test.obj" ".\tests\util.obj" libsamplerate.lib
+
+".\tests\multi_channel_test.exe" : ".\tests\multi_channel_test.c" ".\tests\util.obj"
+    $(CPP) $(CFLAGS) /Fo".\tests\multi_channel_test.obj" /c ".\tests\multi_channel_test.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\multi_channel_test.exe" ".\tests\multi_channel_test.obj" ".\tests\util.obj" libsamplerate.lib
+
+".\tests\snr_bw_test.exe" : ".\tests\snr_bw_test.c" ".\tests\util.obj"
+    $(CPP) $(CFLAGS) /Fo".\tests\snr_bw_test.obj" /c ".\tests\snr_bw_test.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\snr_bw_test.exe" ".\tests\snr_bw_test.obj" ".\tests\util.obj" libsamplerate.lib
+
+# End of Makefile
+#====================================================================

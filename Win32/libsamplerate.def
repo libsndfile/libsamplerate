@@ -1,0 +1,20 @@
+LIBRARY  libsamplerate.dll
+EXPORTS
+
+src_new 				@1
+src_delete				@2
+
+src_get_name			@10
+src_get_description		@11
+src_get_version			@12
+
+src_process				@20
+src_reset				@21
+src_set_ratio			@22
+
+src_error				@30
+src_strerror			@31
+
+src_simple				@40
+
+src_is_valid_ratio		@50
