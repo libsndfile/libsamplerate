@@ -7,31 +7,40 @@ see http://www.mega-nerd.com/SRC/win32.html).
 
 Preliminaries
 -------------
-Included with libsamplerate is a command line program named
-sndfile-resample which uses libnsdile:
+1) Included with libsamplerate is a command line program named
+   sndfile-resample which uses libnsdile:
 
-      http://www.mega-nerd.com/libsndfile/
+        http://www.mega-nerd.com/libsndfile/
 
-for file I/O. If you want to use sndfile-resample you need to ensure
-that libsndfile is correctly installed first. If it is, the command
-"pkg-config --cflags --libs sndfile" should print out something like
-this:
+   for file I/O. If you want to use sndfile-resample you need to
+   ensure that libsndfile is correctly installed first. If it is, the
+   command "pkg-config --cflags --libs sndfile" should print out
+   something like this:
 
      -lsndfile
 
-If pkg-config doesn't exist you will need need to install it. If
-pkg-config cannot find libsndfile you may need install it. If you
-install from from a Linux distribution package, make sure you also
-install the libsndfile-devel package which contains the header files.
+   If pkg-config doesn't exist you will need need to install it. If
+   pkg-config cannot find libsndfile you may need install it. If you
+   install from from a Linux distribution package, make sure you also
+   install the libsndfile-devel package which contains the header files.
 
-If libsndfile is installed, you may need to set the PKG_CONFIG_PATH
-environment variable. If libsndfile is installed in /usr/local/lib,
-you will need to set PKG_CONFIG_PATH using:
+   If libsndfile is installed, you may need to set the PKG_CONFIG_PATH
+   environment variable. If libsndfile is installed in /usr/local/lib,
+   you will need to set PKG_CONFIG_PATH using:
 
-    export PKG_CONFIG=/usr/local/lib/pkgconfig
+       export PKG_CONFIG=/usr/local/lib/pkgconfig
 
-Pkg-config should now work. If it doesn't you need to fix it if you
-want to use sndfile-resample.
+   Pkg-config should now work. If it doesn't you need to fix it if you
+   want to use sndfile-resample.
+
+2) The included tests suite for libsamplerate needs libfftw3 which is
+   available here:
+
+       http://www.fftw.org/
+
+   If FFTW3 is not available, libsamplerate should still compile and
+   install without problems but the test suite will not be as
+   comprehensive as it normally is.
 
 Building
 --------
@@ -62,7 +71,6 @@ Building and verifying libsamplerate is a four or five step process.
 
            Use FFTW : .................... yes
            Have libsndfile : ............. yes
-           Have libefence : .............. no
 
          Installation directories :
 
