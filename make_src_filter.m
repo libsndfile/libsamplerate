@@ -10,7 +10,7 @@ function f = make_src_filter (cycles, increment, atten, filename)
 #=======================================================================
 
 if nargin < 3,
-	error ("Try make_filter (12, 32, 88)") ;
+	error ('Try make_filter (12, 32, 88, "output.txt")') ;
 	endif
 
 if nargin < 4,
