@@ -1,0 +1,6 @@
+Version 1.0.6 (2004-02-20)
+  * Added callback based API.
+  * Added a pair of functions for doing short to float and float to short
+    conversions on an arrays of data.
+  * Many minor bug fixes.
+  
