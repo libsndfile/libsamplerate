@@ -1,7 +1,7 @@
 noinst_PROGRAMS = misc_test termination_test simple_test callback_test \
 					reset_test multi_channel_test snr_bw_test \
-					float_short_test src-evaluate
-	
+					float_short_test src-evaluate benchmark
+
 SAMPLRATEDIR =../src
 INCLUDES = -I$(srcdir)/$(SAMPLRATEDIR)
 noinst_HEADERS = calc_snr.h util.h
@@ -40,6 +40,10 @@ float_short_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(EFENCE_LIB)
 src_evaluate_SOURCES = src-evaluate.c calc_snr.c util.c
 src_evaluate_CFLAGS = @SNDFILE_CFLAGS@ @FFTW3_CFLAGS@
 src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
+
+benchmark_CFLAGS = $(AM_CFLAGS)
+benchmark_SOURCES = benchmark.c  util.c calc_snr.c
+benchmark_LDADD  = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 #===============================================================================
 
