@@ -26,8 +26,6 @@
 
 #define	SINC_MAGIC_MARKER	MAKE_MAGIC (' ', 's', 'i', 'n', 'c', ' ')
 
-#define	ARRAY_LEN(x)		((int) (sizeof (x) / sizeof ((x) [0])))
-
 /*========================================================================================
 **	Macros for handling the index into the array for the filter.
 **	Double precision floating point is not accurate enough so use a 64 bit
