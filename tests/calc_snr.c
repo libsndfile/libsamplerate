@@ -21,14 +21,14 @@
 #include "calc_snr.h"
 #include "util.h"
 
-#if (HAVE_LIBFFTW && HAVE_LIBRFFTW)
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 
-#include <rfftw.h>
+#if (HAVE_FFTW3 == 1)
+
+#include <fftw3.h>
 
 #define	MAX_SPEC_LEN	(1<<18)
 #define	MAX_PEAKS		10
@@ -75,9 +75,73 @@ calculate_snr (float *data, int len)
 	return snr ;
 } /* calculate_snr */
 
+
+
+
+/*-
+
+The analogues to 
+
+	rfftw_create_plan
+	rfftw_one 
+
+with 
+
+	FFTW_REAL_TO_COMPLEX 
+	FFTW_COMPLEX_TO_REAL
+
+directions are 
+
+	fftw_plan_r2r_1d
+
+with kind
+
+	FFTW_R2HC or
+	FFTW_HC2R
+
+followed by fftw_execute. The stride etcetera arguments of 
+rfftw are now in fftw_plan_many_r2r.
+
+Instead of
+
+	rfftwnd_create_plan or
+	rfftw2d_create_plan or 
+	rfftw3d_create_plan
+
+followed by
+
+	rfftwnd_one_real_to_complex or
+	rfftwnd_one_complex_to_real
+
+you now use
+
+	fftw_plan_dft_r2c or
+	fftw_plan_dft_r2c_2d or
+	fftw_plan_dft_r2c_3d or
+	fftw_plan_dft_c2r or
+	fftw_plan_dft_c2r_2d or
+	fftw_plan_dft_c2r_3d
+
+respectively, followed by fftw_execute. As usual, the 
+strides etcetera of
+
+	rfftwnd_real_to_complex or
+	rfftwnd_complex_to_real 
+
+are no specified in the advanced planner routines,
+
+	fftw_plan_many_dft_r2c or 
+	fftw_plan_many_dft_c2r
+
+
+-*/
+
+
+
+
 static void
 log_mag_spectrum (double *input, int len, double *magnitude)
-{	rfftw_plan plan = NULL ;
+{	fftw_plan plan = NULL ;
 
 	double	maxval ;
 	int		k ;
@@ -85,13 +149,13 @@ log_mag_spectrum (double *input, int len, double *magnitude)
 	if (input == NULL || magnitude == NULL)
 		return ;
 
-	plan = rfftw_create_plan (len, FFTW_REAL_TO_COMPLEX, FFTW_ESTIMATE | FFTW_OUT_OF_PLACE) ;
+	plan = fftw_plan_r2r_1d (len, input, magnitude, FFTW_R2HC, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT) ;
 	if (plan == NULL)
 	{	printf ("%s : line %d : create plan failed.\n", __FILE__, __LINE__) ;
 		exit (1) ;
 		} ;
 
-	rfftw_one (plan, input, magnitude) ;
+	fftw_execute (plan) ;
 
 	/* (k < N/2 rounded up) */
 	maxval = 0.0 ;
@@ -226,7 +290,7 @@ find_snr (const double *magnitude, int len)
 	return snr ;
 } /* find_snr */
 
-#else /* ! (HAVE_LIBFFTW && HAVE_LIBRFFTW) */
+#else /* (! HAVE_FFTW3) */
 
 double
 calculate_snr (float *data, int len)
@@ -239,6 +303,7 @@ calculate_snr (float *data, int len)
 } /* calculate_snr */
 
 #endif
+
 /*
 ** Do not edit or modify anything in this comment block.
 ** The arch-tag line is a file identity tag for the GNU Arch 
