@@ -1,3 +1,9 @@
+2004-05-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/callback_test.c
+    Improve callback_test to find input/output length mismatches. This also
+    catches the bug Mark Deggeller reported.
+
 2004-05-25  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/samplerate.c
