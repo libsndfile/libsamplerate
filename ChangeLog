@@ -1,3 +1,15 @@
+2004-05-25  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/samplerate.c
+    Fix a bug in src_callback_read() reported by Mark Deggeller. Data retreived
+    but not used during one call to src_callback_read() must be saved for the
+    next call.
+
+    * src/common.h
+    Add fields saved_frames and saved_data to SF_PRIVATE struct for storing
+    data between sucessive calls to src_callback_read().
+    Also rearange the fields of SF_PRIVATE.
+
 2004-03-20  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac
@@ -50,16 +62,16 @@
 
     * src/src_zoh.c src/src_linear.c
     Fixed an off-by-one indexing issue which was causing distortion at the
-	boundaries between calls to src_process().
+    boundaries between calls to src_process().
 
     * tests/multi_channel_test.c
     Finally passing tests for all three access methods (simple, process and
-	callback).
+    callback).
 
 2003-10-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/calc_snr.c
-    SNR calculation was being screwed up because the peak detector was 
+    SNR calculation was being screwed up because the peak detector was
     mistaking side lobes caused by the windowded FFT as noise/aliasing peaks.
     Therefore added code to wipe out the troughs between peaks which erases
     the side lobe peaks without affecting the noise/aliasing peaks.
