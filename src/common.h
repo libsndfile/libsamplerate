@@ -33,9 +33,11 @@ typedef	long	int32_t ;
 #define	MAX(a,b)	(((a) > (b)) ? (a) : (b))
 #define	MIN(a,b)	(((a) < (b)) ? (a) : (b))
 
-#define	ARRAY_LEN(x)		((int) (sizeof (x) / sizeof ((x) [0])))
+#define	ARRAY_LEN(x)			((int) (sizeof (x) / sizeof ((x) [0])))
+#define OFFSETOF(type,member)	((int) (&((type*) 0)->member))
 
 #define	MAKE_MAGIC(a,b,c,d,e,f)	((a) + ((b) << 4) + ((c) << 8) + ((d) << 12) + ((e) << 16) + ((f) << 20))
+
 
 #include "samplerate.h"
 
