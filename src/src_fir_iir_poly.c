@@ -26,6 +26,8 @@
 
 #define	FIP_MAGIC_MARKER	MAKE_MAGIC ('f', 'i', 'r', 'p', 'l', 'y')
 
+#define IN_BUF_LEN	4096
+
 typedef struct
 {	int		fip_magic_marker ;
 
@@ -34,7 +36,7 @@ typedef struct
 	long	out_count, out_gen ;
 
 	double	src_ratio, input_index ;
-	
+
 	float	*input_buffer ;
 	int		in_buf_len ;
 
@@ -44,11 +46,14 @@ typedef struct
 	float	*iir_out ;
 	int		iir_out_len ;
 
-	float	buffer [1] ;
+	float	dummy [1] ;
 } FIR_IIR_POLY ;
 
 static void fip_reset (SRC_PRIVATE *psrc) ;
 static int fip_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
+
+
+static float best_coeffs [250] ;
 
 const char*
 fip_get_name (int src_enum)
@@ -86,26 +91,58 @@ fip_get_description (int src_enum)
 
 int
 fip_set_converter (SRC_PRIVATE *psrc, int src_enum)
-{	FIR_IIR_POLY *fip ;
+{	FIR_IIR_POLY *fip, temp_fip ;
+	int buffer_total ;
 
-	fip = (FIR_IIR_POLY *) psrc->private_data ;
+	if (psrc->private_data != NULL)
+	{	fip = (FIR_IIR_POLY *) psrc->private_data ;
+		if (fip->fip_magic_marker != FIP_MAGIC_MARKER)
+		{	free (psrc->private_data) ;
+			psrc->private_data = NULL ;
+			} ;
+		} ;
+
+	memset (&temp_fip, 0, sizeof (temp_fip)) ;
+
+	temp_fip.fip_magic_marker = FIP_MAGIC_MARKER ;
+	temp_fip.channels = psrc->channels ;
+
+	psrc->reset = fip_reset ;
+	psrc->process = fip_process ;
 
 	switch (src_enum)
 	{	case SRC_FIR_IIR_POLY_BEST :
+				temp_fip.in_buf_len = IN_BUF_LEN + 2 * ARRAY_LEN (best_coeffs) ;
 				break ;
-
+#if 0
 		case SRC_FIR_IIR_POLY_MEDIUM :
 				break ;
 
 		case SRC_FIR_IIR_POLY_FASTEST :
 				break ;
-
+#endif
 		default :
 				return SRC_ERR_BAD_CONVERTER ;
 		} ;
 
-	psrc->reset = fip_reset ;
-	psrc->process = fip_process ;
+	temp_fip.fir_out_len = 2 * IN_BUF_LEN ;
+	temp_fip.iir_out_len = 4 * IN_BUF_LEN ;
+
+	buffer_total = psrc->channels * (temp_fip.in_buf_len + temp_fip.fir_out_len + temp_fip.iir_out_len) ;
+
+	if ((fip = calloc (1, sizeof (FIR_IIR_POLY) + sizeof (fip->dummy [0]) * buffer_total)) == NULL)
+		return SRC_ERR_MALLOC_FAILED ;
+
+	*fip = temp_fip ;
+	memset (&temp_fip, 0xEE, sizeof (temp_fip)) ;
+
+	psrc->private_data = fip ;
+
+	fip->input_buffer = fip->dummy ;
+	fip->fir_out = fip->dummy + fip->channels * fip->in_buf_len ;
+	fip->iir_out = fip->dummy + fip->channels * (fip->in_buf_len + fip->fir_out_len) ;
+
+	fip_reset (psrc) ;
 
 	return SRC_ERR_NO_ERROR ;
 } /* fip_set_converter */
@@ -132,7 +169,7 @@ fip_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	fip = (FIR_IIR_POLY*) psrc->private_data ;
 
 	/* If there is not a problem, this will be optimised out. */
-	if (sizeof (fip->buffer [0]) != sizeof (data->data_in [0]))
+	if (sizeof (fip->dummy [0]) != sizeof (data->data_in [0]))
 		return SRC_ERR_SIZE_INCOMPATIBILITY ;
 
 
