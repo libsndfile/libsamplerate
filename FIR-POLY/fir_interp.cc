@@ -69,6 +69,7 @@ typedef struct
 	double window [2048] ;
 	double filter [2048] ;
 	double mag [1024] ;
+	double logmag [1024] ;
 	double phase [1024] ;
 } FIR_INTERP ;
 
@@ -128,7 +129,7 @@ poly_evaluate (int order, const double *coeff, double x)
 static double
 evaluate_filter (FIR_INTERP *interp)
 {
-	mag_spectrum (interp->filter, ARRAY_LEN (interp->filter), interp->mag, interp->phase) ;
+	mag_spectrum (interp->filter, ARRAY_LEN (interp->filter), interp->mag, interp->logmag, interp->phase) ;
 
 	return 1.0 ;
 } /* evaluate_filter */
@@ -359,6 +360,14 @@ oct_save (const FIR_INTERP *interp)
 
 	for (k = 0 ; k < ARRAY_LEN (interp->mag) ; k++)
 		fprintf (file, "% f\n", interp->mag [k]) ;
+
+	fprintf (file, "# name: logmag\n") ;
+	fprintf (file, "# type: matrix\n") ;
+	fprintf (file, "# rows: %d\n", ARRAY_LEN (interp->logmag)) ;
+	fprintf (file, "# columns: 1\n") ;
+
+	for (k = 0 ; k < ARRAY_LEN (interp->logmag) ; k++)
+		fprintf (file, "% f\n", interp->logmag [k]) ;
 
 	fprintf (file, "# name: phase\n") ;
 	fprintf (file, "# type: matrix\n") ;

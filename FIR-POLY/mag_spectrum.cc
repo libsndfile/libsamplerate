@@ -26,7 +26,7 @@
 #include <fftw3.h>
 
 void
-mag_spectrum (double *input, int len, double *magnitude, double *phase)
+mag_spectrum (double *input, int len, double *magnitude, double *logmag, double *phase)
 {	static fftw_plan plan = NULL ;
 	static int saved_len = -1 ;
 	static double *fft_data = NULL ;
@@ -61,6 +61,7 @@ mag_spectrum (double *input, int len, double *magnitude, double *phase)
 	maxval = 0.0 ;
 	for (k = 0 ; k < len / 2 ; k++)
 	{	magnitude [k] = sqrt (fft_data [k] * fft_data [k] + fft_data [len - k - 1] * fft_data [len - k - 1]) ;
+		logmag [k] = (magnitude [k] < 1e-10) ? -200.0 : 20 * log10 (magnitude [k]) ;
 		phase [k] = atan2 (fft_data [len - k - 1], fft_data [k]) ;
 		} ;
 
