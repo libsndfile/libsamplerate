@@ -37,7 +37,7 @@ AM_PROG_LIBTOOL
 
 AC_HEADER_STDC
 
-AC_CHECK_HEADERS(stdint.h)
+AC_CHECK_HEADERS(stdint.h sys/times.h)
 
 #====================================================================================
 # Couple of initializations here. Fill in real values later.

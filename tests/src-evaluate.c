@@ -22,12 +22,12 @@
 #include <string.h>
 #include <ctype.h>
 
-#include <time.h>
-#include <sys/times.h>
-
 #include "config.h"
 
-#if (HAVE_FFTW3 && HAVE_SNDFILE)
+#if (HAVE_FFTW3 && HAVE_SNDFILE && HAVE_SYS_TIMES_H)
+
+#include <time.h>
+#include <sys/times.h>
 
 #include <sndfile.h>
 #include <math.h>
