@@ -17,6 +17,12 @@
 */
 
 /*
+** This code is part of Secret Rabibt Code aka libsamplerate. A commercial
+** use license for this code is available, please see:
+**		http://www.mega-nerd.com/SRC/procedure.html
+*/
+
+/*
 **  f = make_filter (65, 128, 100.3) ;
 **  Pass band width  : 0.0039062 (should be 0.0039062)
 **  Stop band atten. : 101.20 dB

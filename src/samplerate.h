@@ -17,6 +17,12 @@
 */
 
 /*
+** This code is part of Secret Rabibt Code aka libsamplerate. A commercial
+** use license for this code is available, please see:
+**		http://www.mega-nerd.com/SRC/procedure.html
+*/
+
+/*
 ** API documentation is available here:
 **     http://www.mega-nerd.com/SRC/api.html
 */
