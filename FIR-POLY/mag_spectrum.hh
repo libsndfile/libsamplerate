@@ -18,7 +18,7 @@
 ** written permission of Erik de Castro Lopo.
 */
 
-void mag_spectrum (double *input, int len, double *magnitude, double scale) ;
+void mag_spectrum (double *input, int len, double *magnitude, double *phase) ;
 
 // Do not edit or modify anything in this comment block.
 // The following line is a file identity tag for the GNU Arch

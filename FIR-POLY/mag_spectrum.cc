@@ -26,19 +26,31 @@
 #include <fftw3.h>
 
 void
-mag_spectrum (double *input, int len, double *magnitude, double scale)
+mag_spectrum (double *input, int len, double *magnitude, double *phase)
 {	static fftw_plan plan = NULL ;
+	static int saved_len = -1 ;
+	static double *fft_data = NULL ;
 
 	double	maxval ;
 	int		k ;
 
-	if (input == NULL || magnitude == NULL)
-		return ;
+	if (input == NULL || magnitude == NULL || phase == NULL)
+	{	printf ("%s %d : input == NULL || magnitude == NULL || phase == NULL\n", __func__, __LINE__) ;
+		exit (1) ;
+		} ;
+
+	if (saved_len > 0 && saved_len != len)
+	{	printf ("%s %d : saved_len != len.\n", __func__, __LINE__) ;
+		exit (1) ;
+		} ;
+
+	if (fft_data == NULL)
+		fft_data = (double *) calloc (sizeof (double), len) ;
 
 	if (plan == NULL)
-	{	plan = fftw_plan_r2r_1d (len, input, magnitude, FFTW_R2HC, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT) ;
+	{	plan = fftw_plan_r2r_1d (len, input, fft_data, FFTW_R2HC, FFTW_ESTIMATE | FFTW_PRESERVE_INPUT) ;
 		if (plan == NULL)
-		{	printf ("%s : line %d : create plan failed.\n", __FILE__, __LINE__) ;
+		{	printf ("%s %d : create plan failed.\n", __func__, __LINE__) ;
 			exit (1) ;
 			} ;
 		} ;
@@ -48,9 +60,9 @@ mag_spectrum (double *input, int len, double *magnitude, double scale)
 	/* (k < N/2 rounded up) */
 	maxval = 0.0 ;
 	for (k = 0 ; k < len / 2 ; k++)
-		magnitude [k] = scale * sqrt (magnitude [k] * magnitude [k] + magnitude [len - k - 1] * magnitude [len - k - 1]) ;
-
-	memset (magnitude + len / 2, 0, len / 2 * sizeof (magnitude [0])) ;
+	{	magnitude [k] = sqrt (fft_data [k] * fft_data [k] + fft_data [len - k - 1] * fft_data [len - k - 1]) ;
+		phase [k] = atan2 (fft_data [len - k - 1], fft_data [k]) ;
+		} ;
 
 	return ;
 } /* mag_spectrum */
