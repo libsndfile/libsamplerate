@@ -45,7 +45,17 @@
 */
 
 /* Set to 1 if the compile is GNU GCC. */
+<<<<<<< diff from left file
 #define COMPILER_IS_GCC 0
+========
+#define COMPILER_IS_GCC 1
+
+/* Target processor clips on negative float to int conversion. */
+#define CPU_CLIPS_NEGATIVE 1
+
+/* Target processor clips on positive float to int conversion. */
+#define CPU_CLIPS_POSITIVE 0
+>>>>>>> diff from right file
 
 /* Set to 1 to enable debugging. */
 #define ENABLE_DEBUG 0
@@ -165,4 +175,4 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.0.15"
+#define VERSION "0.1.0"
