@@ -133,13 +133,13 @@ sinc_get_description (int src_enum)
 {
 	switch (src_enum)
 	{	case SRC_SINC_BEST_QUALITY :
-			return "Band limitied sinc interpolation, best quality, 97dB SNR, 96% BW." ;
+			return "Band limited sinc interpolation, best quality, 97dB SNR, 96% BW." ;
 
 		case SRC_SINC_MEDIUM_QUALITY :
-			return "Band limitied sinc interpolation, medium quality, 97dB SNR, 90% BW." ;
+			return "Band limited sinc interpolation, medium quality, 97dB SNR, 90% BW." ;
 
 		case SRC_SINC_FASTEST :
-			return "Band limitied sinc interpolation, fastest, 97dB SNR, 80% BW." ;
+			return "Band limited sinc interpolation, fastest, 97dB SNR, 80% BW." ;
 		} ;
 
 	return NULL ;
