@@ -40,8 +40,6 @@
 #define	M_PI			3.14159265358979323846264338
 #endif
 
-#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
-
 enum
 {	BOOLEAN_FALSE	= 0,
 	BOOLEAN_TRUE	= 1

@@ -16,6 +16,12 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#define	ABS(a)			(((a) < 0) ? - (a) : (a))
+#define MIN(a,b)		(((a) < (b)) ? (a) : (b))
+#define	MAX(a,b)		(((a) >= (b)) ? (a) : (b))
+
+#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
+
 void gen_windowed_sines (float *data, int data_len, double *freqs, int freq_count) ;
 
 void save_oct_float (char *filename, float *input, int in_len, float *output, int out_len) ;

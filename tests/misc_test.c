@@ -24,8 +24,6 @@
 
 #include "util.h"
 
-#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
-
 static void name_test (void) ;
 static void error_test (void) ;
 static void src_ratio_test (void) ;

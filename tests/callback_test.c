@@ -28,8 +28,6 @@
 #define	BUFFER_LEN		90000
 #define CB_READ_LEN		256
 
-#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
-
 static void callback_test (int converter, double ratio) ;
 
 int

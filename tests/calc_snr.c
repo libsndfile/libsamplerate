@@ -33,9 +33,6 @@
 #define	MAX_SPEC_LEN	(1<<18)
 #define	MAX_PEAKS		10
 
-#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
-#define	MAX(x,y)		(((x) >= (y)) ? (x) : (y))
-
 static void log_mag_spectrum (double *input, int len, double *magnitude) ;
 static void smooth_mag_spectrum (double *magnitude, int len) ;
 static double find_snr (const double *magnitude, int len) ;

@@ -30,10 +30,6 @@
 #define	BUFFER_LEN		(1<<15)
 #define	BLOCK_LEN		(12)
 
-#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
-#define	MAX(x,y)		((x) >= (y) ? (x) : (y))
-#define	MIN(x,y)		((x) < (y) ? (x) : (y))
-
 static void simple_test (int converter, int channel_count, double target_snr) ;
 static void process_test (int converter, int channel_count, double target_snr) ;
 static void callback_test (int converter, int channel_count, double target_snr) ;

@@ -38,7 +38,6 @@
 
 #define	MAX_FREQS		4
 #define	BUFFER_LEN		40000
-#define ARRAY_LEN(x)	((int) ((sizeof (x)) / (sizeof ((x) [0]))))
 
 #define SAFE_STRNCAT(dest,src,len)								\
 		{	int safe_strncat_count ;							\

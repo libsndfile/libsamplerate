@@ -27,11 +27,6 @@
 
 #define	BUFFER_LEN		10000
 
-#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
-
-#define	ABS(a)			(((a) < 0) ? - (a) : (a))
-#define	MAX(a,b)		(((a) >= (b)) ? (a) : (b))
-
 static void float_to_short_test (void) ;
 static void short_to_float_test (void) ;
 

@@ -25,10 +25,6 @@
 
 #define BLOCK_LEN		100
 
-#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
-
-#define MIN(a,b)		(((a) < (b)) ? (a) : (b))
-
 static void stream_test (int converter, double ratio) ;
 
 int

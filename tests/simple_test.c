@@ -27,8 +27,6 @@
 
 #define	BUFFER_LEN		2048
 
-#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
-
 static void simple_test (int converter, double ratio) ;
 
 int

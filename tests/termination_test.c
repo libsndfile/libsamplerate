@@ -27,11 +27,6 @@
 #define	SHORT_BUFFER_LEN	2048
 #define	LONG_BUFFER_LEN		((1 << 16) - 20)
 
-#define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
-
-#define MIN(a,b)		(((a) < (b)) ? (a) : (b))
-#define MAX(a,b)		(((a) > (b)) ? (a) : (b))
-
 static void stream_test (int converter, double ratio) ;
 static void term_test (int converter, double ratio) ;
 

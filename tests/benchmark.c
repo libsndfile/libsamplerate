@@ -12,10 +12,8 @@
 #define BUFFER_LEN	(1<<23)
 #define SNR_LEN		(1<<16)
 
-#define ARRAY_LEN(x)	((int)(sizeof (x)) / (sizeof ((x) [0])))
-
-static float input [BUFFER_LEN];
-static float output [BUFFER_LEN];
+static float input [BUFFER_LEN] ;
+static float output [BUFFER_LEN] ;
 
 int
 main (void)
