@@ -29,7 +29,7 @@
 
 #define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
 
-#define	ABS(a)			(((a) < 0) ? -(a) : (a))
+#define	ABS(a)			(((a) < 0) ? - (a) : (a))
 #define	MAX(a,b)		(((a) >= (b)) ? (a) : (b))
 
 static void float_to_short_test (void) ;
@@ -64,7 +64,7 @@ float_to_short_test (void)
 	{	-0.95, -0.99, -1.0, -1.01, -1.1, -2.0, -11.1, -111.1, -2222.2, -33333.3
 		} ;
 
-	static short out [MAX(ARRAY_LEN (fpos), ARRAY_LEN (fneg))] ;
+	static short out [MAX (ARRAY_LEN (fpos), ARRAY_LEN (fneg))] ;
 
 	int k ;
 

@@ -204,7 +204,7 @@ log_mag_spectrum (double *input, int len, double *magnitude)
 		} ;
 
 	fftw_execute (plan) ;
-	
+
 	fftw_destroy_plan (plan) ;
 
 	/* (k < N/2 rounded up) */

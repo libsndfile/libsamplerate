@@ -44,7 +44,7 @@ main (int argc, char *argv [])
 	int			new_sample_rate = -1, k, converter, max_speed = SF_FALSE ;
 
 	if (argc == 2 && strcmp (argv [1], "--version") == 0)
-	{	char  buffer [64], *cptr ;
+	{	char buffer [64], *cptr ;
 
 		if ((cptr = strrchr (argv [0], '/')) != NULL)
 			argv [0] = cptr + 1 ;
