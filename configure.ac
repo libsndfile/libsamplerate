@@ -83,41 +83,6 @@ else
 	AC_DEFINE([ENABLE_DEBUG],0,[Set to 1 to enable debugging.])
 	fi
 
-if test $ac_cv_c_compiler_gnu = yes ; then
-	CFLAGS="$CFLAGS -W -Wstrict-prototypes -Wmissing-prototypes -Wall -pedantic -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow"
-	# -Wpointer-arith -Wundef -Wbad-function-cast -Wmissing-declarations -Wconversion -Winline"
-	if test "$ac_arg_gcc_opt" = "N" ; then
-		temp_CFLAGS=`echo $CFLAGS | sed "s/O2/O0/"`
-		CFLAGS=$temp_CFLAGS
-		AC_MSG_WARN([[*** Compiler optimisations switched off. ***]])
-		fi
-
-	# Disable -Wall and -pedantic for Apple Darwin/Rhapsody.
-	# System headers on these systems are broken.
-	case "$target_os" in
-		darwin* | rhapsody*)
-			temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall -pedantic//"`
-			CFLAGS=$temp_CFLAGS
-			;;
-		linux*)
-			SHLIB_VERSION_ARG="-Wl,--version-script=Version_script"
-			;;
-		*)
-			;;
-		esac
-	if test x$ac_arg_gcc_pipe != "xN" ; then
-	 	CFLAGS="$CFLAGS -pipe"
-	 	fi
-
-	if test x$ac_arg_gcc_werror = "xyes" ; then
-		CFLAGS="-Werror $CFLAGS"
-		fi
-
-	AC_DEFINE([COMPILER_IS_GCC],1, [Set to 1 if the compile is GNU GCC.])
-	GCC_MAJOR_VERSION=`$CC -dumpversion | sed "s/\..*//"`
-	AC_DEFINE_UNQUOTED([GCC_MAJOR_VERSION],${GCC_MAJOR_VERSION}, [Major version of GCC or 3 otherwise.])
-	fi
-
 #====================================================================================
 # Check types and their sizes.
 
@@ -212,6 +177,44 @@ if test $ac_arg_fftw = "Y" ; then
 if test x$ac_cv_fftw3 != xyes ; then
 	ac_cv_fftw3=no
 	HAVE_FFTW3=0
+	fi
+
+#====================================================================================
+# GCC stuff.
+
+if test $ac_cv_c_compiler_gnu = yes ; then
+	CFLAGS="$CFLAGS -W -Wstrict-prototypes -Wmissing-prototypes -Wall -pedantic -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow"
+	# -Wpointer-arith -Wundef -Wbad-function-cast -Wmissing-declarations -Wconversion -Winline"
+	if test "$ac_arg_gcc_opt" = "N" ; then
+		temp_CFLAGS=`echo $CFLAGS | sed "s/O2/O0/"`
+		CFLAGS=$temp_CFLAGS
+		AC_MSG_WARN([[*** Compiler optimisations switched off. ***]])
+		fi
+
+	# Disable -Wall and -pedantic for Apple Darwin/Rhapsody.
+	# System headers on these systems are broken.
+	case "$target_os" in
+		darwin* | rhapsody*)
+			temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall -pedantic//"`
+			CFLAGS=$temp_CFLAGS
+			;;
+		linux*)
+			SHLIB_VERSION_ARG="-Wl,--version-script=Version_script"
+			;;
+		*)
+			;;
+		esac
+	if test x$ac_arg_gcc_pipe != "xN" ; then
+	 	CFLAGS="$CFLAGS -pipe"
+	 	fi
+
+	if test x$ac_arg_gcc_werror = "xyes" ; then
+		CFLAGS="-Werror $CFLAGS"
+		fi
+
+	AC_DEFINE([COMPILER_IS_GCC],1, [Set to 1 if the compile is GNU GCC.])
+	GCC_MAJOR_VERSION=`$CC -dumpversion | sed "s/\..*//"`
+	AC_DEFINE_UNQUOTED([GCC_MAJOR_VERSION],${GCC_MAJOR_VERSION}, [Major version of GCC or 3 otherwise.])
 	fi
 
 #====================================================================================
