@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2004 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2004 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -24,9 +24,17 @@
 #include "float_cast.h"
 #include "common.h"
 
-#define	FIP_MAGIC_MARKER	MAKE_MAGIC ('f', 'i', 'r', 'p', 'l', 'y')
+#define	FIP_MAGIC_MARKER	MAKE_MAGIC ('F', '/', 'I', '/', 'P', ' ')
 
-#define IN_BUF_LEN	4096
+#define BUFFER_LEN	1024
+
+typedef struct
+{	int count ;
+	int increment ;
+	const float *c ;
+} FIP_COEFF_SET ;
+
+#include "fip_best.h"
 
 typedef struct
 {	int		fip_magic_marker ;
@@ -37,8 +45,16 @@ typedef struct
 
 	double	src_ratio, input_index ;
 
+	/* The raw coeff set for this converter. */
+	const	FIP_COEFF_SET *coeff_set ;
+
+	/* The current FIR coefficents for the times 2 upsampler. */
+	float 	*coeffs0, * coeffs1 ;
+	int		max_half_coeff_len, half_coeff_len ;
+
+	/* Buffer definitions. */
 	float	*input_buffer ;
-	int		in_buf_len, in_start, in_end ;
+	int		in_buf_len, in_current ;
 
 	float	*fir_out ;
 	int		fir_out_len, fir_start, fir_end ;
@@ -57,8 +73,6 @@ static int fip_process_const_down (FIR_IIR_POLY * fip, SRC_DATA * data) ;
 static int fip_process_var_up (FIR_IIR_POLY * fip, SRC_DATA * data) ;
 static int fip_process_const_up (FIR_IIR_POLY * fip, SRC_DATA * data) ;
 
-
-static float best_coeffs [250] ;
 
 const char*
 fip_get_name (int src_enum)
@@ -98,7 +112,7 @@ fip_get_description (int src_enum)
 
 int
 fip_set_converter (SRC_PRIVATE *psrc, int src_enum)
-{	FIR_IIR_POLY *fip, temp_fip ;
+{	FIR_IIR_POLY *fip = NULL, temp_fip ;
 	int buffer_total ;
 
 	if (psrc->private_data != NULL)
@@ -111,6 +125,11 @@ fip_set_converter (SRC_PRIVATE *psrc, int src_enum)
 
 	memset (&temp_fip, 0, sizeof (temp_fip)) ;
 
+	if ((OFFSETOF (FIR_IIR_POLY, dummy) & 0xF) != 0)
+	{	printf ("(OFFSETOF (FIR_IIR_POLY, dummy) & 0xF) != 0\n") ;
+		exit (1) ;
+		} ;
+
 	temp_fip.fip_magic_marker = FIP_MAGIC_MARKER ;
 	temp_fip.channels = psrc->channels ;
 
@@ -119,23 +138,28 @@ fip_set_converter (SRC_PRIVATE *psrc, int src_enum)
 
 	switch (src_enum)
 	{	case SRC_FIR_IIR_POLY_BEST :
-				temp_fip.in_buf_len = IN_BUF_LEN + 2 * ARRAY_LEN (best_coeffs) ;
+				temp_fip.coeff_set = &fip_best ;
 				break ;
 #if 0
 		case SRC_FIR_IIR_POLY_MEDIUM :
+				temp_fip.coeff_set = &fip_medium ;
 				break ;
 
 		case SRC_FIR_IIR_POLY_FASTEST :
+				temp_fip.coeff_set = &fip_fastest ;
 				break ;
 #endif
 		default :
 				return SRC_ERR_BAD_CONVERTER ;
 		} ;
 
-	temp_fip.fir_out_len = 2 * IN_BUF_LEN ;
-	temp_fip.iir_out_len = 4 * IN_BUF_LEN ;
+	temp_fip.max_half_coeff_len = SRC_MAX_RATIO * temp_fip.coeff_set->count / temp_fip.coeff_set->increment ;
+	temp_fip.in_buf_len = temp_fip.channels * 2 * temp_fip.max_half_coeff_len ;
 
-	buffer_total = psrc->channels * (temp_fip.in_buf_len + temp_fip.fir_out_len + temp_fip.iir_out_len) ;
+	temp_fip.fir_out_len = BUFFER_LEN ;
+	temp_fip.iir_out_len = 2 * BUFFER_LEN ;
+
+	buffer_total = 4 + temp_fip.max_half_coeff_len + psrc->channels * (temp_fip.in_buf_len + temp_fip.fir_out_len + temp_fip.iir_out_len) ;
 
 	if ((fip = calloc (1, sizeof (FIR_IIR_POLY) + sizeof (fip->dummy [0]) * buffer_total)) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
@@ -145,9 +169,18 @@ fip_set_converter (SRC_PRIVATE *psrc, int src_enum)
 
 	psrc->private_data = fip ;
 
-	fip->input_buffer = fip->dummy ;
-	fip->fir_out = fip->dummy + fip->channels * fip->in_buf_len ;
-	fip->iir_out = fip->dummy + fip->channels * (fip->in_buf_len + fip->fir_out_len) ;
+	/* Allocate buffers. */
+	fip->coeffs0 = fip->dummy ;
+	while ((((unsigned long) fip->coeffs0) & 0xF) > 0)
+		fip->coeffs0 ++ ;
+
+	fip->coeffs1 = fip->coeffs0 + fip->max_half_coeff_len ;
+	fip->input_buffer = fip->coeffs1 + fip->max_half_coeff_len ;
+
+	fip->fir_out = fip->input_buffer + fip->channels * fip->in_buf_len ;
+	fip->iir_out = fip->fir_out + fip->channels * fip->fir_out_len ;
+
+	printf ("total : %d / %d\n", (fip->iir_out + fip->iir_out_len) - fip->dummy, buffer_total) ;
 
 	fip_reset (psrc) ;
 
@@ -166,11 +199,13 @@ fip_reset (SRC_PRIVATE *psrc)
 	memset (fip->fir_out, 0, fip->channels * fip->fir_out_len * sizeof (fip->dummy [0])) ;
 	memset (fip->iir_out, 0, fip->channels * fip->iir_out_len * sizeof (fip->dummy [0])) ;
 
-	fip->in_start = fip->in_end = ARRAY_LEN (best_coeffs) ;
-	fip->fir_start = fip->fir_end = 0 ;
+	fip->in_current = 0 ;
+	fip->fir_start = 0 ;
 	fip->iir_start = fip->iir_end = 0 ;
 
 	fip->src_ratio = fip->input_index = 0.0 ;
+
+	fip->half_coeff_len = 0 ;
 
 	return ;
 } /* fip_reset */
@@ -181,6 +216,7 @@ fip_reset (SRC_PRIVATE *psrc)
 static int
 fip_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	FIR_IIR_POLY *fip ;
+	int error ;
 
 	if (psrc->private_data == NULL)
 		return SRC_ERR_NO_PRIVATE ;
@@ -195,22 +231,56 @@ fip_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	if (fip->src_ratio < 1.0 / SRC_MAX_RATIO)
 		fip->src_ratio = data->src_ratio ;
 
+	fip->in_count = data->input_frames * fip->channels ;
+	fip->out_count = data->output_frames * fip->channels ;
+	fip->in_used = fip->out_gen = 0 ;
+
+	/* Choose a more specialised process() function. */
 	if (fip->src_ratio < 1.0 || data->src_ratio < 1.0)
-	{	/* Special case code for constant and varying src_ratio downsampling. */
-		if (fabs (fip->src_ratio - data->src_ratio) > 1e-20)
-			return fip_process_var_down (fip, data) ;
+	{	if (fabs (fip->src_ratio - data->src_ratio) > 1e-20)
+			error = fip_process_var_down (fip, data) ;
+		else
+			error = fip_process_const_down (fip, data) ;
+		}
+	else if (fabs (fip->src_ratio - data->src_ratio) > 1e-20)
+		error = fip_process_var_up (fip, data) ;
+	else
+		error = fip_process_const_up (fip, data) ;
 
-		return fip_process_const_down (fip, data) ;
-		} ;
+	data->input_frames_used = fip->in_used / fip->channels ;
+	data->output_frames_gen = fip->out_gen / fip->channels ;
 
-	if (fabs (fip->src_ratio - data->src_ratio) > 1e-20)
-		return fip_process_var_up (fip, data) ;
-
-	return fip_process_const_up (fip, data) ;
+	return error ;
 } /* fip_process */
 
 /*----------------------------------------------------------------------------------------
 */
+
+static void
+fip_generate_fir_current_coeffs (FIR_IIR_POLY * fip)
+{	int k ;
+
+	if (fip->src_ratio >= 1.0)
+	{	fip->half_coeff_len = fip->coeff_set->count / fip->coeff_set->increment / 2 ;
+
+		for (k = 0 ; k < fip->half_coeff_len ; k++)
+		{	fip->coeffs0 [k] = fip->coeff_set->c [fip->coeff_set->increment * k] ;
+			fip->coeffs1 [k] = fip->coeff_set->c [fip->coeff_set->increment * k + fip->coeff_set->increment / 2] ;
+			} ;
+
+		/* Round it up to a multiple of 4. */
+		while (fip->half_coeff_len & 3)
+		{	fip->coeffs0 [fip->half_coeff_len] = 0.0 ;
+			fip->coeffs1 [fip->half_coeff_len] = 0.0 ;
+			fip->half_coeff_len ++ ;
+			} ;
+
+		return ;
+		} ;
+
+	printf ("%s : not implemented yet.\n", __func__) ;
+	exit (1) ;
+} /* fip_generate_fir_current_coeffs */
 
 static int
 fip_process_var_down (FIR_IIR_POLY * fip, SRC_DATA * data)
@@ -222,7 +292,10 @@ fip_process_var_down (FIR_IIR_POLY * fip, SRC_DATA * data)
 
 static int
 fip_process_const_down (FIR_IIR_POLY * fip, SRC_DATA * data)
-{	fip = NULL ;
+{
+	if (fip->half_coeff_len == 0)
+		fip_generate_fir_current_coeffs (fip) ;
+
 	data = NULL ;
 	printf ("%s : not implemented yet.\n", __func__) ;
 	return SRC_ERR_NO_ERROR ;
@@ -230,7 +303,10 @@ fip_process_const_down (FIR_IIR_POLY * fip, SRC_DATA * data)
 
 static int
 fip_process_var_up (FIR_IIR_POLY * fip, SRC_DATA * data)
-{	fip = NULL ;
+{
+	if (fip->half_coeff_len == 0)
+		fip_generate_fir_current_coeffs (fip) ;
+
 	data = NULL ;
 	printf ("%s : not implemented yet.\n", __func__) ;
 	return SRC_ERR_NO_ERROR ;
@@ -238,9 +314,35 @@ fip_process_var_up (FIR_IIR_POLY * fip, SRC_DATA * data)
 
 static int
 fip_process_const_up (FIR_IIR_POLY * fip, SRC_DATA * data)
-{	fip = NULL ;
-	data = NULL ;
-	printf ("%s : not implemented yet.\n", __func__) ;
+{	long max_in_used ;
+	int ch, indx ;
+
+	/* If we don't yet have the coeffs, generate them. */
+	if (fip->half_coeff_len == 0)
+		fip_generate_fir_current_coeffs (fip) ;
+
+	max_in_used = lrintf (fip->in_count / fip->src_ratio - 0.5) ;
+	max_in_used -= max_in_used & 1 ;
+
+	if (fip->channels != 1)
+	{	printf ("%s : fip->channels != 1\n", __func__) ;
+		exit (1) ;
+		}
+
+	/* Main processing loop. */
+	while (fip->out_gen < fip->out_count && fip->in_used < max_in_used)
+	{
+		for (ch = 0 ; ch < fip->channels ; ch ++)
+		{	indx = (fip->in_current + fip->half_coeff_len + ch) % fip->in_buf_len ;
+			fip->input_buffer [indx] = data->data_in [fip->in_used ++] ;
+			} ;
+
+
+
+
+		fip->in_current = (fip->in_current + 1) % fip->in_buf_len ;
+		} ;
+
 	return SRC_ERR_NO_ERROR ;
 } /* fip_process_const_up */
 
