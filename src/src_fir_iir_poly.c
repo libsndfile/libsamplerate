@@ -52,6 +52,12 @@ typedef struct
 static void fip_reset (SRC_PRIVATE *psrc) ;
 static int fip_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 
+static int fip_process_var_down (FIR_IIR_POLY * fip, SRC_DATA * data) ;
+static int fip_process_const_down (FIR_IIR_POLY * fip, SRC_DATA * data) ;
+static int fip_process_var_up (FIR_IIR_POLY * fip, SRC_DATA * data) ;
+static int fip_process_const_up (FIR_IIR_POLY * fip, SRC_DATA * data) ;
+
+
 static float best_coeffs [250] ;
 
 const char*
@@ -185,19 +191,58 @@ fip_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	if (sizeof (fip->dummy [0]) != sizeof (data->data_in [0]))
 		return SRC_ERR_SIZE_INCOMPATIBILITY ;
 
-	if (data->src_ratio < 1.0)
-	{	printf ("Bad ratio %f\n", data->src_ratio) ;
-		exit (1) ;
+	/* Just after an fip_reset(), the src_ratio field is invalid. */
+	if (fip->src_ratio < 1.0 / SRC_MAX_RATIO)
+		fip->src_ratio = data->src_ratio ;
+
+	if (fip->src_ratio < 1.0 || data->src_ratio < 1.0)
+	{	/* Special case code for constant and varying src_ratio downsampling. */
+		if (fabs (fip->src_ratio - data->src_ratio) > 1e-20)
+			return fip_process_var_down (fip, data) ;
+
+		return fip_process_const_down (fip, data) ;
 		} ;
 
+	if (fabs (fip->src_ratio - data->src_ratio) > 1e-20)
+		return fip_process_var_up (fip, data) ;
 
-	return SRC_ERR_NO_ERROR ;
+	return fip_process_const_up (fip, data) ;
 } /* fip_process */
 
 /*----------------------------------------------------------------------------------------
 */
 
+static int
+fip_process_var_down (FIR_IIR_POLY * fip, SRC_DATA * data)
+{	fip = NULL ;
+	data = NULL ;
+	printf ("%s : not implemented yet.\n", __func__) ;
+	return SRC_ERR_NO_ERROR ;
+} /* fip_process_var_down */
 
+static int
+fip_process_const_down (FIR_IIR_POLY * fip, SRC_DATA * data)
+{	fip = NULL ;
+	data = NULL ;
+	printf ("%s : not implemented yet.\n", __func__) ;
+	return SRC_ERR_NO_ERROR ;
+} /* fip_process_const_down */
+
+static int
+fip_process_var_up (FIR_IIR_POLY * fip, SRC_DATA * data)
+{	fip = NULL ;
+	data = NULL ;
+	printf ("%s : not implemented yet.\n", __func__) ;
+	return SRC_ERR_NO_ERROR ;
+} /* fip_process_var_up */
+
+static int
+fip_process_const_up (FIR_IIR_POLY * fip, SRC_DATA * data)
+{	fip = NULL ;
+	data = NULL ;
+	printf ("%s : not implemented yet.\n", __func__) ;
+	return SRC_ERR_NO_ERROR ;
+} /* fip_process_const_up */
 
 
 /*
