@@ -116,12 +116,6 @@ const char* zoh_get_description (int src_enum) ;
 
 int zoh_set_converter (SRC_PRIVATE *psrc, int src_enum) ;
 
-/* In src_fir_iir_poly.c */
-const char* fip_get_name (int src_enum) ;
-const char* fip_get_description (int src_enum) ;
-
-int fip_set_converter (SRC_PRIVATE *psrc, int src_enum) ;
-
 #endif	/* COMMON_H_INCLUDED */
 
 /*

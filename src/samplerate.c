@@ -313,9 +313,6 @@ src_get_name (int converter_type)
 	if ((desc = linear_get_name (converter_type)) != NULL)
 		return desc ;
 
-	if ((desc = fip_get_name (converter_type)) != NULL)
-		return desc ;
-
 	return NULL ;
 } /* src_get_name */
 
@@ -330,9 +327,6 @@ src_get_description (int converter_type)
 		return desc ;
 
 	if ((desc = linear_get_description (converter_type)) != NULL)
-		return desc ;
-
-	if ((desc = fip_get_description (converter_type)) != NULL)
 		return desc ;
 
 	return NULL ;
@@ -486,9 +480,6 @@ psrc_set_converter (SRC_PRIVATE	*psrc, int converter_type)
 		return SRC_ERR_NO_ERROR ;
 
 	if (linear_set_converter (psrc, converter_type) == SRC_ERR_NO_ERROR)
-		return SRC_ERR_NO_ERROR ;
-
-	if (fip_set_converter (psrc, converter_type) == SRC_ERR_NO_ERROR)
 		return SRC_ERR_NO_ERROR ;
 
 	return SRC_ERR_BAD_CONVERTER ;
