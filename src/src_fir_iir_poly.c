@@ -38,20 +38,19 @@ typedef struct
 	double	src_ratio, input_index ;
 
 	float	*input_buffer ;
-	int		in_buf_len ;
+	int		in_buf_len, in_start, in_end ;
 
 	float	*fir_out ;
-	int		fir_out_len ;
+	int		fir_out_len, fir_start, fir_end ;
 
 	float	*iir_out ;
-	int		iir_out_len ;
+	int		iir_out_len, iir_start, iir_end ;
 
 	float	dummy [1] ;
 } FIR_IIR_POLY ;
 
 static void fip_reset (SRC_PRIVATE *psrc) ;
 static int fip_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
-
 
 static float best_coeffs [250] ;
 
@@ -61,12 +60,13 @@ fip_get_name (int src_enum)
 	switch (src_enum)
 	{	case SRC_FIR_IIR_POLY_BEST :
 			return "Best FIR/IIR/Polynomial Interpolator" ;
-
+#if 0
 		case SRC_FIR_IIR_POLY_MEDIUM :
 			return "Medium FIR/IIR/Polynomial Interpolator" ;
 
 		case SRC_FIR_IIR_POLY_FASTEST :
 			return "Fastest FIR/IIR/Polynomial Interpolator" ;
+#endif
 		} ;
 
 	return NULL ;
@@ -78,12 +78,13 @@ fip_get_description (int src_enum)
 	switch (src_enum)
 	{	case SRC_FIR_IIR_POLY_BEST :
 			return "Three stage FIR/IIR/Polynomial Interpolator, best quality, XXdb SNR, XX% BW." ;
-
+#if 0
 		case SRC_FIR_IIR_POLY_MEDIUM :
 			return "Three stage FIR/IIR/Polynomial Interpolator, medium quality, XXdb SNR, XX% BW." ;
 
 		case SRC_FIR_IIR_POLY_FASTEST :
 			return "Three stage FIR/IIR/Polynomial Interpolator, fastest, XXdb SNR, XX% BW." ;
+#endif
 		} ;
 
 	return NULL ;
@@ -152,11 +153,23 @@ fip_reset (SRC_PRIVATE *psrc)
 {	FIR_IIR_POLY *fip ;
 
 	fip = (FIR_IIR_POLY *) psrc->private_data ;
+	if (fip == NULL)
+		return ;
 
+	memset (fip->input_buffer, 0, fip->channels * fip->in_buf_len * sizeof (fip->dummy [0])) ;
+	memset (fip->fir_out, 0, fip->channels * fip->fir_out_len * sizeof (fip->dummy [0])) ;
+	memset (fip->iir_out, 0, fip->channels * fip->iir_out_len * sizeof (fip->dummy [0])) ;
+
+	fip->in_start = fip->in_end = ARRAY_LEN (best_coeffs) ;
+	fip->fir_start = fip->fir_end = 0 ;
+	fip->iir_start = fip->iir_end = 0 ;
+
+	fip->src_ratio = fip->input_index = 0.0 ;
+
+	return ;
 } /* fip_reset */
 
 /*========================================================================================
-**	Beware all ye who dare pass this point. There be dragons here.
 */
 
 static int
@@ -172,6 +185,11 @@ fip_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	if (sizeof (fip->dummy [0]) != sizeof (data->data_in [0]))
 		return SRC_ERR_SIZE_INCOMPATIBILITY ;
 
+	if (data->src_ratio < 1.0)
+	{	printf ("Bad ratio %f\n", data->src_ratio) ;
+		exit (1) ;
+		} ;
+
 
 	return SRC_ERR_NO_ERROR ;
 } /* fip_process */
@@ -184,9 +202,8 @@ fip_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 /*
 ** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
+** The arch-tag line is a file identity tag for the GNU Arch
 ** revision control system.
 **
 ** arch-tag: a6c8bad4-740c-4e4f-99f1-e274174ab540
 */
-
