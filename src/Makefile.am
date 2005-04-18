@@ -14,7 +14,7 @@ noinst_HEADERS = common.h float_cast.h $(COEFF_HDRS)
 SRC_SOURCES = samplerate.c src_sinc.c $(COEFF_HDRS) src_zoh.c src_linear.c
 
 # MinGW requires -no-undefined if a DLL is to be built.
-libsamplerate_la_LDFLAGS = -no-undefined version-info @SHARED_VERSION_INFO@ @SHLIB_VERSION_ARG@
+libsamplerate_la_LDFLAGS = -no-undefined -version-info @SHARED_VERSION_INFO@ @SHLIB_VERSION_ARG@
 libsamplerate_la_SOURCES = $(SRC_SOURCES) $(noinst_HEADERS)
 libsamplerate_la_LIBADD  = -lm
 

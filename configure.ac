@@ -25,7 +25,7 @@ AM_CONFIG_HEADER(src/config.h)
 #  6. If any interfaces have been removed since the last public release, then set age
 #     to 0.
 
-SHARED_VERSION_INFO="1:1:1"
+SHARED_VERSION_INFO="1:3:1"
 
 AC_PROG_CC
 AC_PROG_INSTALL
