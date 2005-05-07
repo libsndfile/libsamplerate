@@ -62,7 +62,7 @@ main (int argc, char *argv [])
 		usage_exit (argv [0]) ;
 
 	/* Set default converter. */
-	converter = SRC_SINC_BEST_QUALITY ;
+	converter = SRC_SINC_MEDIUM_QUALITY ;
 
 	for (k = 1 ; k < argc - 2 ; k++)
 	{	if (strcmp (argv [k], "--max-speed") == 0)
@@ -280,7 +280,7 @@ usage_exit (const char *progname)
 
 	puts (
 		"  The optional -c argument allows the converter type to be chosen from\n"
-		"  the following list :"
+		"  the following list (Sinc medium quality is the default) :"
 		"\n"
 		) ;
 
