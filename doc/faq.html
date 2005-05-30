@@ -69,6 +69,8 @@ Author :<BR>Erik de Castro Lopo
 	up/down resampling?</A><BR><BR>
 <A HREF="#Q004">Q4 : If I ran src_simple (libsamplerate) on small chunks (160
 	frames) would that sound bad?</A><BR><BR>
+<A HREF="#Q005">Q5 : I'm using libsamplerate but the high quality settings
+	sound worse than the SRC_LINEAR converter. Why?</A><BR><BR>
 </P>
 <HR>
 <!-- ========================================================================= -->
@@ -88,7 +90,7 @@ Its pretty obvious then, that the sample between the two 0.999 values should
 and will be bigger than 0.999.
 </P>
 <P>
-This means that anyone using libsamplerate should normalise its output before
+This means that anyone using libsamplerate should normalize its output before
 doing things like saving the audio to a 16 bit WAV file.
 </P>
 
@@ -100,7 +102,7 @@ doing things like saving the audio to a 16 bit WAV file.
 	autoconf?</b></h2>
 
 <p>
-libsamplrate uses the pkg-config (man pkg-config) method of registering itself
+libsamplerate uses the pkg-config (man pkg-config) method of registering itself
 with the host system.
 The best way of detecting its presence is using something like this in configure.ac
 (or configure.in):
@@ -171,9 +173,9 @@ get very, very close.
 In order to resample correctly (ie using the <B>SRC_SINC_*</B> converters),
 filtering needs to be applied, regardless of whether its upsampling or
 downsampling.
-This filter needs to attenuate all frequencis above 0.5 times the minimum of
-the source and desination sample rate (call this fshmin).
-Since the filter needed to achieve full attemuation at this point, it has to
+This filter needs to attenuate all frequencies above 0.5 times the minimum of
+the source and destination sample rate (call this fshmin).
+Since the filter needed to achieve full attenuation at this point, it has to
 start rolling off a some frequency below this point.
 It is this rolloff of the very highest frequencies which causes some of the
 loss.
@@ -194,6 +196,67 @@ If you are after high quality sample rate conversion you will be disappointed.
 <P>
 The src_simple() was designed to provide a simple to use interface for people
 who wanted to do sample rate conversion on say, a whole file all at once.
+</P>
+
+<!-- ========================================================================= -->
+<A NAME="Q005"></A>
+<H2><BR><B>Q5 : I'm using libsamplerate but the high quality settings
+	sound worse than the SRC_LINEAR converter. Why?</B></H2>
+<P>
+There are two possible problems.
+Firstly, if you are using the src_simple() function on successive blocks
+of a stream of samples, you will get bad results. The src_simple() function
+is designed for use on a whole sound file, all at once, not on contiguous
+segments of the same sound file.
+To fix the problem, you need to move to the src_process() API or the callback
+based API.
+</P>
+<P>
+If you are already using the src_process() API or the callback based API and
+the high quality settings sound worse than SRC_LINEAR, then you have other
+problems.
+Read on for more debugging hints.
+</P>
+<P>
+All of the higher quality converters need to keep state while doing conversions
+on segments of a large chunk of audio.
+This state information is kept inside the private data pointed to by the
+SRC_STATE pointer returned by the src_new() function.
+This means, that when you want to start doing sample rate conversion on a
+stream of data, you should call src_new() to get a new SRC_STATE pointer
+(or alternatively, call src_reset() on an existing SRC_STATE pointer).
+You should then pass this SRC_STATE pointer to the src_process() function
+with each new block of audio data.
+When you have completed the conversion, you can then call src_delete() on
+the SRC_STATE pointer.
+</P>
+<P>
+If you are doing all of the above correctly, you need to examine your usage
+of the values passed to src_process() in the
+	<A HREF="api_misc.html#SRC_DATA">SRC_DATA</A>
+struct.
+Specifically:
+</P>
+<UL>
+	<LI> Check that input_frames and output_frames fields are being set in
+			terms of frames (number of sample values times channels) instead
+			of just the number of samples.
+	<LI> Check that you are using the return values input_frames_used and
+			output_frames_gen to update your source and destination pointers
+			correctly.
+	<LI> Check that you are updating the data_in and data_out pointers
+			correctly for each successive call.
+</UL>
+<P>
+While doing the above, it is probably useful to compare what you are doing to
+what is done in the example programs in the examples/ directory of the source
+code tarball.
+</P>
+<P>
+If you have done all of the above and are still having problems then its
+probably time to email the author with the smallest chunk of code that
+adequately demonstrates your problem.
+This chunk should not need to be any more than 100 lines of code.
 </P>
 
 <!-- <A HREF="mailto:aldel@mega-nerd.com">For the spam bots</A> -->
