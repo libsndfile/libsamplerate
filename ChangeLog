@@ -3,6 +3,10 @@
     * doc/Makefile.am
     Fix a bug preventing the inclusion of the html API docs in the tarball.
 
+    * src/src_zoh.c src/src_linear.c
+    Improve calculation of input_index.
+    Fix updating of input_index (thanks to Stas Sergeev).
+
 2005-04-18  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac src/Makefile.am
