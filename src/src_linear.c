@@ -117,7 +117,7 @@ linear_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		} ;
 
 	if (linear->in_used > linear->in_count)
-	{	input_index += linear->in_used - linear->in_count ;
+	{	input_index += (linear->in_used - linear->in_count) / linear->channels ;
 		linear->in_used = linear->in_count ;
 		} ;
 

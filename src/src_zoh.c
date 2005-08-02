@@ -109,7 +109,7 @@ zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		} ;
 
 	if (zoh->in_used > zoh->in_count)
-	{	input_index += zoh->in_used - zoh->in_count ;
+	{	input_index += (zoh->in_used - zoh->in_count) / zoh->channels ;
 		zoh->in_used = zoh->in_count ;
 		} ;
 
