@@ -7,6 +7,9 @@
     Improve calculation of input_index.
     Fix updating of input_index (thanks to Stas Sergeev).
 
+    * tests/calc_snr.c
+    Fix a compile problem when FFTW is not present (thanks to Stas Sergeev).
+
 2005-04-18  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac src/Makefile.am
