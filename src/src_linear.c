@@ -54,7 +54,7 @@ typedef struct
 static int
 linear_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	LINEAR_DATA *linear ;
-	double		src_ratio, input_index ;
+	double		src_ratio, input_index, rem ;
 	int			ch ;
 
 	if (psrc->private_data == NULL)
@@ -110,9 +110,10 @@ linear_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
+		rem = fmod (input_index, 1.0) ;
 
-		linear->in_used += linear->channels * lrint (floor (input_index)) ;
-		input_index -= floor (input_index) ;
+		linear->in_used += linear->channels * lrint (input_index - rem) ;
+		input_index = rem ;
 		} ;
 
 	if (linear->in_used > linear->in_count)

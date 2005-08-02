@@ -52,7 +52,7 @@ typedef struct
 static int
 zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	ZOH_DATA 	*zoh ;
-	double		src_ratio, input_index ;
+	double		src_ratio, input_index, rem ;
 	int			ch ;
 
 	if (psrc->private_data == NULL)
@@ -85,8 +85,9 @@ zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		input_index += 1.0 / src_ratio ;
 		} ;
 
-	zoh->in_used += zoh->channels * lrint (floor (input_index)) ;
-	input_index -= floor (input_index) ;
+	rem = fmod (input_index, 1.0) ;
+	zoh->in_used += zoh->channels * lrint (input_index - rem) ;
+	input_index = rem ;
 
 	/* Main processing loop. */
 	while (zoh->out_gen < zoh->out_count && zoh->in_used + zoh->channels * input_index <= zoh->in_count)
@@ -101,9 +102,10 @@ zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
+		rem = fmod (input_index, 1.0) ;
 
-		zoh->in_used += zoh->channels * lrint (floor (input_index)) ;
-		input_index -= floor (input_index) ;
+		zoh->in_used += zoh->channels * lrint (input_index - rem) ;
+		input_index = rem ;
 		} ;
 
 	if (zoh->in_used > zoh->in_count)
