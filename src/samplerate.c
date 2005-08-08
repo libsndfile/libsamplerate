@@ -340,7 +340,7 @@ src_get_description (int converter_type)
 
 const char *
 src_get_version (void)
-{	return PACKAGE "-" VERSION ;
+{	return PACKAGE "-" VERSION " (c) 2002-2005 Erik de Castro Lopo" ;
 } /* src_get_version */
 
 int
