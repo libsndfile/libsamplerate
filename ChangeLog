@@ -1,3 +1,13 @@
+2005-08-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/termination_test.c
+    Rename term_test() to init_term_test() and add extra test functionality
+    to sanity test the first sample output after reset.
+
+    * src/src_zoh.c src/src_linear.c
+    Fix bug found by new test. Thanks Stas Sergeev for bringint this to my
+    attention.
+
 2005-08-02  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/Makefile.am
@@ -53,7 +63,7 @@
     * configure.ac Win32/Makefile.mingw.in
     Add preliminary support for compiling on Win32 using MinGW.
 
-    * configure.ac 
+    * configure.ac
     Bump version to 0.1.2.
     Add --enable-gcc-werror configure option.
 

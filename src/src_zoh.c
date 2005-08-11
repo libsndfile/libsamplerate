@@ -41,6 +41,7 @@ static void zoh_reset (SRC_PRIVATE *psrc) ;
 typedef struct
 {	int		zoh_magic_marker ;
 	int		channels ;
+	int		reset ;
 	long	in_count, in_used ;
 	long	out_count, out_gen ;
 	float	last_value [1] ;
@@ -59,6 +60,13 @@ zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		return SRC_ERR_NO_PRIVATE ;
 
 	zoh = (ZOH_DATA*) psrc->private_data ;
+
+	if (zoh->reset)
+	{	/* If we have just been reset, set the last_value data. */
+		for (ch = 0 ; ch < zoh->channels ; ch++)
+			zoh->last_value [ch] = data->data_in [ch] ;
+		zoh->reset = 0 ;
+		} ;
 
 	zoh->in_count = data->input_frames * zoh->channels ;
 	zoh->out_count = data->output_frames * zoh->channels ;
@@ -194,6 +202,7 @@ zoh_reset (SRC_PRIVATE *psrc)
 		return ;
 
 	zoh->channels = psrc->channels ;
+	zoh->reset = 1 ;
 	memset (zoh->last_value, 0, sizeof (zoh->last_value [0]) * zoh->channels) ;
 
 	return ;

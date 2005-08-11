@@ -43,6 +43,7 @@ static void linear_reset (SRC_PRIVATE *psrc) ;
 typedef struct
 {	int		linear_magic_marker ;
 	int		channels ;
+	int		reset ;
 	long	in_count, in_used ;
 	long	out_count, out_gen ;
 	float	last_value [1] ;
@@ -61,6 +62,13 @@ linear_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		return SRC_ERR_NO_PRIVATE ;
 
 	linear = (LINEAR_DATA*) psrc->private_data ;
+
+	if (linear->reset)
+	{	/* If we have just been reset, set the last_value data. */
+		for (ch = 0 ; ch < linear->channels ; ch++)
+			linear->last_value [ch] = data->data_in [ch] ;
+		linear->reset = 0 ;
+		} ;
 
 	linear->in_count = data->input_frames * linear->channels ;
 	linear->out_count = data->output_frames * linear->channels ;
@@ -200,6 +208,9 @@ linear_reset (SRC_PRIVATE *psrc)
 	linear = (LINEAR_DATA*) psrc->private_data ;
 	if (linear == NULL)
 		return ;
+
+	linear->channels = psrc->channels ;
+	linear->reset = 1 ;
 
 	memset (linear->last_value, 0, sizeof (linear->last_value [0]) * linear->channels) ;
 } /* linear_reset */
