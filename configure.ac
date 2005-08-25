@@ -6,7 +6,7 @@ AC_PREREQ(2.54)
 AC_INIT
 AC_CONFIG_SRCDIR([src/samplerate.c])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(libsamplerate,0.1.3pre3)
+AM_INIT_AUTOMAKE(libsamplerate,0.1.3pre4)
 AM_CONFIG_HEADER(src/config.h)
 
 #------------------------------------------------------------------------------------
