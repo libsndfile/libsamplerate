@@ -29,6 +29,8 @@
 #include <samplerate.h>
 #include <sndfile.h>
 
+#define DEFAULT_CONVERTER SRC_SINC_MEDIUM_QUALITY
+
 #define	BUFFER_LEN		4096	/*-(1<<16)-*/
 
 static void usage_exit (const char *progname) ;
@@ -62,7 +64,7 @@ main (int argc, char *argv [])
 		usage_exit (argv [0]) ;
 
 	/* Set default converter. */
-	converter = SRC_SINC_MEDIUM_QUALITY ;
+	converter = DEFAULT_CONVERTER ;
 
 	for (k = 1 ; k < argc - 2 ; k++)
 	{	if (strcmp (argv [k], "--max-speed") == 0)
@@ -280,12 +282,12 @@ usage_exit (const char *progname)
 
 	puts (
 		"  The optional -c argument allows the converter type to be chosen from\n"
-		"  the following list (Sinc medium quality is the default) :"
+		"  the following list :"
 		"\n"
 		) ;
 
 	for (k = 0 ; (cptr = src_get_name (k)) != NULL ; k++)
-		printf ("       %d : %s\n", k, cptr) ;
+		printf ("       %d : %s%s\n", k, cptr, k == DEFAULT_CONVERTER ? " (default)" : "") ;
 
 	puts ("") ;
 
