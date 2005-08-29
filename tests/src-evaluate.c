@@ -37,7 +37,7 @@
 #include "util.h"
 
 #define	MAX_FREQS		4
-#define	BUFFER_LEN		40000
+#define	BUFFER_LEN		80000
 
 #define SAFE_STRNCAT(dest,src,len)								\
 		{	int safe_strncat_count ;							\
@@ -78,7 +78,7 @@ main (int argc, char *argv [])
 	{	{	"sndfile-resample",
 			"examples/sndfile-resample --version",
 			"libsamplerate",
-			"examples/sndfile-resample --max-speed -c 2 -to %d source.wav destination.wav",
+			"examples/sndfile-resample --max-speed -c 0 -to %d source.wav destination.wav",
 			SF_FORMAT_WAV | SF_FORMAT_PCM_32
 			},
 		{	"sox",
@@ -282,7 +282,7 @@ generate_source_wav (const char *filename, const double *freqs, int freq_count, 
 
 static double
 measure_destination_wav (char *filename, int *output_samples, int expected_peaks)
-{	static float buffer [124000] ;
+{	static float buffer [250000] ;
 
 	SNDFILE *sndfile ;
 	SF_INFO sfinfo ;
@@ -299,7 +299,7 @@ measure_destination_wav (char *filename, int *output_samples, int expected_peaks
 		} ;
 
 	if (sfinfo.frames > ARRAY_LEN (buffer))
-	{	printf ("Line %d : Too many frames of data in file.\n", __LINE__) ;
+	{	printf ("Line %d : Too many frames (%ld) of data in file.\n", __LINE__, (long) sfinfo.frames) ;
 		exit (1) ;
 		} ;
 
@@ -328,6 +328,7 @@ measure_snr (const RESAMPLE_PROG *prog, int *output_samples, int verbose)
 		{	1,	{ 0.011111111111 },		13231,		1,	1.0 },
 		{	1,	{ 0.011111111111 },		44101,		1,	1.0 },
 		{	2,	{ 0.311111, 0.49 },		78199,		2,	1.0 },
+		{	2,	{ 0.011111, 0.49 },		12345,		1,	0.5 },
 		{	2,	{ 0.0123456, 0.4 },		20143,		1,	0.5 },
 		{	2,	{ 0.0111111, 0.4 },		26461,		1,	0.5 },
 		{	1,	{ 0.381111111111 },		58661,		1,	1.0 }
@@ -349,7 +350,7 @@ measure_snr (const RESAMPLE_PROG *prog, int *output_samples, int verbose)
 		generate_source_wav ("source.wav", snr_test [k].freqs, snr_test [k].freq_count, prog->format) ;
 
 		snprintf (command, sizeof (command), prog->convert_cmd, snr_test [k].output_samplerate) ;
-		SAFE_STRNCAT (command, " >/dev/null", sizeof (command)) ;
+		SAFE_STRNCAT (command, " >/dev/null 2>&1", sizeof (command)) ;
 		if ((retval = system (command)) != 0)
 			printf ("system returned %d\n", retval) ;
 
@@ -421,7 +422,7 @@ find_attenuation (double freq, const RESAMPLE_PROG *prog, int verbose)
 	remove (filename) ;
 
 	snprintf (command, sizeof (command), prog->convert_cmd, 88189) ;
-	SAFE_STRNCAT (command, " >/dev/null", sizeof (command)) ;
+	SAFE_STRNCAT (command, " >/dev/null 2>&1", sizeof (command)) ;
 	if ((retval = system (command)) != 0)
 		printf ("system returned %d\n", retval) ;
 
