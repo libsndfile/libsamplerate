@@ -1,3 +1,11 @@
+2005-09-06  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/float_cast.h
+    Update to include Cygwin specific fixes.
+
+    * doc/api_callback.html
+    Complete the documentation of the callback API.
+
 2005-08-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/termination_test.c
