@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2004 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2005 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -53,6 +53,7 @@ main (int argc, char *argv [])
 	if (argc != 3)
 		usage_exit (argv [0]) ;
 
+	putchar ('\n') ;
 	printf ("Input File    : %s\n", argv [argc - 2]) ;
 	if ((infile = sf_open (argv [argc - 2], SFM_READ, &sfinfo)) == NULL)
 	{	printf ("Error : Not able to open input file '%s'\n", argv [argc - 2]) ;
@@ -77,7 +78,7 @@ main (int argc, char *argv [])
 	sf_command (outfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
 
 	printf ("Output file   : %s\n", argv [argc - 1]) ;
-	printf ("Converter     : %s\n\n", src_get_name (DEFAULT_CONVERTER)) ;
+	printf ("Converter     : %s\n", src_get_name (DEFAULT_CONVERTER)) ;
 
 	count = timewarp_convert (infile, outfile, DEFAULT_CONVERTER, sfinfo.channels) ;
 
@@ -94,14 +95,14 @@ main (int argc, char *argv [])
 
 static TIMEWARP_FACTOR warp [] =
 {	{	0		, 1.00000001 },
-	{	20000	, 1.00010000 },
-	{	20062	, 1.00000001 },
-	{	40000	, 1.01000000 },
-	{	40071	, 1.00000001 },
-	{	60000	, 1.20000000 },
-	{	60081	, 1.00000001 },
+	{	20000	, 1.01000000 },
+	{	20200	, 1.00000001 },
+	{	40000	, 1.20000000 },
+	{	40300	, 1.00000001 },
+	{	60000	, 1.10000000 },
+	{	60400	, 1.00000001 },
 	{	80000	, 1.50000000 },
-	{	80091	, 1.00000001 },
+	{	81000	, 1.00000001 },
 } ;
 
 static sf_count_t
@@ -132,15 +133,16 @@ timewarp_convert (SNDFILE *infile, SNDFILE *outfile, int converter, int channels
 	if (warp [0].index > 0)
 		src_data.src_ratio = 1.0 ;
 	else
-		src_data.src_ratio = warp [0].ratio ;
+	{	src_data.src_ratio = warp [0].ratio ;
+		warp_index ++ ;
+		} ;
 
 	src_data.data_out = output ;
 	src_data.output_frames = BUFFER_LEN /channels ;
 
 	while (1)
 	{
-
-		if (warp_index < ARRAY_LEN (warp) - 1 && input_count < warp [warp_index].index && input_count > warp [warp_index + 1].index)
+		if (warp_index < ARRAY_LEN (warp) - 1 && input_count >= warp [warp_index].index)
 		{	src_data.src_ratio = warp [warp_index].ratio ;
 			warp_index ++ ;
 			} ;
