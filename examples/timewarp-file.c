@@ -195,8 +195,9 @@ usage_exit (const char *progname)
 		progname = cptr + 1 ;
 
 	printf ("\n"
-		"  A time warping program using libsndfile for file I/O and Secret \n"
-		"  Rabbit Code (aka libsamplerate) for performing the warping.\n"
+		"  A program demonstrating the time warping capabilities of libsamplerate."
+		"  It uses libsndfile for file I/O and Secret Rabbit Code (aka libsamplerate)"
+		"  for performing the warping.\n"
 		"  It works on any file format supported by libsndfile with any \n"
 		"  number of channels (limited only by host memory).\n"
 		"\n"
