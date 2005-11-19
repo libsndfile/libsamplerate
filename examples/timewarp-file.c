@@ -93,15 +93,15 @@ main (int argc, char *argv [])
 */
 
 static TIMEWARP_FACTOR warp [] =
-{	{	0	, 1.00000001 },
-	{	1000, 1.00010000 },
-	{	1062, 1.00000001 },
-	{	2000, 1.01000000 },
-	{	2071, 1.00000001 },
-	{	3000, 1.20000000 },
-	{	3081, 1.00000001 },
-	{	4000, 1.50000000 },
-	{	4091, 1.00000001 },
+{	{	0		, 1.00000001 },
+	{	20000	, 1.00010000 },
+	{	20062	, 1.00000001 },
+	{	40000	, 1.01000000 },
+	{	40071	, 1.00000001 },
+	{	60000	, 1.20000000 },
+	{	60081	, 1.00000001 },
+	{	80000	, 1.50000000 },
+	{	80091	, 1.00000001 },
 } ;
 
 static sf_count_t
@@ -152,7 +152,7 @@ timewarp_convert (SNDFILE *infile, SNDFILE *outfile, int converter, int channels
 			src_data.data_in = input ;
 
 			/* The last read will not be a full buffer, so snd_of_input. */
-			if (src_data.input_frames < BUFFER_LEN / channels)
+			if (src_data.input_frames < INPUT_STEP_SIZE)
 				src_data.end_of_input = SF_TRUE ;
 			} ;
 
@@ -185,7 +185,6 @@ timewarp_convert (SNDFILE *infile, SNDFILE *outfile, int converter, int channels
 static void
 usage_exit (const char *progname)
 {	const char	*cptr ;
-	int		k ;
 
 	if ((cptr = strrchr (progname, '/')) != NULL)
 		progname = cptr + 1 ;
@@ -194,26 +193,18 @@ usage_exit (const char *progname)
 		progname = cptr + 1 ;
 
 	printf ("\n"
-		"  A Sample Rate Converter using libsndfile for file I/O and Secret \n"
-		"  Rabbit Code (aka libsamplerate) for performing the conversion.\n"
+		"  A time warping program using libsndfile for file I/O and Secret \n"
+		"  Rabbit Code (aka libsamplerate) for performing the warping.\n"
 		"  It works on any file format supported by libsndfile with any \n"
 		"  number of channels (limited only by host memory).\n"
+		"\n"
+		"  The warping is dependant on a table hard code into the source code.\n"
 		"\n"
 		"  libsamplerate version : %s\n"
 		"\n"
 		"  Usage : \n"
-		"       %s -to <new sample rate> [-c <number>] <input file> <output file>\n"
-		"       %s -by <amount> [-c <number>] <input file> <output file>\n"
-		"\n", src_get_version (), progname, progname) ;
-
-	puts (
-		"  The optional -c argument allows the converter type to be chosen from\n"
-		"  the following list :"
-		"\n"
-		) ;
-
-	for (k = 0 ; (cptr = src_get_name (k)) != NULL ; k++)
-		printf ("       %d : %s%s\n", k, cptr, k == DEFAULT_CONVERTER ? " (default)" : "") ;
+		"       %s <input file> <output file>\n"
+		"\n", src_get_version (), progname) ;
 
 	puts ("") ;
 
