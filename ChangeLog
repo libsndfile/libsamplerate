@@ -1,3 +1,8 @@
+2005-12-29  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * examples/sndfile-resample.c
+    Exit if SRC ratio is 1.0. Suggested by Bram de Jong.
+
 2005-11-19  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * examples/timewarp-file.c

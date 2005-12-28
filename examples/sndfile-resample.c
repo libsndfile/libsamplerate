@@ -119,6 +119,12 @@ main (int argc, char *argv [])
 		exit (1) ;
 		} ;
 
+	if (fabs (src_ratio - 1.0) < 1e-20)
+	{	printf ("Target samplerate and input samplerate are the same. Exiting.\n") ;
+		sf_close (infile) ;
+		exit (0) ;
+		} ;
+
 	printf ("SRC Ratio     : %f\n", src_ratio) ;
 	printf ("Converter     : %s\n\n", src_get_name (converter)) ;
 
