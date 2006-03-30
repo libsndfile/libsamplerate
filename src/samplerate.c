@@ -117,7 +117,7 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 
 	if (psrc == NULL)
 		return SRC_ERR_BAD_STATE ;
-	if (psrc->process == NULL)
+	if (psrc->vari_process == NULL || psrc->const_process == NULL)
 		return SRC_ERR_BAD_PROC_PTR ;
 
 	if (psrc->mode != SRC_MODE_PROCESS)
@@ -167,7 +167,10 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 		psrc->last_ratio = data->src_ratio ;
 
 	/* Now process. */
-	error = psrc->process (psrc, data) ;
+	if (fabs (psrc->last_ratio - data->src_ratio) < 1e-15)
+		error = psrc->const_process (psrc, data) ;
+	else
+		error = psrc->vari_process (psrc, data) ;
 
 	return error ;
 } /* src_process */
@@ -273,7 +276,7 @@ src_set_ratio (SRC_STATE *state, double new_ratio)
 
 	if (psrc == NULL)
 		return SRC_ERR_BAD_STATE ;
-	if (psrc->process == NULL)
+	if (psrc->vari_process == NULL || psrc->const_process == NULL)
 		return SRC_ERR_BAD_PROC_PTR ;
 
 	psrc->last_ratio = new_ratio ;

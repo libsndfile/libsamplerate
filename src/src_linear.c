@@ -30,7 +30,8 @@
 #include "float_cast.h"
 #include "common.h"
 
-static int linear_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
+static int linear_const_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
+static int linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static void linear_reset (SRC_PRIVATE *psrc) ;
 
 /*========================================================================================
@@ -53,7 +54,7 @@ typedef struct
 */
 
 static int
-linear_process (SRC_PRIVATE *psrc, SRC_DATA *data)
+linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	LINEAR_DATA *linear ;
 	double		src_ratio, input_index, rem ;
 	int			ch ;
@@ -142,7 +143,7 @@ linear_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	data->output_frames_gen = linear->out_gen / linear->channels ;
 
 	return SRC_ERR_NO_ERROR ;
-} /* linear_process */
+} /* linear_vari_process */
 
 /*------------------------------------------------------------------------------
 */
@@ -190,7 +191,8 @@ linear_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	linear->linear_magic_marker = LINEAR_MAGIC_MARKER ;
 	linear->channels = psrc->channels ;
 
-	psrc->process = linear_process ;
+	psrc->const_process = linear_vari_process ;
+	psrc->vari_process = linear_vari_process ;
 	psrc->reset = linear_reset ;
 
 	linear_reset (psrc) ;

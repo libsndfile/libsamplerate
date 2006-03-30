@@ -81,7 +81,7 @@ typedef struct
 	float	buffer [1] ;
 } SINC_FILTER ;
 
-static int sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
+static int sinc_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 
 static double calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index, int ch) ;
 
@@ -163,7 +163,8 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	temp_filter.sinc_magic_marker = SINC_MAGIC_MARKER ;
 	temp_filter.channels = psrc->channels ;
 
-	psrc->process = sinc_process ;
+	psrc->const_process = sinc_vari_process ;
+	psrc->vari_process = sinc_vari_process ;
 	psrc->reset = sinc_reset ;
 
 	switch (src_enum)
@@ -248,7 +249,7 @@ sinc_reset (SRC_PRIVATE *psrc)
 */
 
 static int
-sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
+sinc_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	SINC_FILTER *filter ;
 	double		input_index, src_ratio, count, float_increment, terminate, rem ;
 	increment_t	increment, start_filter_index ;
@@ -340,7 +341,7 @@ sinc_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	data->output_frames_gen = filter->out_gen / filter->channels ;
 
 	return SRC_ERR_NO_ERROR ;
-} /* sinc_process */
+} /* sinc_vari_process */
 
 /*----------------------------------------------------------------------------------------
 */

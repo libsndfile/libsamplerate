@@ -95,7 +95,13 @@ typedef struct SRC_PRIVATE_tag
 	/* Pointer to data to converter specific data. */
 	void	*private_data ;
 
-	int		(*process) (struct SRC_PRIVATE_tag *psrc, SRC_DATA *data) ;
+	/* Varispeed process function. */
+	int		(*vari_process) (struct SRC_PRIVATE_tag *psrc, SRC_DATA *data) ;
+
+	/* Constant speed process function. */
+	int		(*const_process) (struct SRC_PRIVATE_tag *psrc, SRC_DATA *data) ;
+
+	/* State reset. */
 	void	(*reset) (struct SRC_PRIVATE_tag *psrc) ;
 
 	/* Data specific to SRC_MODE_CALLBACK. */

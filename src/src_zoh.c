@@ -30,7 +30,7 @@
 #include "float_cast.h"
 #include "common.h"
 
-static int zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
+static int zoh_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static void zoh_reset (SRC_PRIVATE *psrc) ;
 
 /*========================================================================================
@@ -51,7 +51,7 @@ typedef struct
 */
 
 static int
-zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
+zoh_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 {	ZOH_DATA 	*zoh ;
 	double		src_ratio, input_index, rem ;
 	int			ch ;
@@ -134,7 +134,7 @@ zoh_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	data->output_frames_gen = zoh->out_gen / zoh->channels ;
 
 	return SRC_ERR_NO_ERROR ;
-} /* zoh_process */
+} /* zoh_vari_process */
 
 /*------------------------------------------------------------------------------
 */
@@ -182,7 +182,8 @@ zoh_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	zoh->zoh_magic_marker = ZOH_MAGIC_MARKER ;
 	zoh->channels = psrc->channels ;
 
-	psrc->process = zoh_process ;
+	psrc->const_process = zoh_vari_process ;
+	psrc->vari_process = zoh_vari_process ;
 	psrc->reset = zoh_reset ;
 
 	zoh_reset (psrc) ;
