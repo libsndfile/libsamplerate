@@ -35,6 +35,9 @@ callback_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 float_short_test_SOURCES = float_short_test.c util.c util.h
 float_short_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
+varispeed_test_SOURCES = varispeed_test.c util.c util.h
+varispeed_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
+
 # This program is for evaluating other sample rate converters.
 
 src_evaluate_SOURCES = src-evaluate.c calc_snr.c util.c
