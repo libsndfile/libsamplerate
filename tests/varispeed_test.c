@@ -24,20 +24,20 @@
 
 #include "util.h"
 
-#define	BUFFER_LEN		((1 << 16) - 20)
+#define	BUFFER_LEN		(1 << 16)
 
 static void varispeed_test (int converter) ;
 
 int
 main (void)
 {
-	puts ("    Zero Order Hold interpolator: ") ;
+	printf ("    Zero Order Hold interpolator    : ") ;
 	varispeed_test (SRC_ZERO_ORDER_HOLD) ;
 
-	puts ("    Linear interpolator: ") ;
+	printf ("    Linear interpolator             : ") ;
 	varispeed_test (SRC_LINEAR) ;
 
-	puts ("    Sinc interpolator: ") ;
+	printf ("    Sinc interpolator               : ") ;
 	varispeed_test (SRC_SINC_FASTEST) ;
 
 	return 0 ;
@@ -45,37 +45,16 @@ main (void)
 
 static void
 varispeed_test (int converter)
-{	static float input [BUFFER_LEN], output [BUFFER_LEN] ;
-	double src_ratio ;
+{	static float input [BUFFER_LEN], output [2 * BUFFER_LEN] ;
+	double sine_freq ;
 
 	SRC_STATE	*src_state ;
 	SRC_DATA	src_data ;
 
-	int input_len, output_len, current_in, current_out ;
-	int k, error, terminate ;
+	int error ;
 
-/* Erik */
-for (k = 0 ; k < BUFFER_LEN ; k++) input [k] = k * 1.0 ;
-
-	/* Calculate maximun input and output lengths. */
-	if (src_ratio >= 1.0)
-	{	output_len = BUFFER_LEN ;
-		input_len = (int) floor (BUFFER_LEN / src_ratio) ;
-		}
-	else
-	{	input_len = BUFFER_LEN ;
-		output_len = (int) floor (BUFFER_LEN * src_ratio) ;
-		} ;
-
-	/* Reduce input_len by 10 so output is longer than necessary. */
-	input_len -= 20 ;
-
-	if (output_len > BUFFER_LEN)
-	{	printf ("\n\nLine %d : output_len > BUFFER_LEN\n\n", __LINE__) ;
-		exit (1) ;
-		} ;
-
-	current_in = current_out = 0 ;
+	sine_freq = 0.0011 ;
+	gen_windowed_sines (1, &sine_freq, 1.0, input, ARRAY_LEN (input)) ;
 
 	/* Perform sample rate conversion. */
 	if ((src_state = src_new (converter, 1, &error)) == NULL)
@@ -83,102 +62,34 @@ for (k = 0 ; k < BUFFER_LEN ; k++) input [k] = k * 1.0 ;
 		exit (1) ;
 		} ;
 
-	src_data.end_of_input = 0 ; /* Set this later. */
+	src_data.end_of_input = 1 ;
 
 	src_data.data_in = input ;
+	src_data.input_frames = ARRAY_LEN (input) ;
 
-	src_data.src_ratio = src_ratio ;
+	src_data.src_ratio = 3.0 ;
 
 	src_data.data_out = output ;
-	src_data.output_frames = ARRAY_LEN (output) / 10 ;
+	src_data.output_frames = ARRAY_LEN (output) ;
 
-	terminate = 1 + (int) ceil ((src_ratio >= 1.0) ? src_ratio : 1.0 / src_ratio) ;
-
-	while (1)
-	{
-		src_data.input_frames = next_block_length (0) ;
-		src_data.input_frames = MIN (src_data.input_frames, input_len - current_in) ;
-
-		src_data.output_frames = ARRAY_LEN (output) - current_out ;
-		/*-Erik MIN (src_data.output_frames, output_len - current_out) ;-*/
-
-		src_data.end_of_input = (current_in >= input_len) ? 1 : 0 ;
-
-		if ((error = src_process (src_state, &src_data)))
-		{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
-			printf ("  src_data.input_frames  : %ld\n", src_data.input_frames) ;
-			printf ("  src_data.output_frames : %ld\n\n", src_data.output_frames) ;
-			exit (1) ;
-			} ;
-
-		if (src_data.end_of_input && src_data.output_frames_gen == 0)
-			break ;
-
-		if (src_data.input_frames_used > src_data.input_frames)
-		{	printf ("\n\nLine %d : input_frames_used > input_frames\n\n", __LINE__) ;
-			printf ("  src_data.input_frames      : %ld\n", src_data.input_frames) ;
-			printf ("  src_data.input_frames_used : %ld\n", src_data.input_frames_used) ;
-			printf ("  src_data.output_frames     : %ld\n", src_data.output_frames) ;
-			printf ("  src_data.output_frames_gen : %ld\n\n", src_data.output_frames_gen) ;
-			exit (1) ;
-			} ;
-
-		if (src_data.input_frames_used < 0)
-		{	printf ("\n\nLine %d : input_frames_used (%ld) < 0\n\n", __LINE__, src_data.input_frames_used) ;
-			exit (1) ;
-			} ;
-
-		if (src_data.output_frames_gen < 0)
-		{	printf ("\n\nLine %d : output_frames_gen (%ld) < 0\n\n", __LINE__, src_data.output_frames_gen) ;
-			exit (1) ;
-			} ;
-
-		current_in	+= src_data.input_frames_used ;
-		current_out += src_data.output_frames_gen ;
-
-		if (current_in > input_len + terminate)
-		{	printf ("\n\nLine %d : current_in (%d) > input_len (%d + %d)\n\n", __LINE__, current_in, input_len, terminate) ;
-			exit (1) ;
-			} ;
-
-		if (current_out > output_len)
-		{	printf ("\n\nLine %d : current_out (%d) > output_len (%d)\n\n", __LINE__, current_out, output_len) ;
-			exit (1) ;
-			} ;
-
-		if (src_data.input_frames_used > input_len)
-		{	printf ("\n\nLine %d : input_frames_used (%ld) > %d\n\n", __LINE__, src_data.input_frames_used, input_len) ;
-			exit (1) ;
-			} ;
-
-		if (src_data.output_frames_gen > output_len)
-		{	printf ("\n\nLine %d : output_frames_gen (%ld) > %d\n\n", __LINE__, src_data.output_frames_gen, output_len) ;
-			exit (1) ;
-			} ;
-
-		if (src_data.data_in == NULL && src_data.output_frames_gen == 0)
-			break ;
-
-
-		src_data.data_in	+= src_data.input_frames_used ;
-		src_data.data_out	+= src_data.output_frames_gen ;
+	if ((error = src_set_ratio (src_state, 1.0 / src_data.src_ratio)))
+	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
+		exit (1) ;
+		} ;
+	
+	if ((error = src_process (src_state, &src_data)))
+	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
+		printf ("  src_data.input_frames  : %ld\n", src_data.input_frames) ;
+		printf ("  src_data.output_frames : %ld\n\n", src_data.output_frames) ;
+		exit (1) ;
 		} ;
 
 	src_state = src_delete (src_state) ;
 
-	if (fabs (current_out - src_ratio * input_len) > terminate)
-	{	printf ("\n\nLine %d : bad output data length %d should be %2.1f +/- %d.\n", __LINE__,
-					current_out, src_ratio * input_len, terminate) ;
-		printf ("\tsrc_ratio  : %.4f\n", src_ratio) ;
-		printf ("\tinput_len  : %d\n\tinput_used : %d\n", input_len, current_in) ;
-		printf ("\toutput_len : %d\n\toutput_gen : %d\n\n", output_len, current_out) ;
-		exit (1) ;
-		} ;
-
-	if (current_in != input_len)
+	if (src_data.input_frames_used != ARRAY_LEN (input))
 	{	printf ("\n\nLine %d : unused input.\n", __LINE__) ;
-		printf ("\tinput_len         : %d\n", input_len) ;
-		printf ("\tinput_frames_used : %d\n\n", current_in) ;
+		printf ("\tinput_len         : %d\n", ARRAY_LEN (input)) ;
+		printf ("\tinput_frames_used : %ld\n\n", src_data.input_frames_used) ;
 		exit (1) ;
 		} ;
 

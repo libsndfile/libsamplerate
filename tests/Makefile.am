@@ -1,6 +1,6 @@
 noinst_PROGRAMS = misc_test termination_test simple_test callback_test \
 					reset_test multi_channel_test snr_bw_test \
-					float_short_test src-evaluate benchmark
+					float_short_test varispeed_test src-evaluate benchmark
 
 SAMPLRATEDIR =../src
 INCLUDES = -I$(srcdir)/$(SAMPLRATEDIR)
