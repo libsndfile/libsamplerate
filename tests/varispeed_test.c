@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #include <samplerate.h>
 
@@ -45,16 +46,27 @@ main (void)
 
 static void
 varispeed_test (int converter)
-{	static float input [BUFFER_LEN], output [2 * BUFFER_LEN] ;
+{	static float input [BUFFER_LEN], output [32 * BUFFER_LEN] ;
 	double sine_freq ;
 
 	SRC_STATE	*src_state ;
 	SRC_DATA	src_data ;
 
-	int error ;
+	int input_len, error ;
 
-	sine_freq = 0.0011 ;
-	gen_windowed_sines (1, &sine_freq, 1.0, input, ARRAY_LEN (input)) ;
+	memset (input, 0, sizeof (input)) ;
+
+	input_len = ARRAY_LEN (input) / 2 ;
+
+	sine_freq = 0.0111 ;
+
+	if (1)
+		gen_windowed_sines (1, &sine_freq, 1.0, input, input_len) ;
+	else
+	{	int k ;
+		for (k = 0 ; k < input_len ; k++)
+			input [k] = (1.0 * k) / input_len ;
+		} ;
 
 	/* Perform sample rate conversion. */
 	if ((src_state = src_new (converter, 1, &error)) == NULL)
@@ -65,7 +77,7 @@ varispeed_test (int converter)
 	src_data.end_of_input = 1 ;
 
 	src_data.data_in = input ;
-	src_data.input_frames = ARRAY_LEN (input) ;
+	src_data.input_frames = input_len ;
 
 	src_data.src_ratio = 3.0 ;
 
@@ -76,7 +88,7 @@ varispeed_test (int converter)
 	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
 		exit (1) ;
 		} ;
-	
+
 	if ((error = src_process (src_state, &src_data)))
 	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
 		printf ("  src_data.input_frames  : %ld\n", src_data.input_frames) ;
@@ -84,14 +96,55 @@ varispeed_test (int converter)
 		exit (1) ;
 		} ;
 
-	src_state = src_delete (src_state) ;
-
-	if (src_data.input_frames_used != ARRAY_LEN (input))
+	if (src_data.input_frames_used != input_len)
 	{	printf ("\n\nLine %d : unused input.\n", __LINE__) ;
-		printf ("\tinput_len         : %d\n", ARRAY_LEN (input)) ;
+		printf ("\tinput_len         : %d\n", input_len) ;
 		printf ("\tinput_frames_used : %ld\n\n", src_data.input_frames_used) ;
 		exit (1) ;
 		} ;
+
+	/* Copy the last output to the input. */
+	memcpy (input, output, sizeof (input)) ;
+	reverse_data (input, src_data.output_frames_gen) ;
+
+	if ((error = src_reset (src_state)))
+	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
+		exit (1) ;
+		} ;
+
+	src_data.end_of_input = 1 ;
+
+	src_data.data_in = input ;
+	input_len = src_data.input_frames = src_data.output_frames_gen ;
+
+	src_data.data_out = output ;
+	src_data.output_frames = ARRAY_LEN (output) ;
+
+	if ((error = src_set_ratio (src_state, 1.0 / src_data.src_ratio)))
+	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
+		exit (1) ;
+		} ;
+
+	if ((error = src_process (src_state, &src_data)))
+	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
+		printf ("  src_data.input_frames  : %ld\n", src_data.input_frames) ;
+		printf ("  src_data.output_frames : %ld\n\n", src_data.output_frames) ;
+		exit (1) ;
+		} ;
+
+/*-save_oct_float ("vs.mat", input, src_data.input_frames, output, src_data.output_frames_gen) ;-*/
+
+	if (src_data.input_frames_used != input_len)
+	{	printf ("\n\nLine %d : unused input.\n", __LINE__) ;
+		printf ("\tinput_len         : %d\n", input_len) ;
+		printf ("\tinput_frames_used : %ld\n\n", src_data.input_frames_used) ;
+		exit (1) ;
+		} ;
+
+
+
+
+	src_state = src_delete (src_state) ;
 
 	puts ("ok") ;
 
@@ -100,7 +153,7 @@ varispeed_test (int converter)
 
 /*
 ** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
+** The arch-tag line is a file identity tag for the GNU Arch
 ** revision control system.
 **
 ** arch-tag: 0c9492de-9c59-4690-ba38-f384b547dc74
