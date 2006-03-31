@@ -6,6 +6,9 @@
     * tests/varispeed_test.c tests/Makefile.am
     Add new test and hook into build.
 
+    * tests/util.[ch]
+    Add new function reverse_data.
+
 2005-12-29  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * examples/sndfile-resample.c

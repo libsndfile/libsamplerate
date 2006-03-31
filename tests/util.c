@@ -146,6 +146,24 @@ deinterleave_data (const float *in, float *out, int frames, int channels)
 	return ;
 } /* deinterleave_data */
 
+void
+reverse_data (float *data, int datalen)
+{	int left, right ;
+	float temp ;
+
+	left = 0 ;
+	right = datalen - 1 ;
+
+	while (left < right)
+	{	temp = data [left] ;
+		data [left] = data [right] ;
+		data [right] = temp ;
+		left ++ ;
+		right -- ;
+		} ;
+
+} /* reverse_data */
+
 /*
 ** Do not edit or modify anything in this comment block.
 ** The arch-tag line is a file identity tag for the GNU Arch 
