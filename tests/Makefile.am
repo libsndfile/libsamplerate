@@ -4,7 +4,7 @@ noinst_PROGRAMS = misc_test termination_test simple_test callback_test \
 
 SAMPLRATEDIR =../src
 INCLUDES = -I$(srcdir)/$(SAMPLRATEDIR)
-noinst_HEADERS = calc_snr.h util.h
+noinst_HEADERS = util.h
 
 #===============================================================================
 
@@ -35,7 +35,7 @@ callback_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 float_short_test_SOURCES = float_short_test.c util.c util.h
 float_short_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
-varispeed_test_SOURCES = varispeed_test.c util.c util.h calc_snr.c calc_snr.h
+varispeed_test_SOURCES = varispeed_test.c util.c util.h calc_snr.c
 varispeed_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 # This program is for evaluating other sample rate converters.

@@ -24,7 +24,6 @@
 #include <samplerate.h>
 
 #include "util.h"
-#include "calc_snr.h"
 
 #define	BUFFER_LEN		(1 << 16)
 

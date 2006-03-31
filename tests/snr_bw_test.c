@@ -16,20 +16,19 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include <time.h>
 
-#include "config.h"
-
 #if (HAVE_FFTW3)
 
 #include <samplerate.h>
 
 #include "util.h"
-#include "calc_snr.h"
 
 #define	BUFFER_LEN		50000
 #define	MAX_FREQS		4

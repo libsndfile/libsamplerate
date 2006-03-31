@@ -33,7 +33,6 @@
 #include <math.h>
 #include <sys/utsname.h>
 
-#include "calc_snr.h"
 #include "util.h"
 
 #define	MAX_FREQS		4

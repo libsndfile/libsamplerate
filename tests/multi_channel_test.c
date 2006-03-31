@@ -16,6 +16,8 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -24,9 +26,6 @@
 #include <samplerate.h>
 
 #include "util.h"
-#include "calc_snr.h"
-#include "config.h"
-
 #define	BUFFER_LEN		(1<<15)
 #define	BLOCK_LEN		(12)
 

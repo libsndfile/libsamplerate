@@ -18,7 +18,6 @@
 
 #include "config.h"
 
-#include "calc_snr.h"
 #include "util.h"
 
 #if (HAVE_FFTW3 == 1)
