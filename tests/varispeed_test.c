@@ -24,30 +24,34 @@
 #include <samplerate.h>
 
 #include "util.h"
+#include "calc_snr.h"
 
 #define	BUFFER_LEN		(1 << 16)
 
-static void varispeed_test (int converter) ;
+static void varispeed_test (int converter, double target_snr) ;
 
 int
 main (void)
 {
-/*-	printf ("    Zero Order Hold interpolator    : ") ;
-	varispeed_test (SRC_ZERO_ORDER_HOLD) ;
+	puts ("") ;
+	printf ("    Zero Order Hold interpolator    : ") ;
+	varispeed_test (SRC_ZERO_ORDER_HOLD, 45.0) ;
 
 	printf ("    Linear interpolator             : ") ;
-	varispeed_test (SRC_LINEAR) ;
--*/
+	varispeed_test (SRC_LINEAR, 85.0) ;
+
 	printf ("    Sinc interpolator               : ") ;
-	varispeed_test (SRC_SINC_FASTEST) ;
+	varispeed_test (SRC_SINC_FASTEST, 125.0) ;
+
+	puts ("") ;
 
 	return 0 ;
 } /* main */
 
 static void
-varispeed_test (int converter)
-{	static float input [BUFFER_LEN], output [32 * BUFFER_LEN] ;
-	double sine_freq ;
+varispeed_test (int converter, double target_snr)
+{	static float input [BUFFER_LEN], output [BUFFER_LEN] ;
+	double sine_freq, snr ;
 
 	SRC_STATE	*src_state ;
 	SRC_DATA	src_data ;
@@ -59,14 +63,7 @@ varispeed_test (int converter)
 	input_len = ARRAY_LEN (input) / 2 ;
 
 	sine_freq = 0.0111 ;
-
-	if (1)
-		gen_windowed_sines (1, &sine_freq, 1.0, input, input_len) ;
-	else
-	{	int k ;
-		for (k = 0 ; k < input_len ; k++)
-			input [k] = (1.0 * k) / input_len ;
-		} ;
+	gen_windowed_sines (1, &sine_freq, 1.0, input, input_len) ;
 
 	/* Perform sample rate conversion. */
 	if ((src_state = src_new (converter, 1, &error)) == NULL)
@@ -95,8 +92,6 @@ varispeed_test (int converter)
 		printf ("  src_data.output_frames : %ld\n\n", src_data.output_frames) ;
 		exit (1) ;
 		} ;
-
-printf ("\n\ninput_frames_used: %ld    output_frames_gen : %ld\n", src_data.input_frames_used, src_data.output_frames_gen) ;
 
 	if (src_data.input_frames_used != input_len)
 	{	printf ("\n\nLine %d : unused input.\n", __LINE__) ;
@@ -134,10 +129,6 @@ printf ("\n\ninput_frames_used: %ld    output_frames_gen : %ld\n", src_data.inpu
 		exit (1) ;
 		} ;
 
-save_oct_float ("vs.mat", input, src_data.input_frames, output, src_data.output_frames_gen) ;
-
-printf ("\n\ninput_frames_used: %ld    output_frames_gen : %ld\n", src_data.input_frames_used, src_data.output_frames_gen) ;
-
 	if (src_data.input_frames_used != input_len)
 	{	printf ("\n\nLine %d : unused input.\n", __LINE__) ;
 		printf ("\tinput_len         : %d\n", input_len) ;
@@ -145,10 +136,15 @@ printf ("\n\ninput_frames_used: %ld    output_frames_gen : %ld\n", src_data.inpu
 		exit (1) ;
 		} ;
 
-
-
-
 	src_state = src_delete (src_state) ;
+
+	snr = calculate_snr (output, src_data.output_frames_gen, 1) ;
+
+	if (target_snr > snr)
+	{	printf ("\n\nLine %d : snr (%3.1f) does not meet target (%3.1f)\n\n", __LINE__, target_snr, snr) ;
+		save_oct_float ("varispeed.mat", input, src_data.input_frames, output, src_data.output_frames_gen) ;
+		exit (1) ;
+		} ;
 
 	puts ("ok") ;
 
