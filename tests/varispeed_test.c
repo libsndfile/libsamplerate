@@ -32,12 +32,12 @@ static void varispeed_test (int converter) ;
 int
 main (void)
 {
-	printf ("    Zero Order Hold interpolator    : ") ;
+/*-	printf ("    Zero Order Hold interpolator    : ") ;
 	varispeed_test (SRC_ZERO_ORDER_HOLD) ;
 
 	printf ("    Linear interpolator             : ") ;
 	varispeed_test (SRC_LINEAR) ;
-
+-*/
 	printf ("    Sinc interpolator               : ") ;
 	varispeed_test (SRC_SINC_FASTEST) ;
 
@@ -96,6 +96,8 @@ varispeed_test (int converter)
 		exit (1) ;
 		} ;
 
+printf ("\n\ninput_frames_used: %ld    output_frames_gen : %ld\n", src_data.input_frames_used, src_data.output_frames_gen) ;
+
 	if (src_data.input_frames_used != input_len)
 	{	printf ("\n\nLine %d : unused input.\n", __LINE__) ;
 		printf ("\tinput_len         : %d\n", input_len) ;
@@ -132,7 +134,9 @@ varispeed_test (int converter)
 		exit (1) ;
 		} ;
 
-/*-save_oct_float ("vs.mat", input, src_data.input_frames, output, src_data.output_frames_gen) ;-*/
+save_oct_float ("vs.mat", input, src_data.input_frames, output, src_data.output_frames_gen) ;
+
+printf ("\n\ninput_frames_used: %ld    output_frames_gen : %ld\n", src_data.input_frames_used, src_data.output_frames_gen) ;
 
 	if (src_data.input_frames_used != input_len)
 	{	printf ("\n\nLine %d : unused input.\n", __LINE__) ;
