@@ -1,3 +1,14 @@
+2006-04-18  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/samplerate.[ch] src/Version_script.in
+    Add functions src_int_to_float_array and src_float_to_int_array.
+
+    * tests/float_short_test.c
+    Update test to including testing of above.
+
+    * doc/api_misc.html
+    Update docs fro the above addition.
+
 2006-03-31  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/common.h src/src_*.c src/samplerate.c

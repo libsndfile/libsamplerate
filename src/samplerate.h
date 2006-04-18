@@ -188,6 +188,9 @@ enum
 void src_short_to_float_array (const short *in, float *out, int len) ;
 void src_float_to_short_array (const float *in, short *out, int len) ;
 
+void src_int_to_float_array (const int *in, float *out, int len) ;
+void src_float_to_int_array (const float *in, int *out, int len) ;
+
 
 #ifdef __cplusplus
 }		/* extern "C" */

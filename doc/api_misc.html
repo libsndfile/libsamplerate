@@ -198,19 +198,21 @@ These values are for the current call to <B>src_process</B> only.
 <A NAME="Aux"></A>
 <H3><BR>Auxillary Functions</H3>
 <P>
-There are two auxillary functions for converting arrays of float data
-to and from short data.
+There are four auxillary functions for converting arrays of float data
+to and from short or int data.
 These functions are defined as:
 </P>
 <PRE>
     void src_short_to_float_array (const short *in, float *out, int len) ;
     void src_float_to_short_array (const float *in, short *out, int len) ;
+    void src_int_to_float_array (const int *in, float *out, int len) ;
+    void src_float_to_int_array (const float *in, int *out, int len) ;
 </PRE>
 <P>
 The float data is assumed to be in the range [-1.0, 1.0] and it is
 automatically scaled on the conversion to and from float.
-On the float to short conversion path, any data values which would overflow
-the range of short data are clipped.
+On the float to short/int conversion path, any data values which would overflow
+the range of short/int data are clipped.
 </P>
 
 </DIV>

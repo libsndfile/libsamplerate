@@ -46,6 +46,8 @@
 
 		src_short_to_float_array ;
 		src_float_to_short_array ;
+		src_int_to_float_array ;
+		src_float_to_int_array ;
 	local:
 		*;
 };
