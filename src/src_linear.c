@@ -30,7 +30,6 @@
 #include "float_cast.h"
 #include "common.h"
 
-static int linear_const_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static int linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static void linear_reset (SRC_PRIVATE *psrc) ;
 
@@ -97,8 +96,9 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		input_index += 1.0 / src_ratio ;
 		} ;
 
-	linear->in_used += linear->channels * lrint (floor (input_index)) ;
-	input_index -= floor (input_index) ;
+	rem = fmod (input_index, 1.0) ;
+	linear->in_used += linear->channels * lrint (input_index - rem) ;
+	input_index = fmod (input_index, 1.0) ;
 
 	/* Main processing loop. */
 	while (linear->out_gen < linear->out_count && linear->in_used + linear->channels * input_index <= linear->in_count)

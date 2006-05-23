@@ -21,15 +21,17 @@ libsamplerate_la_LIBADD  = -lm
 #-------------------------------------------------------------------------------
 # An extra check for bad asm.
 
-check-asm : check_asm.sh src_sinc.s
+check-asm : check_asm.sh src_sinc.s src_linear.s src_zoh.s
 	@echo
 	@echo
 	$(srcdir)/check_asm.sh src_sinc.s
+	$(srcdir)/check_asm.sh src_linear.s
+	$(srcdir)/check_asm.sh src_zoh.s
 	@echo
 	@echo
 
-src_sinc.s : $(srcdir)/src_sinc.c
-	$(CC) -S $(CFLAGS) $(DEFAULT_INCLUDES) $(srcdir)/src_sinc.c -o src_sinc.s
+%.s : $(srcdir)/%.c
+	$(CC) -S $(CFLAGS) $(DEFAULT_INCLUDES) $(srcdir)/$+ -o $@
 
 # Disable autoheader.
 AUTOHEADER=echo
