@@ -158,11 +158,12 @@ find_snr (const double *magnitude, int len, int expected_peaks)
 			{	peaks [peak_count].peak = magnitude [k] ;
 				peaks [peak_count].index = k ;
 				peak_count ++ ;
+				qsort (peaks, peak_count, sizeof (PEAK_DATA), peak_compare) ;
 				}
 			else if (magnitude [k] > peaks [MAX_PEAKS - 1].peak)
-			{	qsort (peaks, MAX_PEAKS, sizeof (PEAK_DATA), peak_compare) ;
-				peaks [MAX_PEAKS - 1].peak = magnitude [k] ;
+			{	peaks [MAX_PEAKS - 1].peak = magnitude [k] ;
 				peaks [MAX_PEAKS - 1].index = k ;
+				qsort (peaks, MAX_PEAKS, sizeof (PEAK_DATA), peak_compare) ;
 				} ;
 			} ;
 		} ;
