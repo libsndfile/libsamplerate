@@ -34,13 +34,13 @@ main (void)
 {
 	puts ("") ;
 	printf ("    Zero Order Hold interpolator    : ") ;
-	varispeed_test (SRC_ZERO_ORDER_HOLD, 45.0) ;
+	varispeed_test (SRC_ZERO_ORDER_HOLD, 10.0) ;
 
 	printf ("    Linear interpolator             : ") ;
-	varispeed_test (SRC_LINEAR, 85.0) ;
+	varispeed_test (SRC_LINEAR, 10.0) ;
 
 	printf ("    Sinc interpolator               : ") ;
-	varispeed_test (SRC_SINC_FASTEST, 125.0) ;
+	varispeed_test (SRC_SINC_FASTEST, 115.0) ;
 
 	puts ("") ;
 
@@ -140,7 +140,7 @@ varispeed_test (int converter, double target_snr)
 	snr = calculate_snr (output, src_data.output_frames_gen, 1) ;
 
 	if (target_snr > snr)
-	{	printf ("\n\nLine %d : snr (%3.1f) does not meet target (%3.1f)\n\n", __LINE__, target_snr, snr) ;
+	{	printf ("\n\nLine %d : snr (%3.1f) does not meet target (%3.1f)\n\n", __LINE__, snr, target_snr) ;
 		save_oct_float ("varispeed.mat", input, src_data.input_frames, output, src_data.output_frames_gen) ;
 		exit (1) ;
 		} ;

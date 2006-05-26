@@ -1,3 +1,11 @@
+2006-05-26  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/calc_snr.c
+    Fix minor bug in analysis routines.
+
+    * tests/varispeed_test.c tests/snr_bw_test.c
+    Fix knock on effects of above change.
+
 2006-05-23  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/Makefile.am
