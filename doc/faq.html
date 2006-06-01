@@ -71,6 +71,9 @@ Author :<BR>Erik de Castro Lopo
 	frames) would that sound bad?</A><BR><BR>
 <A HREF="#Q005">Q5 : I'm using libsamplerate but the high quality settings
 	sound worse than the SRC_LINEAR converter. Why?</A><BR><BR>
+<A HREF="#Q006">Q6 : I'm use the SRC_SINC_* converters and up-sampling by a ratio of 
+	2. I reset the converter and put in 1000 samples and I expect to get 2000
+	samples out, but I'm getting less than that. Why?</A><BR><BR>
 </P>
 <HR>
 <!-- ========================================================================= -->
@@ -257,6 +260,32 @@ If you have done all of the above and are still having problems then its
 probably time to email the author with the smallest chunk of code that
 adequately demonstrates your problem.
 This chunk should not need to be any more than 100 lines of code.
+</P>
+
+<!-- ========================================================================= -->
+<A NAME="Q006"></A>
+<H2><BR><B>Q6 : I'm use the SRC_SINC_* converters and up-sampling by a ratio of 
+	2. I reset the converter and put in 1000 samples and I expect to get 2000
+	samples out, but I'm getting less than that. Why?</B></H2>
+<P>
+The short answer is that there is a transport delay inside the converter itself.
+Long answer follows.
+</P>
+<P>
+By way of example, the first time you call src_process() you might only get 1900
+samples out.
+However, after that first call all subsequent calls will probably get you about
+2000 samples out for every 1000 samples you put in.
+</P>
+<P>
+The main problems people have with this transport delay is that they need to read
+out an exact number of samples and the transport delay scews this up.
+The best way to overcome this problem is to always supply more samples on the 
+input than is actually needed to create the required number of output samples.
+With reference to the example above, if you always supply 1500 samples at the
+input, you will always get 2000 samples at the output.
+You will always need to keep track of the number of input frames used on each
+call to src_process() and deal with these values appropriately.
 </P>
 
 <!-- <A HREF="mailto:aldel@mega-nerd.com">For the spam bots</A> -->
