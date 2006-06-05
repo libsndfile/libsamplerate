@@ -319,8 +319,8 @@ sinc_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		start_filter_index = DOUBLE_TO_FP (input_index * float_increment) ;
 
 		for (ch = 0 ; ch < filter->channels ; ch++)
-		{	data->data_out [filter->out_gen] = (float_increment / filter->index_inc) *
-											calc_output (filter, increment, start_filter_index, ch) ;
+		{	data->data_out [filter->out_gen] = (float) ((float_increment / filter->index_inc) *
+											calc_output (filter, increment, start_filter_index, ch)) ;
 			filter->out_gen ++ ;
 			} ;
 

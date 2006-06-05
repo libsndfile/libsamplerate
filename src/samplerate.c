@@ -449,7 +449,7 @@ src_short_to_float_array (const short *in, float *out, int len)
 {
 	while (len)
 	{	len -- ;
-		out [len] = in [len] / (1.0 * 0x8000) ;
+		out [len] = (float) (in [len] / (1.0 * 0x8000)) ;
 		} ;
 
 	return ;
@@ -457,7 +457,7 @@ src_short_to_float_array (const short *in, float *out, int len)
 
 void
 src_float_to_short_array (const float *in, short *out, int len)
-{	float scaled_value ;
+{	double scaled_value ;
 
 	while (len)
 	{	len -- ;
@@ -472,7 +472,7 @@ src_float_to_short_array (const float *in, short *out, int len)
 			continue ;
 			} ;
 
-		out [len] = (lrintf (scaled_value) >> 16) ;
+		out [len] = (short) (lrint (scaled_value) >> 16) ;
 		} ;
 
 } /* src_float_to_short_array */
@@ -482,7 +482,7 @@ src_int_to_float_array (const int *in, float *out, int len)
 {
 	while (len)
 	{	len -- ;
-		out [len] = in [len] / (8.0 * 0x10000000) ;
+		out [len] = (float) (in [len] / (8.0 * 0x10000000)) ;
 		} ;
 
 	return ;
@@ -490,7 +490,7 @@ src_int_to_float_array (const int *in, float *out, int len)
 
 void
 src_float_to_int_array (const float *in, int *out, int len)
-{	float scaled_value ;
+{	double scaled_value ;
 
 	while (len)
 	{	len -- ;
@@ -505,7 +505,7 @@ src_float_to_int_array (const float *in, int *out, int len)
 			continue ;
 			} ;
 
-		out [len] = lrintf (scaled_value) ;
+		out [len] = lrint (scaled_value) ;
 		} ;
 
 } /* src_float_to_int_array */

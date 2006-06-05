@@ -87,8 +87,8 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 			src_ratio = psrc->last_ratio + linear->out_gen * (data->src_ratio - psrc->last_ratio) / (linear->out_count - 1) ;
 
 		for (ch = 0 ; ch < linear->channels ; ch++)
-		{	data->data_out [linear->out_gen] = linear->last_value [ch] + input_index *
-										(data->data_in [ch] - linear->last_value [ch]) ;
+		{	data->data_out [linear->out_gen] = (float) (linear->last_value [ch] + input_index *
+										(data->data_in [ch] - linear->last_value [ch])) ;
 			linear->out_gen ++ ;
 			} ;
 
@@ -112,8 +112,8 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 			} ;
 
 		for (ch = 0 ; ch < linear->channels ; ch++)
-		{	data->data_out [linear->out_gen] = data->data_in [linear->in_used - linear->channels + ch] + input_index *
-						(data->data_in [linear->in_used + ch] - data->data_in [linear->in_used - linear->channels + ch]) ;
+		{	data->data_out [linear->out_gen] = (float) (data->data_in [linear->in_used - linear->channels + ch] + input_index *
+						(data->data_in [linear->in_used + ch] - data->data_in [linear->in_used - linear->channels + ch])) ;
 			linear->out_gen ++ ;
 			} ;
 
