@@ -63,7 +63,7 @@ static void linux_close (AUDIO_OUT *audio_out) ;
 static AUDIO_OUT *
 linux_open (int channels, int samplerate)
 {	LINUX_AUDIO_OUT	*linux_out ;
-	int stereo, temp, error ;
+	int stereo, fmt, error ;
 
 	if ((linux_out = malloc (sizeof (LINUX_AUDIO_OUT))) == NULL)
 	{	perror ("linux_open : malloc ") ;
@@ -90,11 +90,11 @@ linux_open (int channels, int samplerate)
 		exit (1) ;
 		} ;
 
-	temp = 16 ;
-	if ((error = ioctl (linux_out->fd, SOUND_PCM_WRITE_BITS, &temp)) != 0)
-	{	perror ("linux_open : bitwidth ") ;
-		exit (1) ;
-		} ;
+	fmt = CPU_IS_BIG_ENDIAN ? AFMT_S16_BE : AFMT_S16_LE ;
+	if (ioctl (fd, SOUND_PCM_SETFMT, &fmt) != 0)
+	{	perror ("linux_open_dsp_device : set format ") ;
+	    exit (1) ;
+  		} ;
 
 	if ((error = ioctl (linux_out->fd, SOUND_PCM_WRITE_CHANNELS, &channels)) != 0)
 	{	perror ("linux_open : channels ") ;
