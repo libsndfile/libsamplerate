@@ -92,6 +92,16 @@ AC_CHECK_SIZEOF(float,4)
 AC_CHECK_SIZEOF(double,8)
 
 #====================================================================================
+# Determine endian-ness of target processor.
+
+AC_C_FIND_ENDIAN
+
+AC_DEFINE_UNQUOTED(CPU_IS_BIG_ENDIAN, ${ac_cv_c_big_endian},
+        [Target processor is big endian.])
+AC_DEFINE_UNQUOTED(CPU_IS_LITTLE_ENDIAN, ${ac_cv_c_little_endian},
+        [Target processor is little endian.])
+
+#====================================================================================
 # Check for functions.
 
 AC_CHECK_FUNCS(malloc calloc free memcpy memmove)
@@ -165,8 +175,8 @@ if test x$ac_cv_fftw3 != xyes ; then
 # GCC stuff.
 
 if test $ac_cv_c_compiler_gnu = yes ; then
-	CFLAGS="$CFLAGS -W -Wstrict-prototypes -Wmissing-prototypes -Wall -pedantic -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow"
-	# -Wpointer-arith -Wundef -Wbad-function-cast -Wmissing-declarations -Wconversion -Winline"
+	CFLAGS="$CFLAGS -W -Wstrict-prototypes -Wmissing-prototypes -Wall -pedantic -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith"
+	# -Wundef -Wbad-function-cast -Wmissing-declarations -Wconversion -Winline"
 	if test "$ac_arg_gcc_opt" = "N" ; then
 		temp_CFLAGS=`echo $CFLAGS | sed "s/O2/O0/"`
 		CFLAGS=$temp_CFLAGS

@@ -1,3 +1,11 @@
+2006-07-26  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * examples/audio_out.c
+    Fix bug arising from last change.
+
+    * configure.ac
+    Add -Wpointer-arith to CFLAGS.
+
 2006-07-12  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * examples/audio_out.c
