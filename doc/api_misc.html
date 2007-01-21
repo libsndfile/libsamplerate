@@ -161,14 +161,16 @@ This struct is defined as:
 The <B>data_in</B> pointer is used to pass audio data into the converter while the
 <B>data_out</B> pointer supplies the converter with an array to hold the converter's
 output.
+For a converter which has been configured for mulitchannel operation, these pointers
+need to point to a single array of interleaved data.
 </P>
 <P>
 The <B>input_frames</B> and <B>output_frames</B> fields supply the converter with 
-the lengths of the arrays pointed to by the <B>data_in</B> and <b>data_out</B> 
-pointers respectively.
+the lengths of the arrays (in frames) pointed to by the <B>data_in</B> and 
+<b>data_out</B> pointers respectively.
 For monophinc data, these values would indicate the length of the arrays while
-for stereo data these values would be equal to the half the length of the array
-and so on.
+for multi channel data these values would be equal to the the length of the array
+divided by the number of channels.
 </P>
 
 <P>

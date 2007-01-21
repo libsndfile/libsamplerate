@@ -73,6 +73,15 @@ The callback API consists of the following functions :
       int <A HREF="api_full.html#SetRatio">src_set_ratio</A> (SRC_STATE *state, double new_ratio) ;
 </PRE>
 <BR>
+
+<P>
+Like the
+	<A HREF="api_simple.html">simple API</a>
+and the
+	<A HREF="api_full.html">full API</a>,
+the callback based API is able to operate on interleaved multi channel data.
+</P>
+
 <P>
 An example of the use of the callback based API can be found in the
 <B>varispeed-play</B> program in the <B>examples/</B> directory of the
@@ -127,10 +136,11 @@ function to pull data out of the converter.
 	                       long frames, float *data) ;
 </PRE>
 <P>
-The <B>src_callback_read</B> function is passed the <B>SRC_STATE</B> pointer
-returned by <B>src_callback_new</B>, the coversion ratio (output_sample_rate
-/ input_sample_rate), the maximum number of output frames to generate and a
-pointer to a buffer in which to place the output data.
+The <B>src_callback_read</B> function is passed the 
+	<A HREF="api_misc.html#SRC_DATA"><B>SRC_STATE</B></A>
+pointer returned by <B>src_callback_new</B>, the coversion ratio 
+(output_sample_rate / input_sample_rate), the maximum number of output frames 
+to generate and a pointer to a buffer in which to place the output data.
 </P>
 <P>
 The <B>src_callback_read</B> function returns the number of frames generated
@@ -148,12 +158,4 @@ src_error</A> will return non-zero.
 
 </BODY>
 </HTML>
-
-<!--
-  Do not edit or modify anything in this comment block.
-  The arch-tag line is a file identity tag for the GNU Arch
-  revision control system.
-
-  arch-tag: c80cf67e-b7a1-4701-a608-a1718c5aa57d
--->
 

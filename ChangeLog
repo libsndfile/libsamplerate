@@ -1,3 +1,8 @@
+2007-01-21  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * doc/api.html doc/api_callback.html doc/api_misc.html
+    Update docs to make handling of interleaved data more explicit.
+
 2006-07-26  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * examples/audio_out.c
