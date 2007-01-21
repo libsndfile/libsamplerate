@@ -120,6 +120,14 @@ This function is called by the converter whenever it needs input data as a
 result of being calls to <B>src_callback_read</B>.
 </P>
 <P>
+If the converter was initialised to work with more than one channel, the
+callback function must work with mutiple channels of interleaved data.
+The callback function should return the number of frames it supplying to
+the converter.
+For multi channel files, this return value should be the number of floats
+divided by the number of channels.
+</P>
+<P>
 The converter must be one of the supplied converter types documented
 <A HREF="api_misc.html#Converters">here</A>.
 </P>
@@ -136,11 +144,13 @@ function to pull data out of the converter.
 	                       long frames, float *data) ;
 </PRE>
 <P>
-The <B>src_callback_read</B> function is passed the 
+The <B>src_callback_read</B> function is passed the
 	<A HREF="api_misc.html#SRC_DATA"><B>SRC_STATE</B></A>
-pointer returned by <B>src_callback_new</B>, the coversion ratio 
-(output_sample_rate / input_sample_rate), the maximum number of output frames 
+pointer returned by <B>src_callback_new</B>, the coversion ratio
+(output_sample_rate / input_sample_rate), the maximum number of output frames
 to generate and a pointer to a buffer in which to place the output data.
+For multi channel files, the data int the output buffer is stored in
+interleaved format.
 </P>
 <P>
 The <B>src_callback_read</B> function returns the number of frames generated
