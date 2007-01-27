@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2006 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2007 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -34,6 +34,11 @@
 
 static int psrc_set_converter (SRC_PRIVATE	*psrc, int converter_type) ;
 
+
+static inline int
+is_bad_src_ratio (double ratio)
+{	return (ratio < (1.0 / SRC_MAX_RATIO) || ratio > (1.0 * SRC_MAX_RATIO)) ;
+} /* is_bad_src_ratio */
 
 SRC_STATE *
 src_new (int converter_type, int channels, int *error)
@@ -128,7 +133,7 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 		return SRC_ERR_BAD_DATA ;
 
 	/* Check src_ratio is in range. */
-	if (data->src_ratio < (1.0 / SRC_MAX_RATIO) || data->src_ratio > (1.0 * SRC_MAX_RATIO))
+	if (is_bad_src_ratio (data->src_ratio))
 		return SRC_ERR_BAD_SRC_RATIO ;
 
 	/* And that data_in and data_out are valid. */
@@ -204,7 +209,7 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 	memset (&src_data, 0, sizeof (src_data)) ;
 
 	/* Check src_ratio is in range. */
-	if (src_ratio < (1.0 / SRC_MAX_RATIO) || src_ratio > (1.0 * SRC_MAX_RATIO))
+	if (is_bad_src_ratio (src_ratio))
 	{	psrc->error = SRC_ERR_BAD_SRC_RATIO ;
 		return 0 ;
 		} ;
@@ -279,6 +284,9 @@ src_set_ratio (SRC_STATE *state, double new_ratio)
 	if (psrc->vari_process == NULL || psrc->const_process == NULL)
 		return SRC_ERR_BAD_PROC_PTR ;
 
+	if (is_bad_src_ratio (new_ratio))
+		return SRC_ERR_BAD_SRC_RATIO ;
+
 	psrc->last_ratio = new_ratio ;
 
 	return SRC_ERR_NO_ERROR ;
@@ -343,13 +351,13 @@ src_get_description (int converter_type)
 
 const char *
 src_get_version (void)
-{	return PACKAGE "-" VERSION " (c) 2002-2005 Erik de Castro Lopo" ;
+{	return PACKAGE "-" VERSION " (c) 2002-2007 Erik de Castro Lopo" ;
 } /* src_get_version */
 
 int
 src_is_valid_ratio (double ratio)
 {
-	if (ratio < (1.0 / SRC_MAX_RATIO) || ratio > (1.0 * SRC_MAX_RATIO))
+	if (is_bad_src_ratio (ratio))
 		return SRC_FALSE ;
 
 	return SRC_TRUE ;
@@ -528,12 +536,4 @@ psrc_set_converter (SRC_PRIVATE	*psrc, int converter_type)
 
 	return SRC_ERR_BAD_CONVERTER ;
 } /* psrc_set_converter */
-
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: a5c5f514-a370-4210-a066-7f2035de67fb
-*/
 

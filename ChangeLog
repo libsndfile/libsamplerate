@@ -1,3 +1,8 @@
+2007-01-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/samplerate.c
+    Refactor checking of supplied src ratio against min and max.
+
 2007-01-21  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/api.html doc/api_callback.html doc/api_misc.html
