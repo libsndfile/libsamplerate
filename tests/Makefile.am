@@ -1,6 +1,7 @@
 noinst_PROGRAMS = misc_test termination_test simple_test callback_test \
 					reset_test multi_channel_test snr_bw_test \
-					float_short_test varispeed_test src-evaluate benchmark
+					float_short_test varispeed_test callback_hang_test \
+					src-evaluate benchmark
 
 SAMPLRATEDIR =../src
 INCLUDES = -I$(srcdir)/$(SAMPLRATEDIR)
@@ -13,6 +14,9 @@ misc_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
 termination_test_SOURCES = termination_test.c util.c util.h
 termination_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
+
+callback_hang_test_SOURCES = callback_hang_test.c util.c util.h
+callback_hang_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
 simple_test_SOURCES = simple_test.c util.c util.h
 simple_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
@@ -55,6 +59,7 @@ check: $(noinst_PROGRAMS)
 	uname -a
 	./misc_test
 	./termination_test
+	./callback_hang_test
 	./simple_test
 	./callback_test
 	./reset_test
