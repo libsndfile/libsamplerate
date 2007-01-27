@@ -175,7 +175,7 @@ if test x$ac_cv_fftw3 != xyes ; then
 # GCC stuff.
 
 if test $ac_cv_c_compiler_gnu = yes ; then
-	CFLAGS="$CFLAGS -W -Wstrict-prototypes -Wmissing-prototypes -Wall -pedantic -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith"
+	CFLAGS="$CFLAGS -std=gnu99 -W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith"
 	# -Wundef -Wbad-function-cast -Wmissing-declarations -Wconversion -Winline"
 	if test "$ac_arg_gcc_opt" = "N" ; then
 		temp_CFLAGS=`echo $CFLAGS | sed "s/O2/O0/"`
@@ -183,11 +183,11 @@ if test $ac_cv_c_compiler_gnu = yes ; then
 		AC_MSG_WARN([[*** Compiler optimisations switched off. ***]])
 		fi
 
-	# Disable -Wall and -pedantic for Apple Darwin/Rhapsody.
+	# Disable -Wall for Apple Darwin/Rhapsody.
 	# System headers on these systems are broken.
 	case "$target_os" in
 		darwin* | rhapsody*)
-			temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall -pedantic//"`
+			temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall//"`
 			CFLAGS=$temp_CFLAGS
 			;;
 		linux*)
