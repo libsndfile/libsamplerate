@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2006 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2007 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -81,8 +81,8 @@ zoh_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (zoh->in_used + zoh->channels * input_index >= zoh->in_count)
 			break ;
 
-		if (fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
-			src_ratio = psrc->last_ratio + zoh->out_gen * (data->src_ratio - psrc->last_ratio) / (zoh->out_count - 1) ;
+		if (zoh->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
+			src_ratio = psrc->last_ratio + zoh->out_gen * (data->src_ratio - psrc->last_ratio) / zoh->out_count ;
 
 		for (ch = 0 ; ch < zoh->channels ; ch++)
 		{	data->data_out [zoh->out_gen] = zoh->last_value [ch] ;
@@ -100,8 +100,8 @@ zoh_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	/* Main processing loop. */
 	while (zoh->out_gen < zoh->out_count && zoh->in_used + zoh->channels * input_index <= zoh->in_count)
 	{
-		if (fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
-			src_ratio = psrc->last_ratio + zoh->out_gen * (data->src_ratio - psrc->last_ratio) / (zoh->out_count - 1) ;
+		if (zoh->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
+			src_ratio = psrc->last_ratio + zoh->out_gen * (data->src_ratio - psrc->last_ratio) / zoh->out_count ;
 
 		for (ch = 0 ; ch < zoh->channels ; ch++)
 		{	data->data_out [zoh->out_gen] = data->data_in [zoh->in_used - zoh->channels + ch] ;
@@ -208,11 +208,4 @@ zoh_reset (SRC_PRIVATE *psrc)
 
 	return ;
 } /* zoh_reset */
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: 808e62f8-2e4a-44a6-840f-180a3e41af01
-*/
 

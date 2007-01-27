@@ -3,6 +3,16 @@
     * src/samplerate.c
     Refactor checking of supplied src ratio against min and max.
 
+    * configure.ac
+    Remove -pendantic from CFLAGS and add -std=gnu99.
+
+    * tests/callback_hang_test.c tests/Makefile.am
+    Add new test program and hook it into build.
+
+    * src/src_linear.c src/src_sinc.c src/src_zoh.c
+    Fix a bug where the src_callback_read () function would hang under varying
+    src_ratio.
+
 2007-01-21  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/api.html doc/api_callback.html doc/api_misc.html

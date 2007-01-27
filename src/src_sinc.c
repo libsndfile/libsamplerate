@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2006 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2007 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -307,8 +307,8 @@ sinc_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 				break ;
 			} ;
 
-		if (fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
-			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / (filter->out_count - 1) ;
+		if (filter->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
+			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / filter->out_count ;
 
 		float_increment = filter->index_inc * 1.0 ;
 		if (src_ratio < 1.0)
@@ -465,12 +465,4 @@ calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filte
 
 	return (left + right) ;
 } /* calc_output */
-
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: db8efe06-2fbd-487e-be8f-bfc01e68c19f
-*/
 

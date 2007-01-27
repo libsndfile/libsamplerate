@@ -83,8 +83,8 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (linear->in_used + linear->channels * input_index > linear->in_count)
 			break ;
 
-		if (fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
-			src_ratio = psrc->last_ratio + linear->out_gen * (data->src_ratio - psrc->last_ratio) / (linear->out_count - 1) ;
+		if (linear->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
+			src_ratio = psrc->last_ratio + linear->out_gen * (data->src_ratio - psrc->last_ratio) / linear->out_count ;
 
 		for (ch = 0 ; ch < linear->channels ; ch++)
 		{	data->data_out [linear->out_gen] = (float) (linear->last_value [ch] + input_index *
@@ -103,8 +103,8 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	/* Main processing loop. */
 	while (linear->out_gen < linear->out_count && linear->in_used + linear->channels * input_index <= linear->in_count)
 	{
-		if (fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
-			src_ratio = psrc->last_ratio + linear->out_gen * (data->src_ratio - psrc->last_ratio) / (linear->out_count - 1) ;
+		if (linear->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
+			src_ratio = psrc->last_ratio + linear->out_gen * (data->src_ratio - psrc->last_ratio) / linear->out_count ;
 
 		if (SRC_DEBUG && linear->in_used < linear->channels && input_index < 1.0)
 		{	printf ("Whoops!!!!   in_used : %ld     channels : %d     input_index : %f\n", linear->in_used, linear->channels, input_index) ;
