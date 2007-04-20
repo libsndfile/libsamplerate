@@ -1,3 +1,15 @@
+2007-04-20  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/snr_bw_test.c
+    Remove cruft.
+
+    * doc/index.html
+    Add link to Foobar 2000 plugin.
+
+    * configure.ac tests/callback_hang_test.c
+    Test for functions alarm and signal and only compile test if both are
+    available.
+
 2007-01-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/samplerate.c

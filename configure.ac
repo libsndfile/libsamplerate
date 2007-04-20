@@ -104,7 +104,7 @@ AC_DEFINE_UNQUOTED(CPU_IS_LITTLE_ENDIAN, ${ac_cv_c_little_endian},
 #====================================================================================
 # Check for functions.
 
-AC_CHECK_FUNCS(malloc calloc free memcpy memmove)
+AC_CHECK_FUNCS(malloc calloc free memcpy memmove alarm signal)
 
 AC_CHECK_LIB([m],floor)
 AC_CHECK_FUNCS(floor ceil fmod)

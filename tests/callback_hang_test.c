@@ -44,6 +44,7 @@ static long input_callback (void *cb_data, float **data) ;
 int
 main (void)
 {
+#if defined (HAVE_ALARM) && defined (HAVE_SIGNAL) && HAVE_ALARM && HAVE_SIGNAL
 	/* Set up SIGALRM handler. */
 	signal (SIGALRM, alarm_handler) ;
 
@@ -52,6 +53,7 @@ main (void)
 	callback_hang_test (SRC_LINEAR) ;
 	callback_hang_test (SRC_SINC_FASTEST) ;
 	puts ("") ;
+#endif
 
 	return 0 ;
 } /* main */
