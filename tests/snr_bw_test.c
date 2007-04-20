@@ -412,10 +412,6 @@ main (void)
 		" This test cannot be run without FFTW (http://www.fftw.org/).\n"
 		" Both the real and the complex versions of the library are\n"
 		" required.") ;
-
-#if (defined (WIN32) || defined (_WIN32))
-	puts (" It it not known whether FFTW compiles and runs on Win32.") ;
-#endif
 	puts ("****************************************************************\n") ;
 
 	return 0 ;
