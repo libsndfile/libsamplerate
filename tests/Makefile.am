@@ -40,6 +40,7 @@ float_short_test_SOURCES = float_short_test.c util.c util.h
 float_short_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
 varispeed_test_SOURCES = varispeed_test.c util.c util.h calc_snr.c
+varispeed_test__CFLAGS = @FFTW3_CFLAGS@
 varispeed_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 # This program is for evaluating other sample rate converters.

@@ -1,3 +1,8 @@
+2007-05-12  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests.Makefile.am
+    Fix includes for varispeed_test target.
+
 2007-04-20  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/snr_bw_test.c
