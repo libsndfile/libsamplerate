@@ -3,6 +3,12 @@
     * src/src_sinc.c
     Change macros into inline functions for better error checking.
 
+    * src/common.h
+    Add static inline function fmod_one.
+
+    * src/*.c
+    Use fmod_one where appropriate.
+
 2007-05-12  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests.Makefile.am

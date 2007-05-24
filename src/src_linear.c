@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2006 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2007 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -96,9 +96,9 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		input_index += 1.0 / src_ratio ;
 		} ;
 
-	rem = fmod (input_index, 1.0) ;
+	rem = fmod_one (input_index) ;
 	linear->in_used += linear->channels * lrint (input_index - rem) ;
-	input_index = fmod (input_index, 1.0) ;
+	input_index = rem ;
 
 	/* Main processing loop. */
 	while (linear->out_gen < linear->out_count && linear->in_used + linear->channels * input_index <= linear->in_count)
@@ -119,7 +119,7 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
-		rem = fmod (input_index, 1.0) ;
+		rem = fmod_one (input_index) ;
 
 		linear->in_used += linear->channels * lrint (input_index - rem) ;
 		input_index = rem ;

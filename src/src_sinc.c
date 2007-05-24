@@ -122,6 +122,7 @@ fp_to_double (increment_t x)
 {	return fp_fraction_part (x) * INV_FP_ONE ;
 } /* fp_to_double */
 
+
 /*----------------------------------------------------------------------------------------
 */
 
@@ -220,7 +221,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	*/
 
 	temp_filter.b_len = 1000 + 2 * lrint (0.5 + temp_filter.coeff_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO) ;
-	temp_filter.b_len = MIN (temp_filter.b_len, 2048) ;
+	temp_filter.b_len = MIN (temp_filter.b_len, 4096) ;
 	temp_filter.b_len *= temp_filter.channels ;
 
 	if ((filter = calloc (1, sizeof (SINC_FILTER) + sizeof (filter->buffer [0]) * (temp_filter.b_len + temp_filter.channels))) == NULL)
@@ -299,7 +300,7 @@ sinc_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	input_index = psrc->last_position ;
 	float_increment = filter->index_inc ;
 
-	rem = fmod (input_index, 1.0) ;
+	rem = fmod_one (input_index) ;
 	filter->b_current = (filter->b_current + filter->channels * lrint (input_index - rem)) % filter->b_len ;
 	input_index = rem ;
 
@@ -344,7 +345,7 @@ sinc_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
-		rem = fmod (input_index, 1.0) ;
+		rem = fmod_one (input_index) ;
 
 		filter->b_current = (filter->b_current + filter->channels * lrint (input_index - rem)) % filter->b_len ;
 		input_index = rem ;
