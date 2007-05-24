@@ -135,14 +135,13 @@ int zoh_set_converter (SRC_PRIVATE *psrc, int src_enum) ;
 
 static inline double
 fmod_one (double x)
-{	double y = 1.0 ;
-	double i, f ;
+{	double res ;
 
-	i = floor (x / y) ;
-	f = x - i * y ;
-	if ((x < 0.0) != (y < 0.0))
-		f = f - y ;
-	return f ;
+	res = x - lrint (x) ;
+	if (res < 0.0)
+		return res + 1.0 ;
+
+	return res ;
 } /* fmod_one */
 
 #endif	/* COMMON_H_INCLUDED */
