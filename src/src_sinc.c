@@ -46,15 +46,7 @@
 
 #define	SHIFT_BITS				16
 #define	FP_ONE					((double) (((increment_t) 1) << SHIFT_BITS))
-
-#define	DOUBLE_TO_FP(x)			(lrint ((x) * FP_ONE))
-#define	INT_TO_FP(x)			(((increment_t) (x)) << SHIFT_BITS)
-
-#define	FP_FRACTION_PART(x)		((x) & ((((increment_t) 1) << SHIFT_BITS) - 1))
-#define	FP_INTEGER_PART(x)		((x) & (((increment_t) -1) << SHIFT_BITS))
-
-#define	FP_TO_INT(x)			(((x) >> SHIFT_BITS))
-#define	FP_TO_DOUBLE(x)			(FP_FRACTION_PART (x) / FP_ONE)
+#define	INV_FP_ONE				(1.0 / FP_ONE)
 
 /*========================================================================================
 */
@@ -103,6 +95,39 @@ static coeff_t const fastest_coeffs [] =
 {
 #include "fastest_coeffs.h"
 } ; /* fastest_coeffs */
+
+
+static inline increment_t
+double_to_fp (double x)
+{	if (sizeof (increment_t) == 8)
+		return (llrint ((x) * FP_ONE)) ;
+	return (lrint ((x) * FP_ONE)) ;
+} /* double_to_fp */
+
+static inline increment_t
+INT_TO_FP (int x)
+{	return (((increment_t) (x)) << SHIFT_BITS) ;
+} /* INT_TO_FP */
+
+static inline int
+fp_fraction_part (increment_t x)
+{	return ((x) & ((((increment_t) 1) << SHIFT_BITS) - 1)) ;
+} /* fp_fraction_part */
+
+static inline int
+fp_integer_part (increment_t x)
+{	return ((x) & (((increment_t) -1) << SHIFT_BITS)) ;
+} /* fp_integer_part */
+
+static inline int
+fp_to_int (increment_t x)
+{	return (((x) >> SHIFT_BITS)) ;
+} /* fp_to_int */
+
+static inline double
+fp_to_double (increment_t x)
+{	return fp_fraction_part (x) * INV_FP_ONE ;
+} /* fp_to_double */
 
 /*----------------------------------------------------------------------------------------
 */
@@ -314,9 +339,9 @@ sinc_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (src_ratio < 1.0)
 			float_increment = filter->index_inc * src_ratio ;
 
-		increment = DOUBLE_TO_FP (float_increment) ;
+		increment = double_to_fp (float_increment) ;
 
-		start_filter_index = DOUBLE_TO_FP (input_index * float_increment) ;
+		start_filter_index = double_to_fp (input_index * float_increment) ;
 
 		for (ch = 0 ; ch < filter->channels ; ch++)
 		{	data->data_out [filter->out_gen] = (float) ((float_increment / filter->index_inc) *
@@ -431,8 +456,8 @@ calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filte
 
 	left = 0.0 ;
 	do
-	{	fraction = FP_TO_DOUBLE (filter_index) ;
-		indx = FP_TO_INT (filter_index) ;
+	{	fraction = fp_to_double (filter_index) ;
+		indx = fp_to_int (filter_index) ;
 
 		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
 
@@ -451,8 +476,8 @@ calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filte
 
 	right = 0.0 ;
 	do
-	{	fraction = FP_TO_DOUBLE (filter_index) ;
-		indx = FP_TO_INT (filter_index) ;
+	{	fraction = fp_to_double (filter_index) ;
+		indx = fp_to_int (filter_index) ;
 
 		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
 
