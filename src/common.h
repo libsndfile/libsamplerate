@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2006 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2007 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -129,13 +129,21 @@ const char* zoh_get_description (int src_enum) ;
 
 int zoh_set_converter (SRC_PRIVATE *psrc, int src_enum) ;
 
-#endif	/* COMMON_H_INCLUDED */
-
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: 737d46dc-a2f8-4025-bb88-fc8915c69085
+/*----------------------------------------------------------
+**	Common static inline functions.
 */
+
+static inline double
+fmod_one (double x)
+{	double y = 1.0 ;
+	double i, f ;
+
+	i = floor (x / y) ;
+	f = x - i * y ;
+	if ((x < 0.0) != (y < 0.0))
+		f = f - y ;
+	return f ;
+} /* fmod_one */
+
+#endif	/* COMMON_H_INCLUDED */
 
