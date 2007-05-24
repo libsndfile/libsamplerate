@@ -33,13 +33,6 @@
 #define	SINC_MAGIC_MARKER	MAKE_MAGIC (' ', 's', 'i', 'n', 'c', ' ')
 
 /*========================================================================================
-**	Macros for handling the index into the array for the filter.
-**	Double precision floating point is not accurate enough so use a 64 bit
-**	fixed point value instead. SHIFT_BITS (current value of 48) is the number
-**	of bits to the right of the decimal point.
-**	The rest of the macros are for retrieving the fractional and integer parts
-**	and for converting floats and ints to the fixed point format or from the
-**	fixed point type back to integers and floats.
 */
 
 #define MAKE_INCREMENT_T(x) 	((increment_t) (x))
