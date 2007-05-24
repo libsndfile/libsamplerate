@@ -98,9 +98,9 @@ double_to_fp (double x)
 } /* double_to_fp */
 
 static inline increment_t
-INT_TO_FP (int x)
+int_to_fp (int x)
 {	return (((increment_t) (x)) << SHIFT_BITS) ;
-} /* INT_TO_FP */
+} /* int_to_fp */
 
 static inline int
 fp_fraction_part (increment_t x)
@@ -440,7 +440,7 @@ calc_output (SINC_FILTER *filter, increment_t increment, increment_t start_filte
 	int			data_index, coeff_count, indx ;
 
 	/* Convert input parameters into fixed point. */
-	max_filter_index = INT_TO_FP (filter->coeff_half_len) ;
+	max_filter_index = int_to_fp (filter->coeff_half_len) ;
 
 	/* First apply the left half of the filter. */
 	filter_index = start_filter_index ;
