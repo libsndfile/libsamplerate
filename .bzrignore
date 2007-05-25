@@ -1,3 +1,4 @@
+*.cm*
 *.dat
 *.gz
 *.la
@@ -10,6 +11,7 @@
 Makefile
 Makefile.in
 Octave/*.h
+Octave/make_src_filter
 Win32/Makefile.mingw
 aclocal.m4
 autom4te.cache
