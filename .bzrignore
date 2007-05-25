@@ -1,10 +1,15 @@
+*.dat
+*.gz
 *.la
 *.lo
+*.mat
+*.s
 *.wav
 .deps
 .libs
 Makefile
 Makefile.in
+Octave/*.h
 Win32/Makefile.mingw
 aclocal.m4
 autom4te.cache
