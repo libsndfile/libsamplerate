@@ -103,19 +103,14 @@ int_to_fp (int x)
 } /* int_to_fp */
 
 static inline int
-fp_fraction_part (increment_t x)
-{	return ((x) & ((((increment_t) 1) << SHIFT_BITS) - 1)) ;
-} /* fp_fraction_part */
-
-static inline int
-fp_integer_part (increment_t x)
-{	return ((x) & (((increment_t) -1) << SHIFT_BITS)) ;
-} /* fp_integer_part */
-
-static inline int
 fp_to_int (increment_t x)
 {	return (((x) >> SHIFT_BITS)) ;
 } /* fp_to_int */
+
+static inline increment_t
+fp_fraction_part (increment_t x)
+{	return ((x) & ((((increment_t) 1) << SHIFT_BITS) - 1)) ;
+} /* fp_fraction_part */
 
 static inline double
 fp_to_double (increment_t x)
@@ -163,7 +158,8 @@ sinc_get_description (int src_enum)
 int
 sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 {	SINC_FILTER *filter, temp_filter ;
-	int count, bits ;
+	increment_t count ;
+	int bits ;
 
 	/* Quick sanity check. */
 	if (SHIFT_BITS >= sizeof (increment_t) * 8 - 1)
@@ -235,8 +231,8 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	sinc_reset (psrc) ;
 
 	count = filter->coeff_half_len ;
-	for (bits = 0 ; (1 << bits) < count ; bits++)
-		count |= (1 << bits) ;
+	for (bits = 0 ; (MAKE_INCREMENT_T (1) << bits) < count ; bits++)
+		count |= (MAKE_INCREMENT_T (1) << bits) ;
 
 	if (bits + SHIFT_BITS - 1 >= (int) (sizeof (increment_t) * 8))
 		return SRC_ERR_FILTER_LEN ;
