@@ -37,7 +37,7 @@
 
 #define MAKE_INCREMENT_T(x) 	((increment_t) (x))
 
-#define	SHIFT_BITS				16
+#define	SHIFT_BITS				14
 #define	FP_ONE					((double) (((increment_t) 1) << SHIFT_BITS))
 #define	INV_FP_ONE				(1.0 / FP_ONE)
 
@@ -76,7 +76,7 @@ static void sinc_reset (SRC_PRIVATE *psrc) ;
 
 static coeff_t const high_qual_coeffs [] =
 {
-#include "high_qual_coeffs.h"
+#include "../Octave/test.h"
 } ; /* high_qual_coeffs */
 
 static coeff_t const mid_qual_coeffs [] =
@@ -186,7 +186,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	{	case SRC_SINC_BEST_QUALITY :
 				temp_filter.coeffs = high_qual_coeffs ;
 				temp_filter.coeff_half_len = ARRAY_LEN (high_qual_coeffs) - 1 ;
-				temp_filter.index_inc = 128 ;
+				temp_filter.index_inc = 512 ;
 				temp_filter.has_diffs = SRC_FALSE ;
 				temp_filter.coeff_len = ARRAY_LEN (high_qual_coeffs) ;
 				break ;
