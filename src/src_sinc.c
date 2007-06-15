@@ -47,6 +47,10 @@
 typedef int32_t increment_t ;
 typedef float	coeff_t ;
 
+#include "high_qual_coeffs.h"
+#include "mid_qual_coeffs.h"
+#include "fastest_coeffs.h"
+
 typedef struct
 {	int		sinc_magic_marker ;
 
@@ -55,11 +59,9 @@ typedef struct
 	long	out_count, out_gen ;
 
 	int		coeff_half_len, index_inc ;
-	int		has_diffs ;
 
 	double	src_ratio, input_index ;
 
-	int		coeff_len ;
 	coeff_t const	*coeffs ;
 
 	int		b_current, b_end, b_real_end, b_len ;
@@ -73,22 +75,6 @@ static double calc_output (SINC_FILTER *filter, increment_t increment, increment
 static void prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len) ;
 
 static void sinc_reset (SRC_PRIVATE *psrc) ;
-
-static coeff_t const high_qual_coeffs [] =
-{
-#include "../Octave/test.h"
-} ; /* high_qual_coeffs */
-
-static coeff_t const mid_qual_coeffs [] =
-{
-#include "mid_qual_coeffs.h"
-} ; /* mid_qual_coeffs */
-
-static coeff_t const fastest_coeffs [] =
-{
-#include "fastest_coeffs.h"
-} ; /* fastest_coeffs */
-
 
 static inline increment_t
 double_to_fp (double x)
@@ -184,27 +170,21 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 
 	switch (src_enum)
 	{	case SRC_SINC_BEST_QUALITY :
-				temp_filter.coeffs = high_qual_coeffs ;
-				temp_filter.coeff_half_len = ARRAY_LEN (high_qual_coeffs) - 1 ;
-				temp_filter.index_inc = 512 ;
-				temp_filter.has_diffs = SRC_FALSE ;
-				temp_filter.coeff_len = ARRAY_LEN (high_qual_coeffs) ;
+				temp_filter.coeffs = high_qual_coeffs.coeffs ;
+				temp_filter.coeff_half_len = ARRAY_LEN (high_qual_coeffs.coeffs) - 1 ;
+				temp_filter.index_inc = high_qual_coeffs.increment ;
 				break ;
 
 		case SRC_SINC_MEDIUM_QUALITY :
-				temp_filter.coeffs = mid_qual_coeffs ;
-				temp_filter.coeff_half_len = ARRAY_LEN (mid_qual_coeffs) - 1 ;
-				temp_filter.index_inc = 128 ;
-				temp_filter.has_diffs = SRC_FALSE ;
-				temp_filter.coeff_len = ARRAY_LEN (mid_qual_coeffs) ;
+				temp_filter.coeffs = mid_qual_coeffs.coeffs ;
+				temp_filter.coeff_half_len = ARRAY_LEN (mid_qual_coeffs.coeffs) - 1 ;
+				temp_filter.index_inc = mid_qual_coeffs.increment ;
 				break ;
 
 		case SRC_SINC_FASTEST :
-				temp_filter.coeffs = fastest_coeffs ;
-				temp_filter.coeff_half_len = ARRAY_LEN (fastest_coeffs) - 1 ;
-				temp_filter.index_inc = 128 ;
-				temp_filter.has_diffs = SRC_FALSE ;
-				temp_filter.coeff_len = ARRAY_LEN (fastest_coeffs) ;
+				temp_filter.coeffs = fastest_coeffs.coeffs ;
+				temp_filter.coeff_half_len = ARRAY_LEN (fastest_coeffs.coeffs) - 1 ;
+				temp_filter.index_inc = fastest_coeffs.increment ;
 				break ;
 
 		default :
@@ -216,7 +196,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	** a better way. Need to look at prepare_data () at the same time.
 	*/
 
-	temp_filter.b_len = 1000 + 2 * lrint (0.5 + temp_filter.coeff_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO) ;
+	temp_filter.b_len = 1000 + 2 * lrint (0.5 + 2 * temp_filter.coeff_half_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO) ;
 	temp_filter.b_len = MIN (temp_filter.b_len, 4096) ;
 	temp_filter.b_len *= temp_filter.channels ;
 
