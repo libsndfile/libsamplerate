@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2004 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2004, 2007 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -31,6 +31,12 @@
 **  increment        : 128
 */
 
+static const struct mid_qual_coeffs_s
+{	int increment ;
+	coeff_t coeffs [5286] ;
+} mid_qual_coeffs =
+{	128,
+{
  9.20381425342432724079e-01,
  9.20302993473144703707e-01,
  9.20067721990720843728e-01,
@@ -5316,13 +5322,6 @@
 -1.63621651764123018711e-07,
 -1.03664673187799380991e-07,
 -4.47970746308059675830e-08,
- 0			/* Need a final zero coefficient */
-
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: aa7e5110-c82f-4c2f-8296-57bd4fa94766
-*/
-
+ 0.0	/* Need a final zero coefficient */
+}
+} ; /* mid_qual_coeffs */
