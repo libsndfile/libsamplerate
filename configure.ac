@@ -109,6 +109,8 @@ AC_CHECK_FUNCS(malloc calloc free memcpy memmove alarm signal)
 AC_CHECK_LIB([m],floor)
 AC_CHECK_FUNCS(floor ceil fmod)
 
+AC_CHECK_SIGNAL(SIGALRM)
+
 AC_C99_FUNC_LRINT
 AC_C99_FUNC_LRINTF
 # AC_C99_FUNC_LLRINT  Don't need this (yet?).
