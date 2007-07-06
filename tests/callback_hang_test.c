@@ -21,6 +21,8 @@
 #include <unistd.h>
 #include <math.h>
 
+#if HAVE_ALARM && HAVE_SIGNAL && HAVE_SIGALRM
+
 #include <signal.h>
 
 #include <samplerate.h>
@@ -44,7 +46,6 @@ static long input_callback (void *cb_data, float **data) ;
 int
 main (void)
 {
-#if defined (HAVE_ALARM) && defined (HAVE_SIGNAL) && HAVE_ALARM && HAVE_SIGNAL
 	/* Set up SIGALRM handler. */
 	signal (SIGALRM, alarm_handler) ;
 
@@ -53,7 +54,6 @@ main (void)
 	callback_hang_test (SRC_LINEAR) ;
 	callback_hang_test (SRC_SINC_FASTEST) ;
 	puts ("") ;
-#endif
 
 	return 0 ;
 } /* main */
@@ -106,7 +106,7 @@ static void
 alarm_handler (int number)
 {
 	number = 0 ;
-	printf ("\n\n    Error : Hang inside src_callback_read() detected. Exiting!\n\n");
+	printf ("\n\n    Error : Hang inside src_callback_read() detected. Exiting!\n\n") ;
 	exit (1) ;
 } /* alarm_handler */
 
@@ -121,3 +121,13 @@ input_callback (void *cb_data, float **data)
 	return ARRAY_LEN (buffer) ;
 } /* input_callback */
 
+#else
+
+int
+main (void)
+{
+	puts ("\tCan't run this test on this platform.") ;
+	return 0 ;
+} /* main */
+
+#endif

@@ -1,3 +1,14 @@
+2007-07-07  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * acinclude.m4
+    Add AC_CHECK_SIGNAL macro.
+
+    * confiure.ac
+    Use AC_CHECK_SIGNAL to check for SIGALRM.
+
+    * tests/callback_hang_test.c
+    Use HAVE_SIGGALRM and add empty main function if it doesn't exist.
+
 2007-06-15  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/*_coeffs.h
