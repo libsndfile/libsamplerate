@@ -156,6 +156,10 @@ else
 
 )# AC_C_FIND_ENDIAN
 
+
+
+
+
 dnl @synopsis AC_C99_FUNC_LRINT
 dnl
 dnl Check whether C99's lrint function is available.
@@ -192,6 +196,11 @@ if test "$ac_cv_c99_lrint" = yes; then
             [Define if you have C99's lrint function.])
 fi
 ])# AC_C99_FUNC_LRINT
+
+
+
+
+
 dnl @synopsis AC_C99_FUNC_LRINTF
 dnl
 dnl Check whether C99's lrintf function is available.
@@ -204,6 +213,7 @@ dnl and this permission notice appear in all copies.  No representations are
 dnl made about the suitability of this software for any purpose.  It is 
 dnl provided "as is" without express or implied warranty.
 dnl
+
 AC_DEFUN([AC_C99_FUNC_LRINTF],
 [AC_CACHE_CHECK(for lrintf,
   ac_cv_c99_lrintf,
@@ -228,6 +238,11 @@ if test "$ac_cv_c99_lrintf" = yes; then
             [Define if you have C99's lrintf function.])
 fi
 ])# AC_C99_FUNC_LRINTF
+
+
+
+
+
 dnl @synopsis AC_C99_FUNC_LLRINT
 dnl
 dnl Check whether C99's llrint function is available.
@@ -268,6 +283,8 @@ fi
 
 
 
+
+
 dnl @synopsis AC_C_CLIP_MODE
 dnl
 dnl Determine the clipping mode when converting float to int.
@@ -279,8 +296,6 @@ dnl purpose is hereby granted without fee, provided that the above copyright
 dnl and this permission notice appear in all copies.  No representations are
 dnl made about the suitability of this software for any purpose.  It is 
 dnl provided "as is" without express or implied warranty.
-
-
 
 dnl Find the clipping mode in the following way:
 dnl    1) If we are not cross compiling test it.
@@ -390,13 +405,30 @@ case "$ac_cv_c_clip_positive$ac_cv_c_clip_negative" in
 
 
 
-ifelse(dnl	
 
- Do not edit or modify anything in this comment block.
- The arch-tag line is a file identity tag for the GNU Arch 
- revision control system.
+dnl @synopsis AC_CHECK_SIGNAL(SIGNAME)
+dnl
+dnl
+dnl @category C
+dnl @author Erik de Castro Lopo <erikd AT mega-nerd DOT com>
+dnl @version 1.0	Jul 07 2007
 
- arch-tag: 6db7c287-8971-4074-a193-468446194fd0
+AC_DEFUN([AC_CHECK_SIGNAL],
+[AC_CACHE_CHECK(for $1,
+  ac_cv_signal_$1,
+[
+AC_TRY_LINK([
+#include <signal.h>
 
-)dnl
+], signal($1, SIG_DFL) ;, ac_cv_signal_$1=yes, ac_cv_signal_$1=no)
 
+])
+
+if test "$ac_cv_signal_$1" = yes; then
+  AC_DEFINE(HAVE_$1, 1,
+            [Define if you have signal $1.])
+fi
+])# AC_CHECK_SIGNAL
+
+
+## AC_CHECK_SIGNALS
