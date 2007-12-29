@@ -6,6 +6,7 @@
 *.mat
 *.s
 *.wav
+.depend
 .deps
 .libs
 Makefile
