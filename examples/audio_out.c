@@ -91,17 +91,17 @@ linux_open (int channels, int samplerate)
 		} ;
 
 	fmt = CPU_IS_BIG_ENDIAN ? AFMT_S16_BE : AFMT_S16_LE ;
-	if (ioctl (linux_out->fd, SOUND_PCM_SETFMT, &fmt) != 0)
+	if (ioctl (linux_out->fd, SNDCTL_DSP_SETFMT, &fmt) != 0)
 	{	perror ("linux_open_dsp_device : set format ") ;
 	    exit (1) ;
   		} ;
 
-	if ((error = ioctl (linux_out->fd, SOUND_PCM_WRITE_CHANNELS, &channels)) != 0)
+	if ((error = ioctl (linux_out->fd, SNDCTL_DSP_CHANNELS, &channels)) != 0)
 	{	perror ("linux_open : channels ") ;
 		exit (1) ;
 		} ;
 
-	if ((error = ioctl (linux_out->fd, SOUND_PCM_WRITE_RATE, &samplerate)) != 0)
+	if ((error = ioctl (linux_out->fd, SNDCTL_DSP_SPEED, &samplerate)) != 0)
 	{	perror ("linux_open : sample rate ") ;
 		exit (1) ;
 		} ;
