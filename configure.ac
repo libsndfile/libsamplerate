@@ -69,19 +69,9 @@ AC_ARG_ENABLE(fftw,
 		AC_HELP_STRING([--disable-fftw], [disable usage of FFTW ]),
 		ac_arg_fftw="N", ac_arg_fftw="Y")
 
-AC_ARG_ENABLE(debug,
-		AC_HELP_STRING([--enable-debug], [enable debugging ]),
-		ac_arg_debug=yes, ac_arg_debug=no)
-
 AC_ARG_ENABLE(cpu-clip,
 		AC_HELP_STRING([--disable-cpu-clip], [disable tricky cpu specific clipper]),
 		ac_arg_cpu_clip="N", ac_arg_cpu_clip="Y")
-
-if test x$ac_arg_debug = xyes ; then
-	AC_DEFINE([ENABLE_DEBUG],1,[Set to 1 to enable debugging.])
-else
-	AC_DEFINE([ENABLE_DEBUG],0,[Set to 1 to enable debugging.])
-	fi
 
 #====================================================================================
 # Check types and their sizes.
@@ -248,7 +238,6 @@ AC_SUBST(OS_SPECIFIC_LINKS)
 
 AC_SUBST(COMPILER_IS_GCC)
 AC_SUBST(GCC_MAJOR_VERSION)
-AC_SUBST(ENABLE_DEBUG)
 
 AC_SUBST(HAVE_FFTW3)
 AC_SUBST(FFTW3_CFLAGS)
@@ -270,10 +259,8 @@ AC_MSG_RESULT([
 
   Configuration summary :
 
-    Version : ..................... ${VERSION}])
-AC_MSG_RESULT([    Enable debugging : ............ ${ac_arg_debug}
+    Version : ..................... ${VERSION}
 ])
-
 
 if test x$ac_cv_c_compiler_gnu = xyes ; then
 	echo -e "  Tools :\n"
