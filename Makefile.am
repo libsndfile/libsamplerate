@@ -1,5 +1,10 @@
-DIST_SUBDIRS = Win32 @subdirs@
-SUBDIRS = @subdirs@
+## Process this file with automake to produce Makefile.in
+
+DISTCHECK_CONFIGURE_FLAGS = --enable-gcc-werror
+
+SUBDIRS = src doc examples tests
+DIST_SUBDIRS = Win32 $(SUBDIRS)
+
 EXTRA_DIST = reconfigure.mk libsamplerate.spec.in samplerate.pc.in Make.bat
  
 pkgconfigdir = $(libdir)/pkgconfig
@@ -14,10 +19,4 @@ test:
 
 check-asm :
 	(cd src && make check-asm)
-
-## Do not edit or modify anything in this comment block.
-## The arch-tag line is a file identity tag for the GNU Arch 
-## revision control system.
-##
-## arch-tag: 73b721ae-3dbf-4130-997e-923cac695453
 
