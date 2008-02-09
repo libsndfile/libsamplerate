@@ -1,3 +1,9 @@
+2008-02-10  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * Makefile.am configure.ac
+    Add DISTCHECK_CONFIGURE_FLAGS to Makefile.am and a bunch of configure
+    cleanups.
+
 2008-01-21  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * examples/audio_out.c
