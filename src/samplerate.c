@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2007 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -351,7 +351,7 @@ src_get_description (int converter_type)
 
 const char *
 src_get_version (void)
-{	return PACKAGE "-" VERSION " (c) 2002-2007 Erik de Castro Lopo" ;
+{	return PACKAGE "-" VERSION " (c) 2002-2008 Erik de Castro Lopo" ;
 } /* src_get_version */
 
 int

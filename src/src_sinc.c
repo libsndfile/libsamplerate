@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2007 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@
 
 #define MAKE_INCREMENT_T(x) 	((increment_t) (x))
 
-#define	SHIFT_BITS				14
+#define	SHIFT_BITS				12
 #define	FP_ONE					((double) (((increment_t) 1) << SHIFT_BITS))
 #define	INV_FP_ONE				(1.0 / FP_ONE)
 
@@ -50,6 +50,9 @@ typedef float	coeff_t ;
 #include "high_qual_coeffs.h"
 #include "mid_qual_coeffs.h"
 #include "fastest_coeffs.h"
+
+#include "slow_mid_qual_coeffs.h"
+#include "slow_high_qual_coeffs.h"
 
 typedef struct
 {	int		sinc_magic_marker ;
@@ -119,6 +122,12 @@ sinc_get_name (int src_enum)
 
 		case SRC_SINC_FASTEST :
 			return "Fastest Sinc Interpolator" ;
+
+		case SRC_SLOW_SINC_MEDIUM_QUALITY :
+			return "Medium Slow Sinc Interpolator" ;
+
+		case SRC_SLOW_SINC_BEST_QUALITY :
+			return "Best Slow Sinc Interpolator" ;
 		} ;
 
 	return NULL ;
@@ -136,6 +145,12 @@ sinc_get_description (int src_enum)
 
 		case SRC_SINC_FASTEST :
 			return "Band limited sinc interpolation, fastest, 97dB SNR, 80% BW." ;
+
+		case SRC_SLOW_SINC_MEDIUM_QUALITY :
+			return "Slow band limited sinc interpolation, medium quality, 121dB SNR, 90% BW." ;
+
+		case SRC_SLOW_SINC_BEST_QUALITY :
+			return "Slow band limited sinc interpolation, best quality, 145dB SNR, 96% BW." ;
 		} ;
 
 	return NULL ;
@@ -185,6 +200,18 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 				temp_filter.coeffs = fastest_coeffs.coeffs ;
 				temp_filter.coeff_half_len = ARRAY_LEN (fastest_coeffs.coeffs) - 1 ;
 				temp_filter.index_inc = fastest_coeffs.increment ;
+				break ;
+
+		case SRC_SLOW_SINC_MEDIUM_QUALITY :
+				temp_filter.coeffs = slow_mid_qual_coeffs.coeffs ;
+				temp_filter.coeff_half_len = ARRAY_LEN (slow_mid_qual_coeffs.coeffs) - 1 ;
+				temp_filter.index_inc = slow_mid_qual_coeffs.increment ;
+				break ;
+
+		case SRC_SLOW_SINC_BEST_QUALITY :
+				temp_filter.coeffs = slow_high_qual_coeffs.coeffs ;
+				temp_filter.coeff_half_len = ARRAY_LEN (slow_high_qual_coeffs.coeffs) - 1 ;
+				temp_filter.index_inc = slow_high_qual_coeffs.increment ;
 				break ;
 
 		default :

@@ -7,7 +7,9 @@ include_HEADERS = samplerate.h
 EXTRA_DIST = config.h.in Version_script.in check_asm.sh
 CLEANFILES = src_sinc.s
 
-COEFF_HDRS = high_qual_coeffs.h mid_qual_coeffs.h fastest_coeffs.h
+COEFF_HDRS = high_qual_coeffs.h mid_qual_coeffs.h fastest_coeffs.h \
+	slow_mid_qual_coeffs.h slow_high_qual_coeffs.h
+
 
 noinst_HEADERS = common.h float_cast.h $(COEFF_HDRS)
 
@@ -35,10 +37,4 @@ check-asm : check_asm.sh src_sinc.s src_linear.s src_zoh.s
 
 # Disable autoheader.
 AUTOHEADER=echo
-
-## Do not edit or modify anything in this comment block.
-## The arch-tag line is a file identity tag for the GNU Arch
-## revision control system.
-##
-## arch-tag: 62db1d8d-493b-4874-afb0-e421d3dbb868
 

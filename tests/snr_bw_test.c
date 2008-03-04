@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2004 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -143,7 +143,36 @@ main (int argc, char *argv [])
 				},
 			},
 
-	} ; /* snr_test_data */
+		{	SRC_SLOW_SINC_MEDIUM_QUALITY,
+			9,
+			BOOLEAN_TRUE,
+			{	{	1,	{ 0.01111111111 },		3.0,		1,	145.0,	1.0 },
+				{	1,	{ 0.01111111111 },		0.6,		1,	132.0,	1.0 },
+				{	1,	{ 0.01111111111 },		0.3,		1,	138.0,	1.0 },
+				{	1,	{ 0.01111111111 },		1.0,		1,	157.0,	1.0 },
+				{	1,	{ 0.01111111111 },		1.001,		1,	148.0,	1.0 },
+				{	2,	{ 0.011111, 0.324 },	1.9999,		2,	127.0,	1.0 },
+				{	2,	{ 0.012345, 0.457 },	0.456789,	1,	124.0,	0.5 },
+				{	2,	{ 0.011111, 0.45 },		0.6,		1,	126.0,	0.5 },
+				{	1,	{ 0.43111111111 },		1.33,		1,	121.0,	1.0 }
+				}
+			},
+
+		{	SRC_SLOW_SINC_BEST_QUALITY,
+			9,
+			BOOLEAN_TRUE,
+			{	{	1,	{ 0.01111111111 },		3.0,		1,	149.0,	1.0 },
+				{	1,	{ 0.01111111111 },		0.6,		1,	147.0,	1.0 },
+				{	1,	{ 0.01111111111 },		0.3,		1,	148.0,	1.0 },
+				{	1,	{ 0.01111111111 },		1.0,		1,	155.0,	1.0 },
+				{	1,	{ 0.01111111111 },		1.001,		1,	148.0,	1.0 },
+				{	2,	{ 0.011111, 0.324 },	1.9999,		2,	147.0,	1.0 },
+				{	2,	{ 0.012345, 0.457 },	0.456789,	1,	148.0,	0.5 },
+				{	2,	{ 0.011111, 0.45 },		0.6,		1,	149.0,	0.5 },
+				{	1,	{ 0.43111111111 },		1.33,		1,	145.0,	1.0 }
+				}
+			},
+		} ; /* snr_test_data */
 
 	double	best_snr, snr, freq3dB, conversion_rate, worst_conv_rate ;
 	int 	j, k, converter, verbose = 0 ;
@@ -418,12 +447,4 @@ main (void)
 } /* main */
 
 #endif
-
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: c31544f5-637f-4640-953b-1f3f71de11b6
-*/
 
