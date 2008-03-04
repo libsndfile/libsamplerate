@@ -36,7 +36,7 @@ main (void)
 
 	start_time = clock () ;
 
-	if ((error = src_simple (&src_data, SRC_SINC_BEST_QUALITY, 1)) != 0)
+	if ((error = src_simple (&src_data, SRC_OLD_SINC_BEST_QUALITY, 1)) != 0)
 	{	puts (src_strerror (error)) ;
 		exit (1) ;
 		} ;

@@ -47,12 +47,11 @@
 typedef int32_t increment_t ;
 typedef float	coeff_t ;
 
-#include "high_qual_coeffs.h"
-#include "mid_qual_coeffs.h"
+#include "old_high_qual_coeffs.h"
+#include "old_mid_qual_coeffs.h"
 #include "fastest_coeffs.h"
-
-#include "slow_mid_qual_coeffs.h"
-#include "slow_high_qual_coeffs.h"
+#include "mid_qual_coeffs.h"
+#include "high_qual_coeffs.h"
 
 typedef struct
 {	int		sinc_magic_marker ;
@@ -114,20 +113,20 @@ const char*
 sinc_get_name (int src_enum)
 {
 	switch (src_enum)
-	{	case SRC_SINC_BEST_QUALITY :
-			return "Best Sinc Interpolator" ;
+	{	case SRC_OLD_SINC_BEST_QUALITY :
+			return "Old Best Sinc Interpolator" ;
 
-		case SRC_SINC_MEDIUM_QUALITY :
-			return "Medium Sinc Interpolator" ;
+		case SRC_OLD_SINC_MEDIUM_QUALITY :
+			return "Old Medium Sinc Interpolator" ;
 
 		case SRC_SINC_FASTEST :
 			return "Fastest Sinc Interpolator" ;
 
-		case SRC_SLOW_SINC_MEDIUM_QUALITY :
-			return "Medium Slow Sinc Interpolator" ;
+		case SRC_SINC_MEDIUM_QUALITY :
+			return "Medium Sinc Interpolator" ;
 
-		case SRC_SLOW_SINC_BEST_QUALITY :
-			return "Best Slow Sinc Interpolator" ;
+		case SRC_SINC_BEST_QUALITY :
+			return "Best Sinc Interpolator" ;
 		} ;
 
 	return NULL ;
@@ -137,20 +136,22 @@ const char*
 sinc_get_description (int src_enum)
 {
 	switch (src_enum)
-	{	case SRC_SINC_BEST_QUALITY :
-			return "Band limited sinc interpolation, best quality, 97dB SNR, 96% BW." ;
-
-		case SRC_SINC_MEDIUM_QUALITY :
-			return "Band limited sinc interpolation, medium quality, 97dB SNR, 90% BW." ;
-
-		case SRC_SINC_FASTEST :
+	{	case SRC_SINC_FASTEST :
 			return "Band limited sinc interpolation, fastest, 97dB SNR, 80% BW." ;
 
-		case SRC_SLOW_SINC_MEDIUM_QUALITY :
-			return "Slow band limited sinc interpolation, medium quality, 121dB SNR, 90% BW." ;
+		case SRC_SINC_MEDIUM_QUALITY :
+			return "Band limited sinc interpolation, medium quality, 121dB SNR, 90% BW." ;
 
-		case SRC_SLOW_SINC_BEST_QUALITY :
-			return "Slow band limited sinc interpolation, best quality, 145dB SNR, 96% BW." ;
+		case SRC_SINC_BEST_QUALITY :
+			return "Band limited sinc interpolation, best quality, 145dB SNR, 96% BW." ;
+		case SRC_OLD_SINC_BEST_QUALITY :
+			return "Old band limited sinc interpolation, best quality, 97dB SNR, 96% BW." ;
+
+		case SRC_OLD_SINC_MEDIUM_QUALITY :
+			return "Old band limited sinc interpolation, medium quality, 97dB SNR, 90% BW." ;
+
+		default :
+			break ;
 		} ;
 
 	return NULL ;
@@ -184,13 +185,13 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	psrc->reset = sinc_reset ;
 
 	switch (src_enum)
-	{	case SRC_SINC_BEST_QUALITY :
+	{	case SRC_OLD_SINC_BEST_QUALITY :
 				temp_filter.coeffs = high_qual_coeffs.coeffs ;
 				temp_filter.coeff_half_len = ARRAY_LEN (high_qual_coeffs.coeffs) - 1 ;
 				temp_filter.index_inc = high_qual_coeffs.increment ;
 				break ;
 
-		case SRC_SINC_MEDIUM_QUALITY :
+		case SRC_OLD_SINC_MEDIUM_QUALITY :
 				temp_filter.coeffs = mid_qual_coeffs.coeffs ;
 				temp_filter.coeff_half_len = ARRAY_LEN (mid_qual_coeffs.coeffs) - 1 ;
 				temp_filter.index_inc = mid_qual_coeffs.increment ;
@@ -202,13 +203,13 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 				temp_filter.index_inc = fastest_coeffs.increment ;
 				break ;
 
-		case SRC_SLOW_SINC_MEDIUM_QUALITY :
+		case SRC_SINC_MEDIUM_QUALITY :
 				temp_filter.coeffs = slow_mid_qual_coeffs.coeffs ;
 				temp_filter.coeff_half_len = ARRAY_LEN (slow_mid_qual_coeffs.coeffs) - 1 ;
 				temp_filter.index_inc = slow_mid_qual_coeffs.increment ;
 				break ;
 
-		case SRC_SLOW_SINC_BEST_QUALITY :
+		case SRC_SINC_BEST_QUALITY :
 				temp_filter.coeffs = slow_high_qual_coeffs.coeffs ;
 				temp_filter.coeff_half_len = ARRAY_LEN (slow_high_qual_coeffs.coeffs) - 1 ;
 				temp_filter.index_inc = slow_high_qual_coeffs.increment ;
