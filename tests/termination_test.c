@@ -78,7 +78,7 @@ init_term_test (int converter, double src_ratio)
 
 	int k, input_len, output_len, error, terminate ;
 
-	printf ("\tinit_term_test (SRC ratio = %7.4f) .......... ", src_ratio) ;
+	printf ("\tinit_term_test   (SRC ratio = %7.4f) .......... ", src_ratio) ;
 	fflush (stdout) ;
 
 	/* Calculate maximun input and output lengths. */
