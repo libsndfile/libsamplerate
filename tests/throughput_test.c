@@ -50,6 +50,8 @@ throughput_test (int converter)
 
 	src_data.src_ratio = 0.99 ;
 
+	sleep (1) ;
+
 	start_time = clock () ;
 
 	do
@@ -64,7 +66,7 @@ throughput_test (int converter)
 		clock_time = clock () - start_time ;
 		duration = (1.0 * clock_time) / CLOCKS_PER_SEC ;
 	}
-	while (duration < 5.0) ;
+	while (duration < 3.0) ;
 
 	if (src_data.input_frames_used != ARRAY_LEN (input))
 	{	printf ("\n\nLine %d : input frames used %ld should be %d\n", __LINE__, src_data.input_frames_used, ARRAY_LEN (input)) ;
