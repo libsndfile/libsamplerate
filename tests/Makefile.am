@@ -1,7 +1,7 @@
 noinst_PROGRAMS = misc_test termination_test simple_test callback_test \
 					reset_test multi_channel_test snr_bw_test \
 					float_short_test varispeed_test callback_hang_test \
-					src-evaluate benchmark
+					src-evaluate throughput_test
 
 SAMPLRATEDIR =../src
 INCLUDES = -I$(srcdir)/$(SAMPLRATEDIR)
@@ -40,7 +40,7 @@ float_short_test_SOURCES = float_short_test.c util.c util.h
 float_short_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
 varispeed_test_SOURCES = varispeed_test.c util.c util.h calc_snr.c
-varispeed_test__CFLAGS = @FFTW3_CFLAGS@
+varispeed_test_CFLAGS = @FFTW3_CFLAGS@
 varispeed_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 # This program is for evaluating other sample rate converters.
@@ -49,9 +49,9 @@ src_evaluate_SOURCES = src-evaluate.c calc_snr.c util.c
 src_evaluate_CFLAGS = @SNDFILE_CFLAGS@ @FFTW3_CFLAGS@
 src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
 
-benchmark_CFLAGS = $(AM_CFLAGS) @FFTW3_CFLAGS@
-benchmark_SOURCES = benchmark.c  util.c calc_snr.c
-benchmark_LDADD  = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
+throughput_test_CFLAGS = $(AM_CFLAGS) @FFTW3_CFLAGS@
+throughput_test_SOURCES = throughput_test.c  util.c calc_snr.c
+throughput_test_LDADD  = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 #===============================================================================
 
@@ -72,8 +72,3 @@ check: $(noinst_PROGRAMS)
 	@echo "  ${PACKAGE}-${VERSION} passed all tests."
 	@echo "-----------------------------------------------------------------"
 
-# Do not edit or modify anything in this comment block.
-# The arch-tag line is a file identity tag for the GNU Arch 
-# revision control system.
-#
-# arch-tag: ec9d19f8-523c-48e5-8929-809c2641a8dc

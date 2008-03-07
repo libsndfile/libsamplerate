@@ -1,3 +1,21 @@
+/*
+** Copyright (C) 2004-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
+**
+** This program is free software; you can redistribute it and/or modify
+** it under the terms of the GNU General Public License as published by
+** the Free Software Foundation; either version 2 of the License, or
+** (at your option) any later version.
+**
+** This program is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU General Public License for more details.
+**
+** You should have received a copy of the GNU General Public License
+** along with this program; if not, write to the Free Software
+** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +26,7 @@
 
 #include "util.h"
 
-#define BUFFER_LEN	(1<<23)
+#define BUFFER_LEN	(1<<16)
 #define SNR_LEN		(1<<16)
 
 static float input [BUFFER_LEN] ;
@@ -24,7 +42,6 @@ main (void)
 	memset (input, 0, sizeof (input)) ;
 	freq = 0.01 ;
 	gen_windowed_sines (1, &freq, 1.0, input, SNR_LEN) ;
-
 
 	src_data.data_in = input ;
 	src_data.input_frames = ARRAY_LEN (input) ;
@@ -63,10 +80,3 @@ main (void)
 	return 0 ;
 } /* main */
 
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch
-** revision control system.
-**
-** arch-tag: f1c7eab4-7340-49a8-8deb-0f66de593cdb
-*/
