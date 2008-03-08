@@ -1,3 +1,21 @@
+2008-03-08  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/snr_bw_test.c
+    Remove bodgy old throughput calculations.
+
+2008-03-07  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/benchmark.c tests/throughput_test.c
+    Rename former to the latter and make significant improvements.
+
+2008-03-04  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/old_high_qual_coeffs.h src/old_mid_qual_coeffs.h
+    Copy these from the old versions.
+
+    * src/high_qual_coeffs.h src/mid_qual_coeffs.h 
+    New versions of the coefficients with improved SNR.	
+
 2008-02-10  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * Makefile.am configure.ac
@@ -14,7 +32,7 @@
     * acinclude.m4
     Add AC_CHECK_SIGNAL macro.
 
-    * confiure.ac
+    * configure.ac
     Use AC_CHECK_SIGNAL to check for SIGALRM.
 
     * tests/callback_hang_test.c

@@ -62,7 +62,7 @@ typedef struct
 	SINGLE_TEST	test_data [10] ;
 } CONVERTER_TEST ;
 
-static double snr_test (SINGLE_TEST *snr_test_data, int number, int converter, int verbose, double *conversion_rate) ;
+static double snr_test (SINGLE_TEST *snr_test_data, int number, int converter, int verbose) ;
 static double find_peak (float *output, int output_len) ;
 static double bandwidth_test (int converter, int verbose) ;
 
@@ -174,7 +174,7 @@ main (int argc, char *argv [])
 			},
 		} ; /* snr_test_data */
 
-	double	best_snr, snr, freq3dB, conversion_rate, worst_conv_rate ;
+	double	best_snr, snr, freq3dB ;
 	int 	j, k, converter, verbose = 0 ;
 
 	if (argc == 2 && strcmp (argv [1], "--verbose") == 0)
@@ -184,7 +184,6 @@ main (int argc, char *argv [])
 
 	for (j = 0 ; j < ARRAY_LEN (snr_test_data) ; j++)
 	{	best_snr = 5000.0 ;
-		worst_conv_rate = 1e200 ;
 
 		converter = snr_test_data [j].converter ;
 
@@ -192,15 +191,12 @@ main (int argc, char *argv [])
 		printf ("    %s\n", src_get_description (converter)) ;
 
 		for (k = 0 ; k < snr_test_data [j].tests ; k++)
-		{	snr = snr_test (&(snr_test_data [j].test_data [k]), k, converter, verbose, &conversion_rate) ;
+		{	snr = snr_test (&(snr_test_data [j].test_data [k]), k, converter, verbose) ;
 			if (best_snr > snr)
 				best_snr = snr ;
-			if (worst_conv_rate > conversion_rate)
-				worst_conv_rate = conversion_rate ;
 			} ;
 
 		printf ("    Worst case Signal-to-Noise Ratio : %.2f dB.\n", best_snr) ;
-		printf ("    Worst case conversion rate       : %.0f samples/sec.\n", worst_conv_rate) ;
 
 		if (snr_test_data [j].do_bandwidth_test == BOOLEAN_FALSE)
 		{	puts ("    Bandwith test not performed on this converter.\n") ;
@@ -219,14 +215,12 @@ main (int argc, char *argv [])
 */
 
 static double
-snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose, double *conversion_rate)
+snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose)
 {	static float data [BUFFER_LEN + 1] ;
 	static float output [MAX_SPEC_LEN] ;
 
 	SRC_STATE	*src_state ;
 	SRC_DATA	src_data ;
-
-	clock_t start_clock, clock_time ;
 
 	double		output_peak, snr ;
 	int 		k, output_len, input_len, error ;
@@ -282,28 +276,15 @@ snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose, double
 	src_data.data_out = output ;
 	src_data.output_frames = output_len ;
 
-	start_clock = clock () ;
 	if ((error = src_process (src_state, &src_data)))
 	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
 		exit (1) ;
 		} ;
 
-	clock_time = clock () - start_clock ;
-
 	src_state = src_delete (src_state) ;
 
-	if (clock_time <= 0)
-		clock_time = 1 ;
-
-	*conversion_rate = (1.0 * output_len * CLOCKS_PER_SEC) / clock_time ;
-	if (test_data->src_ratio < 1.0)
-		*conversion_rate /= test_data->src_ratio ;
-
 	if (verbose != 0)
-	{	printf ("\tOutput Rate :   %.0f samples/sec\n", *conversion_rate) ;
-
 		printf ("\tOutput Len  :   %ld\n", src_data.output_frames_gen) ;
-		} ;
 
 	if (abs (src_data.output_frames_gen - output_len) > 4)
 	{	printf ("\n\nLine %d : output data length should be %d.\n\n", __LINE__, output_len) ;
