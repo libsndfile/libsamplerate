@@ -68,6 +68,7 @@ check: $(noinst_PROGRAMS)
 	./varispeed_test
 	./float_short_test
 	./snr_bw_test
+	./throughput_test
 	@echo "-----------------------------------------------------------------"
 	@echo "  ${PACKAGE}-${VERSION} passed all tests."
 	@echo "-----------------------------------------------------------------"
