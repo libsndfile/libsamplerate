@@ -54,6 +54,21 @@ Author :<BR>Erik de Castro Lopo
 <DIV CLASS="block">
 
 <H1><B>Simple API</B></H1>
+
+<P>
+<B>Important Note:</B>
+The simple API is not designed to work on small chunks of a larger piece of
+audio. 
+If you attempt to use it this way you are doing it wrong and will not get the
+results you want.
+For processing audio data in chunks you <b>must</b> use the
+	<a href="api_full.html">full api</a>
+or the
+	<a href="api_callback.html">callback based api</a>.
+</P>
+
+<br/><br/>
+
 <P>
 The simple API consists of a single function :
 </P>
@@ -128,12 +143,4 @@ a text string.
 
 </BODY>
 </HTML>
-
-<!--
-  Do not edit or modify anything in this comment block.
-  The arch-tag line is a file identity tag for the GNU Arch 
-  revision control system.
- 
-  arch-tag: 935c1734-00b4-42fb-998e-36b9136d405b
--->
 

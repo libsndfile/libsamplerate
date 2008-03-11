@@ -1,3 +1,9 @@
+2008-03-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * doc/api_simple.html
+    Try once again to convince people that src_simple cannot be used on small
+    chunks of a larger piece of audio.
+
 2008-03-08  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/snr_bw_test.c
