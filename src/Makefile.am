@@ -7,8 +7,7 @@ include_HEADERS = samplerate.h
 EXTRA_DIST = config.h.in Version_script.in check_asm.sh
 CLEANFILES = src_sinc.s
 
-COEFF_HDRS = old_high_qual_coeffs.h old_mid_qual_coeffs.h fastest_coeffs.h \
-	mid_qual_coeffs.h high_qual_coeffs.h
+COEFF_HDRS = fastest_coeffs.h mid_qual_coeffs.h high_qual_coeffs.h
 
 
 noinst_HEADERS = common.h float_cast.h $(COEFF_HDRS)

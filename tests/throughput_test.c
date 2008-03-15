@@ -104,10 +104,7 @@ main (void)
 	throughput_test (SRC_ZERO_ORDER_HOLD) ;
 	throughput_test (SRC_LINEAR) ;
 	throughput_test (SRC_SINC_FASTEST) ;
-
-	throughput_test (SRC_OLD_SINC_MEDIUM_QUALITY) ;
 	throughput_test (SRC_SINC_MEDIUM_QUALITY) ;
-	throughput_test (SRC_OLD_SINC_BEST_QUALITY) ;
 	throughput_test (SRC_SINC_BEST_QUALITY) ;
 
 	puts (

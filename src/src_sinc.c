@@ -47,8 +47,6 @@
 typedef int32_t increment_t ;
 typedef float	coeff_t ;
 
-#include "old_high_qual_coeffs.h"
-#include "old_mid_qual_coeffs.h"
 #include "fastest_coeffs.h"
 #include "mid_qual_coeffs.h"
 #include "high_qual_coeffs.h"
@@ -113,20 +111,16 @@ const char*
 sinc_get_name (int src_enum)
 {
 	switch (src_enum)
-	{	case SRC_OLD_SINC_BEST_QUALITY :
-			return "Old Best Sinc Interpolator" ;
-
-		case SRC_OLD_SINC_MEDIUM_QUALITY :
-			return "Old Medium Sinc Interpolator" ;
-
-		case SRC_SINC_FASTEST :
-			return "Fastest Sinc Interpolator" ;
+	{	case SRC_SINC_BEST_QUALITY :
+			return "Best Sinc Interpolator" ;
 
 		case SRC_SINC_MEDIUM_QUALITY :
 			return "Medium Sinc Interpolator" ;
 
-		case SRC_SINC_BEST_QUALITY :
-			return "Best Sinc Interpolator" ;
+		case SRC_SINC_FASTEST :
+			return "Fastest Sinc Interpolator" ;
+
+		default: break ;
 		} ;
 
 	return NULL ;
@@ -144,11 +138,6 @@ sinc_get_description (int src_enum)
 
 		case SRC_SINC_BEST_QUALITY :
 			return "Band limited sinc interpolation, best quality, 145dB SNR, 96% BW." ;
-		case SRC_OLD_SINC_BEST_QUALITY :
-			return "Old band limited sinc interpolation, best quality, 97dB SNR, 96% BW." ;
-
-		case SRC_OLD_SINC_MEDIUM_QUALITY :
-			return "Old band limited sinc interpolation, medium quality, 97dB SNR, 90% BW." ;
 
 		default :
 			break ;
@@ -185,19 +174,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	psrc->reset = sinc_reset ;
 
 	switch (src_enum)
-	{	case SRC_OLD_SINC_BEST_QUALITY :
-				temp_filter.coeffs = high_qual_coeffs.coeffs ;
-				temp_filter.coeff_half_len = ARRAY_LEN (high_qual_coeffs.coeffs) - 1 ;
-				temp_filter.index_inc = high_qual_coeffs.increment ;
-				break ;
-
-		case SRC_OLD_SINC_MEDIUM_QUALITY :
-				temp_filter.coeffs = mid_qual_coeffs.coeffs ;
-				temp_filter.coeff_half_len = ARRAY_LEN (mid_qual_coeffs.coeffs) - 1 ;
-				temp_filter.index_inc = mid_qual_coeffs.increment ;
-				break ;
-
-		case SRC_SINC_FASTEST :
+	{	case SRC_SINC_FASTEST :
 				temp_filter.coeffs = fastest_coeffs.coeffs ;
 				temp_filter.coeff_half_len = ARRAY_LEN (fastest_coeffs.coeffs) - 1 ;
 				temp_filter.index_inc = fastest_coeffs.increment ;
