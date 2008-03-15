@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2004 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -53,11 +53,20 @@
 /* Target processor clips on positive float to int conversion. */
 #define CPU_CLIPS_POSITIVE 0
 
+/* Target processor is big endian. */
+#define CPU_IS_BIG_ENDIAN 0
+
+/* Target processor is little endian. */
+#define CPU_IS_LITTLE_ENDIAN 1
+
 /* Set to 1 to enable debugging. */
 #define ENABLE_DEBUG 0
 
 /* Major version of GCC or 3 otherwise. */
 /* #undef GCC_MAJOR_VERSION */
+
+/* Define to 1 if you have the `alarm' function. */
+/* #undef HAVE_ALARM */
 
 /* Define to 1 if you have the `calloc' function. */
 #define HAVE_CALLOC 1
@@ -67,9 +76,6 @@
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef HAVE_DLFCN_H */
-
-/* Set to 1 if you have libfftw3. */
-/* #undef HAVE_FFTW3 */
 
 /* Define to 1 if you have the `floor' function. */
 #define HAVE_FLOOR 1
@@ -86,8 +92,14 @@
 /* Define to 1 if you have the `efence' library (-lefence). */
 /* #undef HAVE_LIBEFENCE */
 
+/* Define to 1 if you have the `fftw' library (-lfftw). */
+/* #undef HAVE_LIBFFTW */
+
 /* Define to 1 if you have the `m' library (-lm). */
 /* #undef HAVE_LIBM */
+
+/* Define to 1 if you have the `rfftw' library (-lrfftw). */
+/* #undef HAVE_LIBRFFTW */
 
 /* Define if you have C99's lrint function. */
 /* #undef HAVE_LRINT */
@@ -107,6 +119,12 @@
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 
+/* Define if you have signal SIGALRM. */
+/* #undef HAVE_SIGALRM */
+
+/* Define to 1 if you have the `signal' function. */
+/* #undef HAVE_SIGNAL */
+
 /* Set to 1 if you have libsndfile. */
 #define HAVE_SNDFILE 1
 
@@ -124,9 +142,6 @@
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
-
-/* Define to 1 if you have the <sys/times.h> header file. */
-/* #undef HAVE_SYS_TIMES_H */
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
@@ -171,12 +186,5 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.1.2"
+#define VERSION "0.1.3"
 
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch
-** revision control system.
-**
-** arch-tag: 7c5a8910-8149-4e89-98ce-be92835e435b
-*/

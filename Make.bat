@@ -20,12 +20,3 @@ goto END
 
 :END
 
-goto skipArchTag
-
- Do not edit or modify anything in this comment block.
- The arch-tag line is a file identity tag for the GNU Arch 
- revision control system.
-
- arch-tag: 8700080b-8d9a-4852-ad8a-8ecd027f1f61
-
-:skipArchTag

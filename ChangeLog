@@ -3,6 +3,9 @@
     * src/* tests/*
     Remove all traces of old SRC_OLD_SINC_* converters.
 
+    * Make.bat Win32/*
+    Preliminary Win32 updates.
+
     * configure.ac
     Bump version to 0.1.3.
 
