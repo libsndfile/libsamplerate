@@ -3,6 +3,9 @@
     * src/* tests/*
     Remove all traces of old SRC_OLD_SINC_* converters.
 
+    * configure.ac
+    Bump version to 0.1.3.
+
 2008-03-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/api_simple.html

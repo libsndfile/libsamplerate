@@ -6,7 +6,7 @@ AC_PREREQ(2.54)
 AC_INIT
 AC_CONFIG_SRCDIR([src/samplerate.c])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(libsamplerate,0.1.3pre7)
+AM_INIT_AUTOMAKE(libsamplerate,0.1.3)
 AM_CONFIG_HEADER(src/config.h)
 
 #------------------------------------------------------------------------------------
@@ -284,14 +284,4 @@ if test x$prefix != "x/usr" ; then
 	echo -e "the addition of \"${prefix}/lib/pkgconfig\" to the "
 	echo -e "PKG_CONFIG_PATH environment variable.\n"
 	fi
-
-ifelse(dnl	
-
- Do not edit or modify anything in this comment block.
- The arch-tag line is a file identity tag for the GNU Arch 
- revision control system.
-
- arch-tag: ea0a8fed-620b-4dff-917a-7a32a2368908
-
-)dnl
 
