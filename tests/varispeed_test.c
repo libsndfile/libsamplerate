@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2006 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2006-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -149,12 +149,4 @@ varispeed_test (int converter, double target_snr)
 
 	return ;
 } /* varispeed_test */
-
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch
-** revision control system.
-**
-** arch-tag: 0c9492de-9c59-4690-ba38-f384b547dc74
-*/
 

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 1999-2003 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 1999-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -817,12 +817,4 @@ audio_close (AUDIO_OUT *audio_out)
 } /* audio_close */
 
 #endif /* HAVE_SNDFILE */
-
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: 46fb3b80-7460-44ec-99b3-c893fa320b86
-*/
 

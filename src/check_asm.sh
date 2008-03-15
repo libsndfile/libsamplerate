@@ -45,8 +45,3 @@ if [ $count -gt 0 ]; then
 
 echo "ok"
 
-# Do not edit or modify anything in this comment block.
-# The arch-tag line is a file identity tag for the GNU Arch
-# revision control system.
-#
-# arch-tag: 538c7cfe-6119-475c-b08e-ba3fef84e9e2

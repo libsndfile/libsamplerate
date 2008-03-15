@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2005 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2005-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -238,10 +238,3 @@ main (void)
 
 #endif
 
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: 0c461ce0-44a6-4f5e-9187-b5ce24cd46e0
-*/

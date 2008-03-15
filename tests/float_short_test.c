@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2003 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2003-2008 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -190,13 +190,4 @@ int_to_float_test (void)
 
 	return ;
 } /* int_to_float_test */
-
-
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: d022730c-fab0-443e-880f-562b87c15e50
-*/
 

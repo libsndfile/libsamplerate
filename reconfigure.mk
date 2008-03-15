@@ -20,8 +20,3 @@ clean:
 	rm -f libtool ltmain.sh aclocal.m4 Makefile.in src/config.h.in config.cache
 
 
-# Do not edit or modify anything in this comment block.
-# The arch-tag line is a file identity tag for the GNU Arch 
-# revision control system.
-#
-# arch-tag: ae9d264d-92e0-41b4-a45d-721df7248935

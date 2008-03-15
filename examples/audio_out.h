@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 1999-2003 Erik de Castro Lopo <erikd@zip.com.au>
+** Copyright (C) 1999-2008 Erik de Castro Lopo <erikd@zip.com.au>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -34,11 +34,4 @@ AUDIO_OUT *audio_open (int channels, int samplerate) ;
 void audio_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_data) ;
 
 void audio_close (AUDIO_OUT *audio_data) ;
-/*
-** Do not edit or modify anything in this comment block.
-** The arch-tag line is a file identity tag for the GNU Arch 
-** revision control system.
-**
-** arch-tag: c5ac2ced-4e3a-480b-b9d5-4d51e2c090fa
-*/
 
