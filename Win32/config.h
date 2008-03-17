@@ -188,3 +188,15 @@
 /* Version number of package */
 #define VERSION "0.1.3"
 
+
+
+/* Extra Win32 hacks. */
+
+/*
+**	Microsoft's compiler still does not support the 1999 ISO C Standard 
+**	which includes 'inline'.
+*/
+
+#define inline __inline
+
+#define sleep _sleep

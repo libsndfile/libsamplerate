@@ -1,3 +1,11 @@
+2008-03-17  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/throughput_test.c
+    Include config.h and float_cast.h." -- tests/throughput_test.c 
+
+    * Make.bat Win32/*
+    Bunch more Win32 updates.
+
 2008-03-15  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/* tests/*
