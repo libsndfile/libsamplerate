@@ -1,4 +1,4 @@
-LIBRARY  libsamplerate.dll
+LIBRARY  libsamplerate-0.dll
 EXPORTS
 
 src_new 				@1
