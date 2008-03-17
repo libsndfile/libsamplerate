@@ -19,13 +19,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 #include <time.h>
 #include <unistd.h>
 
 #include <samplerate.h>
 
+#include "config.h"
+
 #include "util.h"
+#include "float_cast.h"
 
 #define BUFFER_LEN	(1<<16)
 
