@@ -35,3 +35,14 @@ void reverse_data (float *data, int datalen) ;
 
 double calculate_snr (float *data, int len, int expected_peaks) ;
 
+#if OS_IS_WIN32
+/*
+**	Extra Win32 hacks.
+**
+**	Despite Microsoft claim of windows being POSIX compatibile it has '_sleep'
+**	instead of 'sleep'.
+*/
+
+#define sleep _sleep
+#endif
+

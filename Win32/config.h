@@ -198,5 +198,3 @@
 */
 
 #define inline __inline
-
-#define sleep _sleep
