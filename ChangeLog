@@ -1,3 +1,8 @@
+2008-03-23  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * doc/*.html
+    Final documentation tweaks for release.
+
 2008-03-17  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/throughput_test.c
