@@ -20,6 +20,8 @@ compile
 config.*
 configure
 depcomp
+doc/ChangeLog
+doc/NEWS
 examples/sndfile-resample
 examples/timewarp-file
 examples/varispeed-play
