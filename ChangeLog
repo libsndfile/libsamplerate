@@ -1,3 +1,8 @@
+2008-04-26  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * Win32/libsamplerate-0.def
+    Add src_int_to_float/float_to_int_array to exports.
+
 2008-03-23  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/*.html
