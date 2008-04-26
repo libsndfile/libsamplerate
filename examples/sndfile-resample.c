@@ -264,7 +264,8 @@ apply_gain (float * data, long frames, int channels, double max, double gain)
 
 static void
 usage_exit (const char *progname)
-{	const char	*cptr ;
+{	char lsf_ver [128] ;
+	const char	*cptr ;
 	int		k ;
 
 	if ((cptr = strrchr (progname, '/')) != NULL)
@@ -273,18 +274,22 @@ usage_exit (const char *progname)
 	if ((cptr = strrchr (progname, '\\')) != NULL)
 		progname = cptr + 1 ;
 
+	
+	sf_command (NULL, SFC_GET_LIB_VERSION, lsf_ver, sizeof (lsf_ver)) ;
+
 	printf ("\n"
 		"  A Sample Rate Converter using libsndfile for file I/O and Secret \n"
 		"  Rabbit Code (aka libsamplerate) for performing the conversion.\n"
 		"  It works on any file format supported by libsndfile with any \n"
 		"  number of channels (limited only by host memory).\n"
 		"\n"
-		"  libsamplerate version : %s\n"
+		"       %s\n"
+		"       %s\n"
 		"\n"
 		"  Usage : \n"
 		"       %s -to <new sample rate> [-c <number>] <input file> <output file>\n"
 		"       %s -by <amount> [-c <number>] <input file> <output file>\n"
-		"\n", src_get_version (), progname, progname) ;
+		"\n", src_get_version (), lsf_ver, progname, progname) ;
 
 	puts (
 		"  The optional -c argument allows the converter type to be chosen from\n"

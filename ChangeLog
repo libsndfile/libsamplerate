@@ -3,6 +3,9 @@
     * Win32/libsamplerate-0.def
     Add src_int_to_float/float_to_int_array to exports.
 
+    * examples/sndfile-resample.c
+    Add printing of libsndfile version, modify libsamplerate version.
+
 2008-03-23  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/*.html
