@@ -132,8 +132,15 @@ AC_DEFINE_UNQUOTED(CPU_CLIPS_NEGATIVE, ${ac_cv_c_clip_negative},
 
 #====================================================================================
 # Check for libsndfile which is required for the test and example programs.
+AC_ARG_ENABLE(sndfile,
+	AC_HELP_STRING([--disable-sndfile], [disable support for sndfile (default=autodetect)]),
+	[ enable_sndfile=$enableval ], [ enable_sndfile=yes ])
 
-PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.6, ac_cv_sndfile=1, ac_cv_sndfile=0)
+if test "x$enable_sndfile" = "xyes"; then
+	PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.6, ac_cv_sndfile=1, ac_cv_sndfile=0)
+else
+	ac_cv_sndfile=0
+fi
 
 AC_DEFINE_UNQUOTED([HAVE_SNDFILE],$ac_cv_sndfile,[Set to 1 if you have libsndfile.])
 

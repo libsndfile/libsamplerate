@@ -1,3 +1,8 @@
+2008-05-13  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * configure.ac
+    Make use of libsndfile optional. Patch from Samuli Suominen.
+
 2008-04-26  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * Win32/libsamplerate-0.def
