@@ -99,7 +99,7 @@ src_ratio_test (void)
 		{	printf ("\n\nLine %d : SRC ratio %f should not have passed.\n\n", __LINE__, ratio_test [k].ratio) ;
 			exit (1) ;
 			} ;
-		printf ("\t SRC ratio (%8.5f) : %s .................... ok\n", ratio_test [k].ratio,
+		printf ("\t SRC ratio (%9.5f) : %s ................... ok\n", ratio_test [k].ratio,
 			(ratio_test [k].should_pass ? "pass" : "fail")) ;
 		} ;
 
