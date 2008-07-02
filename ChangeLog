@@ -1,3 +1,16 @@
+2008-07-02  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/downsample_test.c
+    New test file to test for buffer overrun bugs at extreme low conversion
+    ratios.
+
+    * tests/Makefile.am
+    Hook above test program into build.
+
+    * src/src_sinc.c
+    Fix buffer overrrun bug at extreme low conversion ratios. Thanks to Russell
+    O'Connor for the report.
+
 2008-05-13  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac
@@ -19,7 +32,7 @@
 2008-03-17  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/throughput_test.c
-    Include config.h and float_cast.h." -- tests/throughput_test.c 
+    Include config.h and float_cast.h." -- tests/throughput_test.c
 
     * Make.bat Win32/*
     Bunch more Win32 updates.
@@ -56,8 +69,8 @@
     * src/old_high_qual_coeffs.h src/old_mid_qual_coeffs.h
     Copy these from the old versions.
 
-    * src/high_qual_coeffs.h src/mid_qual_coeffs.h 
-    New versions of the coefficients with improved SNR.	
+    * src/high_qual_coeffs.h src/mid_qual_coeffs.h
+    New versions of the coefficients with improved SNR.
 
 2008-02-10  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
