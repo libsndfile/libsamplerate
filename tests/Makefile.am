@@ -1,7 +1,7 @@
 noinst_PROGRAMS = misc_test termination_test simple_test callback_test \
 					reset_test multi_channel_test snr_bw_test \
 					float_short_test varispeed_test callback_hang_test \
-					src-evaluate throughput_test
+					src-evaluate throughput_test downsample_test
 
 SAMPLRATEDIR =../src
 INCLUDES = -I$(srcdir)/$(SAMPLRATEDIR)
@@ -39,6 +39,9 @@ callback_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 float_short_test_SOURCES = float_short_test.c util.c util.h
 float_short_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
+downsample_test_SOURCES = downsample_test.c util.c util.h
+downsample_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
+
 varispeed_test_SOURCES = varispeed_test.c util.c util.h calc_snr.c
 varispeed_test_CFLAGS = @FFTW3_CFLAGS@
 varispeed_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
@@ -61,6 +64,7 @@ check: $(noinst_PROGRAMS)
 	./misc_test
 	./termination_test
 	./callback_hang_test
+	./downsample_test
 	./simple_test
 	./callback_test
 	./reset_test
