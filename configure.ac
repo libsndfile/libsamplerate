@@ -6,7 +6,7 @@ AC_PREREQ(2.54)
 AC_INIT
 AC_CONFIG_SRCDIR([src/samplerate.c])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(libsamplerate,0.1.3)
+AM_INIT_AUTOMAKE(libsamplerate,0.1.4)
 AM_CONFIG_HEADER(src/config.h)
 
 #------------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ AM_CONFIG_HEADER(src/config.h)
 #  6. If any interfaces have been removed since the last public release, then set age
 #     to 0.
 
-SHARED_VERSION_INFO="1:3:1"
+SHARED_VERSION_INFO="1:4:1"
 
 AC_PROG_CC
 AC_PROG_INSTALL

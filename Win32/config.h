@@ -77,6 +77,9 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 /* #undef HAVE_DLFCN_H */
 
+/* Set to 1 if you have libfftw3. */
+/* #undef HAVE_FFTW3 */
+
 /* Define to 1 if you have the `floor' function. */
 #define HAVE_FLOOR 1
 
@@ -89,17 +92,8 @@
 /* Define to 1 if you have the <inttypes.h> header file. */
 /* #undef HAVE_INTTYPES_H */
 
-/* Define to 1 if you have the `efence' library (-lefence). */
-/* #undef HAVE_LIBEFENCE */
-
-/* Define to 1 if you have the `fftw' library (-lfftw). */
-/* #undef HAVE_LIBFFTW */
-
 /* Define to 1 if you have the `m' library (-lm). */
 /* #undef HAVE_LIBM */
-
-/* Define to 1 if you have the `rfftw' library (-lrfftw). */
-/* #undef HAVE_LIBRFFTW */
 
 /* Define if you have C99's lrint function. */
 /* #undef HAVE_LRINT */
@@ -142,6 +136,9 @@
 
 /* Define to 1 if you have the <sys/stat.h> header file. */
 #define HAVE_SYS_STAT_H 1
+
+/* Define to 1 if you have the <sys/times.h> header file. */
+/* #undef HAVE_SYS_TIMES_H */
 
 /* Define to 1 if you have the <sys/types.h> header file. */
 #define HAVE_SYS_TYPES_H 1
@@ -186,7 +183,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "0.1.3"
+#define VERSION "0.1.4"
 
 
 

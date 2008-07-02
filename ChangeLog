@@ -11,6 +11,9 @@
     Fix buffer overrrun bug at extreme low conversion ratios. Thanks to Russell
     O'Connor for the report.
 
+    * configure.ac NEWS README doc/*.html
+    Update for 0.1.4 release.
+
 2008-05-13  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac
