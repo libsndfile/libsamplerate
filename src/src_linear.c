@@ -80,7 +80,7 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	/* Calculate samples before first sample in input array. */
 	while (input_index < 1.0 && priv->out_gen < priv->out_count)
 	{
-		if (priv->in_used + priv->channels * input_index > priv->in_count)
+		if (priv->in_used + priv->channels * (1.0 + input_index) >= priv->in_count)
 			break ;
 
 		if (priv->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
@@ -101,7 +101,7 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	input_index = rem ;
 
 	/* Main processing loop. */
-	while (priv->out_gen < priv->out_count && priv->in_used + priv->channels * input_index <= priv->in_count)
+	while (priv->out_gen < priv->out_count && priv->in_used + priv->channels * input_index < priv->in_count)
 	{
 		if (priv->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
 			src_ratio = psrc->last_ratio + priv->out_gen * (data->src_ratio - psrc->last_ratio) / priv->out_count ;

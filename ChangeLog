@@ -6,6 +6,14 @@
     * tests/callback_test.c
     Test with 2 channels for improved generality. Simplify setup.
 
+    * src/src_linear.c src/src_zoh.c
+    Change local variable names to be the same across these two files for easier
+    comparison.
+
+    * src/src_linear.c
+    Fix a bug where the the converter was reading beyond the end of the input.
+    Thanks to Paul Kelly for the bug report.
+
 2008-07-02  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/downsample_test.c
