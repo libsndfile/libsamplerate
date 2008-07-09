@@ -1,3 +1,9 @@
+2008-07-10  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/samplerate.c
+    Fix a valgrind warning which occured when the call back function returns
+    a count of zero without modifying the pointer value. Thanks to Paul Kelly.
+
 2008-07-09  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/src_sinc.c

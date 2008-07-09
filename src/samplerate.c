@@ -132,16 +132,13 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 	if (data == NULL)
 		return SRC_ERR_BAD_DATA ;
 
-	/* Check src_ratio is in range. */
-	if (is_bad_src_ratio (data->src_ratio))
-		return SRC_ERR_BAD_SRC_RATIO ;
-
 	/* And that data_in and data_out are valid. */
 	if (data->data_in == NULL || data->data_out == NULL)
 		return SRC_ERR_BAD_DATA_PTR ;
 
-	if (data->data_in == NULL)
-		data->input_frames = 0 ;
+	/* Check src_ratio is in range. */
+	if (is_bad_src_ratio (data->src_ratio))
+		return SRC_ERR_BAD_SRC_RATIO ;
 
 	if (data->input_frames < 0)
 		data->input_frames = 0 ;
@@ -226,7 +223,11 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 	while (output_frames_gen < frames)
 	{
 		if (src_data.input_frames == 0)
-		{	float *ptr ;
+		{	/*	Use a dummy array for the case where the callback function
+			**	returns without setting the ptr.
+			*/
+			float dummy [1] ;
+			float *ptr = dummy ;
 
 			src_data.input_frames = psrc->callback_func (psrc->user_callback_data, &ptr) ;
 			src_data.data_in = ptr ;
