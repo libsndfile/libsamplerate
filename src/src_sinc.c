@@ -78,9 +78,7 @@ static void sinc_reset (SRC_PRIVATE *psrc) ;
 
 static inline increment_t
 double_to_fp (double x)
-{	if (sizeof (increment_t) == 8)
-		return (llrint ((x) * FP_ONE)) ;
-	return (lrint ((x) * FP_ONE)) ;
+{	return (lrint ((x) * FP_ONE)) ;
 } /* double_to_fp */
 
 static inline increment_t

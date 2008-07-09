@@ -1,3 +1,8 @@
+2008-07-09  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/src_sinc.c
+    Remove use of llrint because sizeof (increment_t) is guaranteed not to be 8.
+
 2008-07-02  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/downsample_test.c
