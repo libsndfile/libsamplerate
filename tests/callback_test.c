@@ -29,6 +29,7 @@
 #define CB_READ_LEN		256
 
 static void callback_test (int converter, double ratio) ;
+static void end_of_stream_test (int converter) ;
 
 int
 main (void)
@@ -54,6 +55,12 @@ main (void)
 
 	puts ("") ;
 
+	puts ("    End of stream test :") ;
+	end_of_stream_test (SRC_ZERO_ORDER_HOLD) ;
+	end_of_stream_test (SRC_LINEAR) ;
+	end_of_stream_test (SRC_SINC_FASTEST) ;
+
+	puts ("") ;
 	return 0 ;
 } /* main */
 
@@ -63,6 +70,7 @@ main (void)
 typedef struct
 {	int channels ;
 	long count, total ;
+	int end_of_data ;
 	float data [BUFFER_LEN] ;
 } TEST_CB_DATA ;
 
@@ -105,6 +113,7 @@ callback_test (int converter, double src_ratio)
 
 	test_callback_data.channels = 2 ;
 	test_callback_data.count = 0 ;
+	test_callback_data.end_of_data = 0 ;
 	test_callback_data.total = ARRAY_LEN (test_callback_data.data) ;
 
 	if ((src_state = src_callback_new (test_callback_func, converter, test_callback_data.channels, &error, &test_callback_data)) == NULL)
@@ -141,3 +150,94 @@ callback_test (int converter, double src_ratio)
 	return ;
 } /* callback_test */
 
+/*=====================================================================================
+*/
+
+static long
+eos_callback_func (void *cb_data, float **data)
+{
+	TEST_CB_DATA *pcb_data ;
+	long frames ;
+
+	if (data == NULL)
+		return 0 ;
+
+	if ((pcb_data = cb_data) == NULL)
+		return 0 ;
+
+	/*
+	**	Return immediately if there is no more data.
+	**	In this case, the output pointer 'data' will not be set and
+	**	valgrind should not warn about it.
+	*/
+	if (pcb_data->end_of_data)
+		return 0 ;
+
+	if (pcb_data->total - pcb_data->count > CB_READ_LEN)
+		frames = CB_READ_LEN / pcb_data->channels ;
+	else
+		frames = (pcb_data->total - pcb_data->count) / pcb_data->channels ;
+
+	*data = pcb_data->data + pcb_data->count ;
+	pcb_data->count += frames ;
+
+	/*
+	**	Set end_of_data so that the next call to the callback function will
+	**	return zero ocunt without setting the 'data' pointer.
+	*/
+	if (pcb_data->total < 2 * pcb_data->count)
+		pcb_data->end_of_data = 1 ;
+
+	return frames ;
+} /* eos_callback_data */
+
+
+static void
+end_of_stream_test (int converter)
+{	static TEST_CB_DATA test_callback_data ;
+	static float output [BUFFER_LEN] ;
+
+	SRC_STATE	*src_state ;
+
+	double	src_ratio = 0.3 ;
+	long	read_count, read_total ;
+	int 	error ;
+
+	printf ("\t%-30s        ........... ", src_get_name (converter)) ;
+	fflush (stdout) ;
+
+	test_callback_data.channels = 2 ;
+	test_callback_data.count = 0 ;
+	test_callback_data.end_of_data = 0 ;
+	test_callback_data.total = ARRAY_LEN (test_callback_data.data) ;
+
+	if ((src_state = src_callback_new (eos_callback_func, converter, test_callback_data.channels, &error, &test_callback_data)) == NULL)
+	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
+		exit (1) ;
+		} ;
+
+	read_total = 0 ;
+	do
+	{	/* We will be throwing away output data, so just grab as much as possible. */
+		read_count = ARRAY_LEN (output) / test_callback_data.channels ;
+		read_count = src_callback_read (src_state, src_ratio, read_count, output) ;
+		read_total += read_count ;
+		}
+	while (read_count > 0) ;
+
+	if ((error = src_error (src_state)) != 0)
+	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
+		exit (1) ;
+		} ;
+
+	src_state = src_delete (src_state) ;
+
+	if (test_callback_data.end_of_data == 0)
+	{	printf ("\n\nLine %d : test_callback_data.end_of_data should not be 0."
+				" This is a bug in the test.\n\n", __LINE__) ;
+		exit (1) ;
+		} ;
+
+	puts ("ok") ;
+	return ;
+} /* end_of_stream_test */
