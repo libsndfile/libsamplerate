@@ -23,7 +23,7 @@
 
 static void
 downsample_test (int converter)
-{	static float in [1000], out[10] ;
+{	static float in [1000], out [10] ;
 	SRC_DATA data ;
 
     printf ("        downsample_test     (%-28s) ....... ", src_get_name (converter)) ;
