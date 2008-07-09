@@ -25,7 +25,7 @@
 
 #include "util.h"
 
-#define	BUFFER_LEN		90000
+#define	BUFFER_LEN		10000
 #define CB_READ_LEN		256
 
 static void callback_test (int converter, double ratio) ;
@@ -79,9 +79,9 @@ test_callback_func (void *cb_data, float **data)
 		return 0 ;
 
 	if (pcb_data->total - pcb_data->count > CB_READ_LEN)
-		frames = CB_READ_LEN ;
+		frames = CB_READ_LEN / pcb_data->channels ;
 	else
-		frames = pcb_data->total - pcb_data->count ;
+		frames = (pcb_data->total - pcb_data->count) / pcb_data->channels ;
 
 	*data = pcb_data->data + pcb_data->count ;
 	pcb_data->count += frames ;
@@ -98,42 +98,25 @@ callback_test (int converter, double src_ratio)
 	SRC_STATE	*src_state ;
 
 	long	read_count, read_total ;
-	int 	input_len, output_len, error ;
+	int 	error ;
 
 	printf ("\tcallback_test    (SRC ratio = %6.4f) ........... ", src_ratio) ;
 	fflush (stdout) ;
 
-	/* Calculate maximun input and output lengths. */
-	if (src_ratio >= 1.0)
-	{	output_len = BUFFER_LEN ;
-		input_len = (int) floor (BUFFER_LEN / src_ratio) ;
-		}
-	else
-	{	input_len = BUFFER_LEN ;
-		output_len = (int) floor (BUFFER_LEN * src_ratio) ;
-		} ;
-
-	/* Reduce input_len by 10 so output is longer than necessary. */
-	input_len -= 10 ;
-
-	if (output_len > BUFFER_LEN)
-	{	printf ("\n\nLine %d : output_len > BUFFER_LEN\n\n", __LINE__) ;
-		exit (1) ;
-		} ;
-
-	test_callback_data.channels = 1 ;
+	test_callback_data.channels = 2 ;
 	test_callback_data.count = 0 ;
-	test_callback_data.total = input_len ;
+	test_callback_data.total = ARRAY_LEN (test_callback_data.data) ;
 
-	if ((src_state = src_callback_new (test_callback_func, converter, 1, &error, &test_callback_data)) == NULL)
+	if ((src_state = src_callback_new (test_callback_func, converter, test_callback_data.channels, &error, &test_callback_data)) == NULL)
 	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
 		exit (1) ;
 		} ;
 
 	read_total = 0 ;
 	do
-	{	read_count = (ARRAY_LEN (output) - read_total > CB_READ_LEN) ? CB_READ_LEN : ARRAY_LEN (output) - read_total ;
-		read_count = src_callback_read (src_state, src_ratio, read_count, output + read_total) ;
+	{	/* We will be throwing away output data, so just grab as much as possible. */
+		read_count = ARRAY_LEN (output) / test_callback_data.channels ;
+		read_count = src_callback_read (src_state, src_ratio, read_count, output) ;
 		read_total += read_count ;
 		}
 	while (read_count > 0) ;
@@ -145,10 +128,11 @@ callback_test (int converter, double src_ratio)
 
 	src_state = src_delete (src_state) ;
 
-	if (fabs (read_total - src_ratio * input_len) > 2)
+	if (fabs (read_total - src_ratio * ARRAY_LEN (test_callback_data.data)) > src_ratio)
 	{	printf ("\n\nLine %d : input / output length mismatch.\n\n", __LINE__) ;
-		printf ("    input len  : %d\n", input_len) ;
-		printf ("    output len : %ld (should be %g +/- 2)\n\n", read_total, floor (0.5 + src_ratio * input_len)) ;
+		printf ("    input len  : %d\n", ARRAY_LEN (test_callback_data.data)) ;
+		printf ("    output len : %ld (should be %g +/- %g)\n\n", read_total,
+					floor (0.5 + src_ratio * ARRAY_LEN (test_callback_data.data)), ceil (src_ratio)) ;
 		exit (1) ;
 		} ;
 

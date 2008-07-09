@@ -3,6 +3,9 @@
     * src/src_sinc.c
     Remove use of llrint because sizeof (increment_t) is guaranteed not to be 8.
 
+    * tests/callback_test.c
+    Test with 2 channels for improved generality. Simplify setup.
+
 2008-07-02  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/downsample_test.c
