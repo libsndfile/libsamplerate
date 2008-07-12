@@ -12,6 +12,7 @@
 Makefile
 Makefile.in
 Octave/*.h
+Octave/make_quad_filter
 Octave/make_src_filter
 Win32/Makefile.mingw
 aclocal.m4
