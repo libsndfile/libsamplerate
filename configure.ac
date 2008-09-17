@@ -34,6 +34,7 @@ AC_PROG_MAKE_SET
 AC_PROG_LN_S
 AC_PROG_LIBTOOL
 AM_PROG_LIBTOOL
+AC_PROG_MKDIR_P
 
 if test "x-$build_os-$host_os-$target_os" = x-mingw32-mingw32-mingw32 ; then
 	AC_CHECK_PROG(DLLTOOL, dlltool, dlltool)
