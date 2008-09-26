@@ -18,6 +18,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
 #include <math.h>
 
 #include	"util.h"
@@ -163,4 +165,35 @@ reverse_data (float *data, int datalen)
 		} ;
 
 } /* reverse_data */
+
+void
+print_cpu_name (void)
+{	char buffer [512] ;
+	FILE * file ;
+
+	if ((file = fopen ("/proc/cpuinfo", "r")) == NULL)
+	{	puts ("Unknown") ;
+		return ;
+		} ;
+
+	while (fgets (buffer, sizeof (buffer), file) != NULL)
+		if (strstr (buffer, "model name") == buffer)
+		{	const char * cptr ;
+	
+			if ((cptr = strchr (buffer, ':')) != NULL)
+			{	cptr ++ ;
+				while (isspace (cptr [0])) cptr ++ ;
+				printf ("%s", cptr) ;
+				goto complete ;
+				} ;
+			} ;
+
+	goto failed ;
+complete :
+	fclose (file) ;
+	return ;
+failed :
+	puts ("Unknown") ;
+	return ;
+} /* print_cpu_name */
 
