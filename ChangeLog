@@ -3,6 +3,9 @@
     * tests/util.[ch]
     Add function print_cpu_name.
 
+    * tests/throughput_test.c
+    Add ability to do best-of N runs, print CPU type.
+
 2008-09-17  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac
