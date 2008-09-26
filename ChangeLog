@@ -1,3 +1,8 @@
+2008-09-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/src_sinc.c
+    Optimization. About a 5% improvement in throughput.
+
 2008-09-26  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/util.[ch]
