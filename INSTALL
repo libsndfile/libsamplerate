@@ -28,7 +28,7 @@ Preliminaries
    environment variable. If libsndfile is installed in /usr/local/lib,
    you will need to set PKG_CONFIG_PATH using:
 
-       export PKG_CONFIG=/usr/local/lib/pkgconfig
+       export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
 
    Pkg-config should now work. If it doesn't you need to fix it if you
    want to use sndfile-resample.
