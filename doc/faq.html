@@ -74,6 +74,10 @@ Author :<BR>Erik de Castro Lopo
 <A HREF="#Q006">Q6 : I'm use the SRC_SINC_* converters and up-sampling by a ratio of 
 	2. I reset the converter and put in 1000 samples and I expect to get 2000
 	samples out, but I'm getting less than that. Why?</A><BR><BR>
+<A HREF="#Q007">Q7 : I have input and output sample rates that are integer
+	values, but the API wants me to divide one by the other and put the result
+	in a floating point number. Won't this case problems for long running
+	conversions?</A><BR><BR>
 </P>
 <HR>
 <!-- ========================================================================= -->
@@ -97,6 +101,7 @@ This means that anyone using libsamplerate should normalize its output before
 doing things like saving the audio to a 16 bit WAV file.
 </P>
 
+<!-- pepper -->
 <!-- ========================================================================= -->
 
 <a NAME="Q002"></a>
@@ -112,7 +117,7 @@ The best way of detecting its presence is using something like this in configure
 </p>
 
 <pre>
-    PKG_CHECK_MODULES(SAMPLERATE, samplerate >= 0.0.15,
+    PKG_CHECK_MODULES(SAMPLERATE, samplerate >= 0.1.3,
             ac_cv_samplerate=1, ac_cv_samplerate=0)
 
     AC_DEFINE_UNQUOTED([HAVE_SAMPLERATE],${ac_cv_samplerate},
@@ -140,7 +145,7 @@ libsamplerate configure process. For instance on my system I get this:
 
       Configuration summary :
 
-        Version : ..................... 0.1.0
+        Version : ..................... 0.1.3
         Enable debugging : ............ no
 
       Tools :
@@ -162,6 +167,7 @@ libsamplerate configure process. For instance on my system I get this:
 </pre>
 
 
+<!-- pepper -->
 <!-- ========================================================================= -->
 <A NAME="Q003"></A>
 <H2><BR><B>Q3 : If I upsample and downsample to the original rate, for
@@ -188,6 +194,7 @@ The other factor is that the filter itself can introduce transient artifacts
 which causes the output to be different to the input.
 </P>
 
+<!-- pepper -->
 <!-- ========================================================================= -->
 <A NAME="Q004"></A>
 <H2><BR><B>Q4 : If I ran src_simple on small chunks (say 160 frames) would that
@@ -201,6 +208,7 @@ The src_simple() was designed to provide a simple to use interface for people
 who wanted to do sample rate conversion on say, a whole file all at once.
 </P>
 
+<!-- pepper -->
 <!-- ========================================================================= -->
 <A NAME="Q005"></A>
 <H2><BR><B>Q5 : I'm using libsamplerate but the high quality settings
@@ -262,6 +270,7 @@ adequately demonstrates your problem.
 This chunk should not need to be any more than 100 lines of code.
 </P>
 
+<!-- pepper -->
 <!-- ========================================================================= -->
 <A NAME="Q006"></A>
 <H2><BR><B>Q6 : I'm use the SRC_SINC_* converters and up-sampling by a ratio of 
@@ -287,6 +296,59 @@ input, you will always get 2000 samples at the output.
 You will always need to keep track of the number of input frames used on each
 call to src_process() and deal with these values appropriately.
 </P>
+
+<!-- pepper -->
+<!-- ========================================================================= -->
+<A NAME="Q007"></A>
+<H2><BR><B>Q7 : I have input and output sample rates that are integer
+	values, but the API wants me to divide one by the other and put the result
+	in a floating point number. Won't this case problems for long running
+	conversions?</B></H2>
+<P>
+The short answer is no, the precision of the ratio is many orders of magnitude
+more than is really needed.
+</P>
+<P>
+For the long answer, lets do come calculations.
+Firstly, the <tt>src_ratio</tt> field is double precision floating point number
+which has
+	<a href="http://en.wikipedia.org/wiki/Double_precision">
+	53 bits of precision</a>.
+</P>
+<P>
+That means that the maximum error in your ratio converted to a double is one
+bit in 2^53 which means the the double float value would be wrong by one sample
+after 9007199254740992 samples have passed or wrong by more than half a sample
+wrong after half that many (4503599627370496 samples) have passed.
+</P>
+<P>
+Now if for example our output sample rate is 96kHz then
+</P>
+<pre>
+    4503599627370496 samples at 96kHz is 46912496118 seconds
+    46912496118 seconds is 781874935 minutes
+    781874935 minutes is 13031248 hours
+    13031248 hours is 542968 days
+    542968 days is 1486 years
+</pre>
+<P>
+So, after 1486 years, the input will be wrong by more than half of one sampling
+period.
+</P>
+<p>
+All this assumes that the crystal oscillators uses to sample the audio stream
+is perfect.
+This is not the case.
+According to
+	<a href="http://www.ieee-uffc.org/freqcontrol/quartz/vig/vigcomp.htm">
+	this web site</a>,
+the accuracy of standard crystal oscillators (XO, TCXO, OCXO) is at best
+1 in 100 million.
+The <tt>src_ratio</tt> is therefore 45035996 times more accurate than the
+crystal clock source used to sample the original audio signal and any potential
+problem with the <tt>src_ratio</tt> being a floating point number will be
+completely swamped by sampling inaccuracies.
+</p>
 
 <!-- <A HREF="mailto:aldel@mega-nerd.com">For the spam bots</A> -->
 
