@@ -1,3 +1,8 @@
+2008-11-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * doc/index.html
+    Update best converter specs.
+
 2008-10-22  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * examples/audio_out.c
