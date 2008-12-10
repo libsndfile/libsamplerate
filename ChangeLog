@@ -6,6 +6,9 @@
     * configure.ac
     Various updates.
 
+    * tests/multichan_throughput_test.c tests/Makefile.am
+    Add new test and hook into build.
+
 2008-11-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/index.html

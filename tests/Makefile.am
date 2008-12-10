@@ -1,7 +1,8 @@
 noinst_PROGRAMS = misc_test termination_test simple_test callback_test \
 					reset_test multi_channel_test snr_bw_test \
 					float_short_test varispeed_test callback_hang_test \
-					src-evaluate throughput_test downsample_test
+					src-evaluate throughput_test multichan_throughput_test \
+					downsample_test
 
 SAMPLRATEDIR =../src
 INCLUDES = -I$(srcdir)/$(SAMPLRATEDIR)
@@ -48,13 +49,17 @@ varispeed_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 # This program is for evaluating other sample rate converters.
 
-src_evaluate_SOURCES = src-evaluate.c calc_snr.c util.c
-src_evaluate_CFLAGS = @SNDFILE_CFLAGS@ @FFTW3_CFLAGS@
-src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
-
 throughput_test_CFLAGS = $(AM_CFLAGS) @FFTW3_CFLAGS@
 throughput_test_SOURCES = throughput_test.c  util.c calc_snr.c
 throughput_test_LDADD  = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
+
+multichan_throughput_test_CFLAGS = $(AM_CFLAGS) @FFTW3_CFLAGS@
+multichan_throughput_test_SOURCES = multichan_throughput_test.c  util.c calc_snr.c
+multichan_throughput_test_LDADD  = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
+
+src_evaluate_SOURCES = src-evaluate.c calc_snr.c util.c
+src_evaluate_CFLAGS = @SNDFILE_CFLAGS@ @FFTW3_CFLAGS@
+src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
 
 #===============================================================================
 
