@@ -1,13 +1,26 @@
-# Copyright (C) 2002-2004 Erik de Castro Lopo (erikd AT mega-nerd DOT com).
+# Copyright (C) 2002-2008 Erik de Castro Lopo (erikd AT mega-nerd DOT com).
 
-dnl Require autoconf version >= 2.54)
-AC_PREREQ(2.54)
+dnl Require autoconf version >= 2.57)
+AC_PREREQ(2.57)
 
-AC_INIT
+AC_INIT([libsamplerate],[0.1.4pre1],[erikd@mega-nerd.com])
+
+# Put config stuff in Cfg.
+AC_CONFIG_AUX_DIR(Cfg)
+
 AC_CONFIG_SRCDIR([src/samplerate.c])
 AC_CANONICAL_TARGET([])
-AM_INIT_AUTOMAKE(libsamplerate,0.1.4)
-AM_CONFIG_HEADER(src/config.h)
+
+AC_CONFIG_MACRO_DIR([M4])
+
+AM_INIT_AUTOMAKE($PACKAGE_NAME,$PACKAGE_VERSION)
+AC_CONFIG_HEADER(src/config.h)
+
+
+dnl Add parameters for aclocal
+AC_SUBST(ACLOCAL_AMFLAGS, "-I M4")
+
+AC_LANG([C])
 
 #------------------------------------------------------------------------------------
 # Rules for library version information:
@@ -28,12 +41,17 @@ AM_CONFIG_HEADER(src/config.h)
 SHARED_VERSION_INFO="1:4:1"
 
 AC_PROG_CC
+AM_PROG_CC_C_O
+
+# Do not check for F77.
+define([AC_LIBTOOL_LANG_F77_CONFIG], [:])dnl
+
+AM_PROG_LIBTOOL
+
 AC_PROG_INSTALL
 
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
-AC_PROG_LIBTOOL
-AM_PROG_LIBTOOL
 AC_PROG_MKDIR_P
 
 if test "x-$build_os-$host_os-$target_os" = x-mingw32-mingw32-mingw32 ; then

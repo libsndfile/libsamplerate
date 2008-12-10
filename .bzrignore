@@ -9,6 +9,12 @@
 .depend
 .deps
 .libs
+Cfg
+M4/libtool.m4
+M4/ltoptions.m4
+M4/ltsugar.m4
+M4/ltversion.m4
+M4/lt~obsolete.m4
 Makefile
 Makefile.in
 Octave/*.h
@@ -39,4 +45,3 @@ stamp-h1
 tests/*_test
 tests/benchmark
 tests/src-evaluate
-Cfg

@@ -1,3 +1,11 @@
+2008-12-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * reconfigure.mk autogen.sh
+    Remove the first, add the second.
+
+    * configure.ac
+    Various updates.
+
 2008-11-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/index.html
