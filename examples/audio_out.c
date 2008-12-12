@@ -20,7 +20,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <errno.h>
 
 #include <config.h>
 
@@ -793,7 +792,8 @@ audio_close (AUDIO_OUT *audio_out)
 AUDIO_OUT *
 audio_open (int channels, int samplerate)
 {
-	channels = samplerate ;
+	(void) channels ;
+	(void) samplerate ;
 
 	return NULL ;
 } /* audio_open */
@@ -801,9 +801,9 @@ audio_open (int channels, int samplerate)
 void
 audio_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_data)
 {
-	callback = NULL ;
-	audio_out = NULL ;
-	callback_data = NULL ;
+	(void) callback ;
+	(void) audio_out ;
+	(void) callback_data ;
 
 	return ;
 } /* audio_play */

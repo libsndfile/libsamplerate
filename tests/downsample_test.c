@@ -17,6 +17,7 @@
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <samplerate.h>
 
 #include "util.h"
@@ -35,7 +36,10 @@ downsample_test (int converter)
 	data.data_in = in ;
 	data.data_out = out ;
 
-	src_simple (&data, converter, 1) ;
+	if (src_simple (&data, converter, 1))
+	{	puts ("src_simple failed.") ;
+		exit (1) ;
+		} ;
 
 	puts ("ok") ;
 } /* downsample_test */
