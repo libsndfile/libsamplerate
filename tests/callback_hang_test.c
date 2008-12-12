@@ -107,7 +107,7 @@ callback_hang_test (int converter)
 static void
 alarm_handler (int number)
 {
-	number = 0 ;
+	(void) number ;
 	printf ("\n\n    Error : Hang inside src_callback_read() detected. Exiting!\n\n") ;
 	exit (1) ;
 } /* alarm_handler */
@@ -117,7 +117,7 @@ input_callback (void *cb_data, float **data)
 {
 	static float buffer [20] ;
 
-	cb_data = NULL ;
+	(void) cb_data ;
 	*data = buffer ;
 
 	return ARRAY_LEN (buffer) ;

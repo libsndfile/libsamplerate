@@ -87,7 +87,8 @@ src_callback_new (src_callback_t func, int converter_type, int channels, int *er
 	if (error != NULL)
 		*error = 0 ;
 
-	src_state = src_new (converter_type, channels, error) ;
+	if ((src_state = src_new (converter_type, channels, error)) == NULL)
+		return NULL ;
 
 	src_reset (src_state) ;
 

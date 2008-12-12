@@ -1,3 +1,13 @@
+2008-12-12  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    *  src/samplerate.c examples/audio_out.c tests/*.c
+    Fix a couple of very minor warnings uncovered by Erik Hovland using a
+    static analysis tool.
+
+    * src/src_*.c
+    Fix a potential memory leak. Thanks to Peter G. Vavaroutsos for point this
+    out.
+
 2008-12-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * reconfigure.mk autogen.sh
