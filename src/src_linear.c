@@ -174,11 +174,8 @@ linear_set_converter (SRC_PRIVATE *psrc, int src_enum)
 		return SRC_ERR_BAD_CONVERTER ;
 
 	if (psrc->private_data != NULL)
-	{	priv = (LINEAR_DATA*) psrc->private_data ;
-		if (priv->linear_magic_marker != LINEAR_MAGIC_MARKER)
-		{	free (psrc->private_data) ;
-			psrc->private_data = NULL ;
-			} ;
+	{	free (psrc->private_data) ;
+		psrc->private_data = NULL ;
 		} ;
 
 	if (psrc->private_data == NULL)

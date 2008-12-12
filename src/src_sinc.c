@@ -154,11 +154,8 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 		return SRC_ERR_SHIFT_BITS ;
 
 	if (psrc->private_data != NULL)
-	{	filter = (SINC_FILTER*) psrc->private_data ;
-		if (filter->sinc_magic_marker != SINC_MAGIC_MARKER)
-		{	free (psrc->private_data) ;
-			psrc->private_data = NULL ;
-			} ;
+	{	free (psrc->private_data) ;
+		psrc->private_data = NULL ;
 		} ;
 
 	memset (&temp_filter, 0, sizeof (temp_filter)) ;
