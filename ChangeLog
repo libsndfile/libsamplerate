@@ -8,6 +8,9 @@
     Fix a potential memory leak. Thanks to Peter G. Vavaroutsos for point this
     out.
 
+    * tests/multi_channel_test.c
+    Robustify test.
+
 2008-12-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * reconfigure.mk autogen.sh
