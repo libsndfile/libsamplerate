@@ -3,6 +3,10 @@
     * tests/multichan_throughput_test.c
     Do throughput test on all three SINC based converters.
 
+    * src/src_sinc.c
+    Rejig converter so filter coefficients are calculated once per frame and
+    special case channel counts of 1, 2 and 4.
+
 2008-12-12  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     *  src/samplerate.c examples/audio_out.c tests/*.c
