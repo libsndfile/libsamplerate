@@ -22,12 +22,15 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 
 #include <samplerate.h>
 
 #include "util.h"
-#define	BUFFER_LEN		(1<<15)
+#define	BUFFER_LEN		50000
 #define	BLOCK_LEN		(12)
+
+#define	MAX_CHANNELS	4
 
 static void simple_test (int converter, int channel_count, double target_snr) ;
 static void process_test (int converter, int channel_count, double target_snr) ;
@@ -35,39 +38,52 @@ static void callback_test (int converter, int channel_count, double target_snr) 
 
 int
 main (void)
-{
+{	double target ;
+
 	puts ("\n    Zero Order Hold interpolator :") ;
-	simple_test		(SRC_ZERO_ORDER_HOLD, 1, 45.0) ;
-	process_test	(SRC_ZERO_ORDER_HOLD, 1, 45.0) ;
-	callback_test	(SRC_ZERO_ORDER_HOLD, 1, 45.0) ;
-	simple_test		(SRC_ZERO_ORDER_HOLD, 2, 44.0) ;
-	process_test	(SRC_ZERO_ORDER_HOLD, 2, 44.0) ;
-	callback_test	(SRC_ZERO_ORDER_HOLD, 2, 44.0) ;
-	simple_test		(SRC_ZERO_ORDER_HOLD, 3, 44.0) ;
-	process_test	(SRC_ZERO_ORDER_HOLD, 3, 44.0) ;
-	callback_test	(SRC_ZERO_ORDER_HOLD, 3, 44.0) ;
+	target = 38.0 ;
+	simple_test		(SRC_ZERO_ORDER_HOLD, 1, target) ;
+	process_test	(SRC_ZERO_ORDER_HOLD, 1, target) ;
+	callback_test	(SRC_ZERO_ORDER_HOLD, 1, target) ;
+	simple_test		(SRC_ZERO_ORDER_HOLD, 2, target) ;
+	process_test	(SRC_ZERO_ORDER_HOLD, 2, target) ;
+	callback_test	(SRC_ZERO_ORDER_HOLD, 2, target) ;
+	simple_test		(SRC_ZERO_ORDER_HOLD, 3, target) ;
+	process_test	(SRC_ZERO_ORDER_HOLD, 3, target) ;
+	callback_test	(SRC_ZERO_ORDER_HOLD, 3, target) ;
+	simple_test		(SRC_ZERO_ORDER_HOLD, 4, target) ;
+	process_test	(SRC_ZERO_ORDER_HOLD, 4, target) ;
+	callback_test	(SRC_ZERO_ORDER_HOLD, 4, target) ;
 
 	puts ("\n    Linear interpolator :") ;
-	simple_test		(SRC_LINEAR, 1, 92.0) ;
-	process_test	(SRC_LINEAR, 1, 92.0) ;
-	callback_test	(SRC_LINEAR, 1, 92.0) ;
-	simple_test		(SRC_LINEAR, 2, 90.0) ;
-	process_test	(SRC_LINEAR, 2, 90.0) ;
-	callback_test	(SRC_LINEAR, 2, 90.0) ;
-	simple_test		(SRC_LINEAR, 3, 88.0) ;
-	process_test	(SRC_LINEAR, 3, 88.0) ;
-	callback_test	(SRC_LINEAR, 3, 88.0) ;
+	target = 79.0 ;
+	simple_test		(SRC_LINEAR, 1, target) ;
+	process_test	(SRC_LINEAR, 1, target) ;
+	callback_test	(SRC_LINEAR, 1, target) ;
+	simple_test		(SRC_LINEAR, 2, target) ;
+	process_test	(SRC_LINEAR, 2, target) ;
+	callback_test	(SRC_LINEAR, 2, target) ;
+	simple_test		(SRC_LINEAR, 3, target) ;
+	process_test	(SRC_LINEAR, 3, target) ;
+	callback_test	(SRC_LINEAR, 3, target) ;
+	simple_test		(SRC_LINEAR, 4, target) ;
+	process_test	(SRC_LINEAR, 4, target) ;
+	callback_test	(SRC_LINEAR, 4, target) ;
 
 	puts ("\n    Sinc interpolator :") ;
-	simple_test		(SRC_SINC_FASTEST, 1, 100.0) ;
-	process_test	(SRC_SINC_FASTEST, 1, 100.0) ;
-	callback_test	(SRC_SINC_FASTEST, 1, 100.0) ;
-	simple_test		(SRC_SINC_FASTEST, 2, 100.0) ;
-	process_test	(SRC_SINC_FASTEST, 2, 100.0) ;
-	callback_test	(SRC_SINC_FASTEST, 2, 100.0) ;
-	simple_test		(SRC_SINC_FASTEST, 3, 100.0) ;
-	process_test	(SRC_SINC_FASTEST, 3, 100.0) ;
-	callback_test	(SRC_SINC_FASTEST, 3, 100.0) ;
+	target = 100.0 ;
+	simple_test		(SRC_SINC_FASTEST, 1, target) ;
+	process_test	(SRC_SINC_FASTEST, 1, target) ;
+	callback_test	(SRC_SINC_FASTEST, 1, target) ;
+	simple_test		(SRC_SINC_FASTEST, 2, target) ;
+	process_test	(SRC_SINC_FASTEST, 2, target) ;
+	callback_test	(SRC_SINC_FASTEST, 2, target) ;
+	simple_test		(SRC_SINC_FASTEST, 3, target) ;
+	process_test	(SRC_SINC_FASTEST, 3, target) ;
+	callback_test	(SRC_SINC_FASTEST, 3, target) ;
+	simple_test		(SRC_SINC_FASTEST, 4, target) ;
+	process_test	(SRC_SINC_FASTEST, 4, target) ;
+	callback_test	(SRC_SINC_FASTEST, 4, target) ;
 
 	puts ("") ;
 
@@ -77,10 +93,10 @@ main (void)
 /*==============================================================================
 */
 
-static float input_serial		[BUFFER_LEN] ;
-static float input_interleaved	[BUFFER_LEN] ;
-static float output_interleaved	[BUFFER_LEN] ;
-static float output_serial		[BUFFER_LEN] ;
+static float input_serial		[BUFFER_LEN * MAX_CHANNELS] ;
+static float input_interleaved	[BUFFER_LEN * MAX_CHANNELS] ;
+static float output_interleaved	[BUFFER_LEN * MAX_CHANNELS] ;
+static float output_serial		[BUFFER_LEN * MAX_CHANNELS] ;
 
 static void
 simple_test (int converter, int channel_count, double target_snr)
@@ -92,12 +108,14 @@ simple_test (int converter, int channel_count, double target_snr)
 	printf ("\t%-22s (%d channel%c) ............. ", "simple_test", channel_count, channel_count > 1 ? 's' : ' ') ;
 	fflush (stdout) ;
 
+	assert (channel_count <= MAX_CHANNELS) ;
+
 	memset (input_serial, 0, sizeof (input_serial)) ;
 	memset (input_interleaved, 0, sizeof (input_interleaved)) ;
 	memset (output_interleaved, 0, sizeof (output_interleaved)) ;
 	memset (output_serial, 0, sizeof (output_serial)) ;
 
-	frames = MIN (ARRAY_LEN (input_serial) / channel_count, 1 << 16) ;
+	frames = BUFFER_LEN ;
 
 	/* Calculate channel_count separate windowed sine waves. */
 	for (ch = 0 ; ch < channel_count ; ch++)
@@ -162,16 +180,18 @@ process_test (int converter, int channel_count, double target_snr)
 	printf ("\t%-22s (%d channel%c) ............. ", "process_test", channel_count, channel_count > 1 ? 's' : ' ') ;
 	fflush (stdout) ;
 
+	assert (channel_count <= MAX_CHANNELS) ;
+
 	memset (input_serial, 0, sizeof (input_serial)) ;
 	memset (input_interleaved, 0, sizeof (input_interleaved)) ;
 	memset (output_interleaved, 0, sizeof (output_interleaved)) ;
 	memset (output_serial, 0, sizeof (output_serial)) ;
 
-	frames = MIN (ARRAY_LEN (input_serial) / channel_count, 1 << 16) ;
+	frames = BUFFER_LEN ;
 
 	/* Calculate channel_count separate windowed sine waves. */
 	for (ch = 0 ; ch < channel_count ; ch++)
-	{	freq = (200.0 + 33.333333333 * ch) / 44100.0 ;
+	{	freq = (400.0 + 11.333333333 * ch) / 44100.0 ;
 		gen_windowed_sines (1, &freq, 1.0, input_serial + ch * frames, frames) ;
 		} ;
 
@@ -288,13 +308,15 @@ callback_test (int converter, int channel_count, double target_snr)
 	printf ("\t%-22s (%d channel%c) ............. ", "callback_test", channel_count, channel_count > 1 ? 's' : ' ') ;
 	fflush (stdout) ;
 
+	assert (channel_count <= MAX_CHANNELS) ;
+
 	memset (input_serial, 0, sizeof (input_serial)) ;
 	memset (input_interleaved, 0, sizeof (input_interleaved)) ;
 	memset (output_interleaved, 0, sizeof (output_interleaved)) ;
 	memset (output_serial, 0, sizeof (output_serial)) ;
 	memset (&test_callback_data, 0, sizeof (test_callback_data)) ;
 
-	frames = MIN (ARRAY_LEN (input_serial) / channel_count, 1 << 16) ;
+	frames = BUFFER_LEN ;
 
 	/* Calculate channel_count separate windowed sine waves. */
 	for (ch = 0 ; ch < channel_count ; ch++)
