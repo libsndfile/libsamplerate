@@ -188,12 +188,12 @@ print_cpu_name (void)
 				} ;
 			} ;
 
-	goto failed ;
+	fclose (file) ;
+	puts ("Unknown") ;
+	return ;
+
 complete :
 	fclose (file) ;
-	return ;
-failed :
-	puts ("Unknown") ;
 	return ;
 } /* print_cpu_name */
 

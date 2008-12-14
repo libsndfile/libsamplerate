@@ -4,6 +4,9 @@
     Move variable definition out one scope level to avoid warnings from static
     analysis tools. Thanks Erik Hovland.
 
+    * tests/util.c
+    Make sure FILE* is closed. Thanks Erik Hovland.
+
 2008-12-13  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/multichan_throughput_test.c
