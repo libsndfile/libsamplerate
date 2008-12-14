@@ -222,13 +222,13 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 
 	output_frames_gen = 0 ;
 	while (output_frames_gen < frames)
-	{
+	{	/*	Use a dummy array for the case where the callback function
+		**	returns without setting the ptr.
+		*/
+		float dummy [1] ;
+			
 		if (src_data.input_frames == 0)
-		{	/*	Use a dummy array for the case where the callback function
-			**	returns without setting the ptr.
-			*/
-			float dummy [1] ;
-			float *ptr = dummy ;
+		{	float *ptr = dummy ;
 
 			src_data.input_frames = psrc->callback_func (psrc->user_callback_data, &ptr) ;
 			src_data.data_in = ptr ;
