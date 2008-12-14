@@ -709,7 +709,9 @@ sinc_quad_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 static inline void
 calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index, int channels, double scale, float * output)
-{	double		fraction, left [channels], right [channels], icoeff ;
+{	double		fraction, icoeff ;
+	/* The following line is 1999 ISO Standard C. If your compiler complains, get a better compiler. */
+	double		left [channels], right [channels] ;
 	increment_t	filter_index, max_filter_index ;
 	int			data_index, coeff_count, indx, ch ;
 
