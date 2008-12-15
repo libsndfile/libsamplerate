@@ -100,7 +100,8 @@ throughput_test (int converter, int channels, long best_throughput)
 
 static void
 single_run (void)
-{	int k ;
+{	const int max_channels = 7 ;
+	int k ;
 
 	printf ("\n    CPU : ") ;
 	print_cpu_name () ;
@@ -111,15 +112,15 @@ single_run (void)
 		"    ---------------------------------------------------------------------"
 		) ;
 
-	for (k = 1 ; k <= 5 ; k++)
+	for (k = 1 ; k <= max_channels / 2 ; k++)
 		throughput_test (SRC_SINC_FASTEST, k, 0) ;
 
 	puts ("") ;
-	for (k = 1 ; k <= 5 ; k++)
+	for (k = 1 ; k <= max_channels / 2 ; k++)
 		throughput_test (SRC_SINC_MEDIUM_QUALITY, k, 0) ;
 
 	puts ("") ;
-	for (k = 1 ; k <= 5 ; k++)
+	for (k = 1 ; k <= max_channels ; k++)
 		throughput_test (SRC_SINC_BEST_QUALITY, k, 0) ;
 
 	puts ("") ;

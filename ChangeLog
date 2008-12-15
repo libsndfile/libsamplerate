@@ -7,6 +7,10 @@
     * tests/util.c
     Make sure FILE* is closed. Thanks Erik Hovland.
 
+    * tests/multi_channel_test.c tests/multichan_throughput_test.c
+    Update tests to make sure tests include tests for 6 channels with the Sinc
+    converters.
+
 2008-12-13  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/multichan_throughput_test.c

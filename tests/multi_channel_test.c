@@ -30,7 +30,7 @@
 #define	BUFFER_LEN		50000
 #define	BLOCK_LEN		(12)
 
-#define	MAX_CHANNELS	4
+#define	MAX_CHANNELS	6
 
 static void simple_test (int converter, int channel_count, double target_snr) ;
 static void process_test (int converter, int channel_count, double target_snr) ;
@@ -39,51 +39,31 @@ static void callback_test (int converter, int channel_count, double target_snr) 
 int
 main (void)
 {	double target ;
+	int k ;
 
 	puts ("\n    Zero Order Hold interpolator :") ;
 	target = 38.0 ;
-	simple_test		(SRC_ZERO_ORDER_HOLD, 1, target) ;
-	process_test	(SRC_ZERO_ORDER_HOLD, 1, target) ;
-	callback_test	(SRC_ZERO_ORDER_HOLD, 1, target) ;
-	simple_test		(SRC_ZERO_ORDER_HOLD, 2, target) ;
-	process_test	(SRC_ZERO_ORDER_HOLD, 2, target) ;
-	callback_test	(SRC_ZERO_ORDER_HOLD, 2, target) ;
-	simple_test		(SRC_ZERO_ORDER_HOLD, 3, target) ;
-	process_test	(SRC_ZERO_ORDER_HOLD, 3, target) ;
-	callback_test	(SRC_ZERO_ORDER_HOLD, 3, target) ;
-	simple_test		(SRC_ZERO_ORDER_HOLD, 4, target) ;
-	process_test	(SRC_ZERO_ORDER_HOLD, 4, target) ;
-	callback_test	(SRC_ZERO_ORDER_HOLD, 4, target) ;
+	for (k = 1 ; k <= MAX_CHANNELS ; k++)
+	{	simple_test		(SRC_ZERO_ORDER_HOLD, k, target) ;
+		process_test	(SRC_ZERO_ORDER_HOLD, k, target) ;
+		callback_test	(SRC_ZERO_ORDER_HOLD, k, target) ;
+		} ;
 
 	puts ("\n    Linear interpolator :") ;
 	target = 79.0 ;
-	simple_test		(SRC_LINEAR, 1, target) ;
-	process_test	(SRC_LINEAR, 1, target) ;
-	callback_test	(SRC_LINEAR, 1, target) ;
-	simple_test		(SRC_LINEAR, 2, target) ;
-	process_test	(SRC_LINEAR, 2, target) ;
-	callback_test	(SRC_LINEAR, 2, target) ;
-	simple_test		(SRC_LINEAR, 3, target) ;
-	process_test	(SRC_LINEAR, 3, target) ;
-	callback_test	(SRC_LINEAR, 3, target) ;
-	simple_test		(SRC_LINEAR, 4, target) ;
-	process_test	(SRC_LINEAR, 4, target) ;
-	callback_test	(SRC_LINEAR, 4, target) ;
+	for (k = 1 ; k <= MAX_CHANNELS ; k++)
+	{	simple_test		(SRC_LINEAR, k, target) ;
+		process_test	(SRC_LINEAR, k, target) ;
+		callback_test	(SRC_LINEAR, k, target) ;
+		} ;
 
 	puts ("\n    Sinc interpolator :") ;
 	target = 100.0 ;
-	simple_test		(SRC_SINC_FASTEST, 1, target) ;
-	process_test	(SRC_SINC_FASTEST, 1, target) ;
-	callback_test	(SRC_SINC_FASTEST, 1, target) ;
-	simple_test		(SRC_SINC_FASTEST, 2, target) ;
-	process_test	(SRC_SINC_FASTEST, 2, target) ;
-	callback_test	(SRC_SINC_FASTEST, 2, target) ;
-	simple_test		(SRC_SINC_FASTEST, 3, target) ;
-	process_test	(SRC_SINC_FASTEST, 3, target) ;
-	callback_test	(SRC_SINC_FASTEST, 3, target) ;
-	simple_test		(SRC_SINC_FASTEST, 4, target) ;
-	process_test	(SRC_SINC_FASTEST, 4, target) ;
-	callback_test	(SRC_SINC_FASTEST, 4, target) ;
+	for (k = 1 ; k <= MAX_CHANNELS ; k++)
+	{	simple_test		(SRC_SINC_FASTEST, k, target) ;
+		process_test	(SRC_SINC_FASTEST, k, target) ;
+		callback_test	(SRC_SINC_FASTEST, k, target) ;
+		} ;
 
 	puts ("") ;
 
