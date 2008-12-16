@@ -43,7 +43,7 @@ main (void)
 
 	puts ("\n    Zero Order Hold interpolator :") ;
 	target = 38.0 ;
-	for (k = 1 ; k <= MAX_CHANNELS ; k++)
+	for (k = 1 ; k <= 3 ; k++)
 	{	simple_test		(SRC_ZERO_ORDER_HOLD, k, target) ;
 		process_test	(SRC_ZERO_ORDER_HOLD, k, target) ;
 		callback_test	(SRC_ZERO_ORDER_HOLD, k, target) ;
@@ -51,7 +51,7 @@ main (void)
 
 	puts ("\n    Linear interpolator :") ;
 	target = 79.0 ;
-	for (k = 1 ; k <= MAX_CHANNELS ; k++)
+	for (k = 1 ; k <= 3 ; k++)
 	{	simple_test		(SRC_LINEAR, k, target) ;
 		process_test	(SRC_LINEAR, k, target) ;
 		callback_test	(SRC_LINEAR, k, target) ;
@@ -85,7 +85,7 @@ simple_test (int converter, int channel_count, double target_snr)
 	double	freq, snr ;
 	int		ch, error, frames ;
 
-	printf ("\t%-22s (%d channel%c) ............. ", "simple_test", channel_count, channel_count > 1 ? 's' : ' ') ;
+	printf ("\t%-22s (%2d channel%c) ............ ", "simple_test", channel_count, channel_count > 1 ? 's' : ' ') ;
 	fflush (stdout) ;
 
 	assert (channel_count <= MAX_CHANNELS) ;
@@ -157,7 +157,7 @@ process_test (int converter, int channel_count, double target_snr)
 	double	freq, snr ;
 	int		ch, error, frames, current_in, current_out ;
 
-	printf ("\t%-22s (%d channel%c) ............. ", "process_test", channel_count, channel_count > 1 ? 's' : ' ') ;
+	printf ("\t%-22s (%2d channel%c) ............ ", "process_test", channel_count, channel_count > 1 ? 's' : ' ') ;
 	fflush (stdout) ;
 
 	assert (channel_count <= MAX_CHANNELS) ;
@@ -285,7 +285,7 @@ callback_test (int converter, int channel_count, double target_snr)
 	double	freq, snr, src_ratio ;
 	int		ch, error, frames, read_total, read_count ;
 
-	printf ("\t%-22s (%d channel%c) ............. ", "callback_test", channel_count, channel_count > 1 ? 's' : ' ') ;
+	printf ("\t%-22s (%2d channel%c) ............ ", "callback_test", channel_count, channel_count > 1 ? 's' : ' ') ;
 	fflush (stdout) ;
 
 	assert (channel_count <= MAX_CHANNELS) ;
