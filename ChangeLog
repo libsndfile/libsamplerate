@@ -3,6 +3,10 @@
     * tests/multi_channel_test.c tests/multichan_throughput_test.c
     Update tests to make sure tests include tests for 10 channels.
 
+    * src/src_sinc.c
+    Make 6 channel Sinc conversion another special case.
+    Use Duff's Device to speed up the multi-channel case.
+
 2008-12-15  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/samplerate.c

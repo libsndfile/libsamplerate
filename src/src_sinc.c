@@ -71,6 +71,7 @@ typedef struct
 } SINC_FILTER ;
 
 static int sinc_multichan_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
+static int sinc_hex_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static int sinc_quad_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static int sinc_stereo_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static int sinc_mono_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
@@ -180,6 +181,11 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	if (psrc->channels == 4)
 	{	psrc->const_process = sinc_quad_vari_process ;
 		psrc->vari_process = sinc_quad_vari_process ;
+		}
+	else
+	if (psrc->channels == 6)
+	{	psrc->const_process = sinc_hex_vari_process ;
+		psrc->vari_process = sinc_hex_vari_process ;
 		}
 	else
 	{	psrc->const_process = sinc_multichan_vari_process ;
@@ -454,7 +460,7 @@ calc_output_stereo (SINC_FILTER *filter, increment_t increment, increment_t star
 		right [1] += icoeff * filter->buffer [data_index + 1] ;
 
 		filter_index -= increment ;
-		data_index = data_index - filter->channels ;
+		data_index = data_index - 2 ;
 		}
 	while (filter_index > MAKE_INCREMENT_T (0)) ;
 
@@ -605,7 +611,7 @@ calc_output_quad (SINC_FILTER *filter, increment_t increment, increment_t start_
 		right [3] += icoeff * filter->buffer [data_index + 3] ;
 
 		filter_index -= increment ;
-		data_index = data_index - filter->channels ;
+		data_index = data_index - 4 ;
 		}
 	while (filter_index > MAKE_INCREMENT_T (0)) ;
 
@@ -708,6 +714,165 @@ sinc_quad_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 } /* sinc_quad_vari_process */
 
 static inline void
+calc_output_hex (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index, double scale, float * output)
+{	double		fraction, left [6], right [6], icoeff ;
+	increment_t	filter_index, max_filter_index ;
+	int			data_index, coeff_count, indx ;
+
+	/* Convert input parameters into fixed point. */
+	max_filter_index = int_to_fp (filter->coeff_half_len) ;
+
+	/* First apply the left half of the filter. */
+	filter_index = start_filter_index ;
+	coeff_count = (max_filter_index - filter_index) / increment ;
+	filter_index = filter_index + coeff_count * increment ;
+	data_index = filter->b_current - filter->channels * coeff_count ;
+
+	left [0] = left [1] = left [2] = left [3] = left [4] = left [5] = 0.0 ;
+	do
+	{	fraction = fp_to_double (filter_index) ;
+		indx = fp_to_int (filter_index) ;
+
+		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
+
+		left [0] += icoeff * filter->buffer [data_index] ;
+		left [1] += icoeff * filter->buffer [data_index + 1] ;
+		left [2] += icoeff * filter->buffer [data_index + 2] ;
+		left [3] += icoeff * filter->buffer [data_index + 3] ;
+		left [4] += icoeff * filter->buffer [data_index + 4] ;
+		left [5] += icoeff * filter->buffer [data_index + 5] ;
+
+		filter_index -= increment ;
+		data_index = data_index + 6 ;
+		}
+	while (filter_index >= MAKE_INCREMENT_T (0)) ;
+
+	/* Now apply the right half of the filter. */
+	filter_index = increment - start_filter_index ;
+	coeff_count = (max_filter_index - filter_index) / increment ;
+	filter_index = filter_index + coeff_count * increment ;
+	data_index = filter->b_current + filter->channels * (1 + coeff_count) ;
+
+	right [0] = right [1] = right [2] = right [3] = right [4] = right [5] = 0.0 ;
+	do
+	{	fraction = fp_to_double (filter_index) ;
+		indx = fp_to_int (filter_index) ;
+
+		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
+
+		right [0] += icoeff * filter->buffer [data_index] ;
+		right [1] += icoeff * filter->buffer [data_index + 1] ;
+		right [2] += icoeff * filter->buffer [data_index + 2] ;
+		right [3] += icoeff * filter->buffer [data_index + 3] ;
+		right [4] += icoeff * filter->buffer [data_index + 4] ;
+		right [5] += icoeff * filter->buffer [data_index + 5] ;
+
+		filter_index -= increment ;
+		data_index = data_index - 6 ;
+		}
+	while (filter_index > MAKE_INCREMENT_T (0)) ;
+
+	output [0] = scale * (left [0] + right [0]) ;
+	output [1] = scale * (left [1] + right [1]) ;
+	output [2] = scale * (left [2] + right [2]) ;
+	output [3] = scale * (left [3] + right [3]) ;
+	output [4] = scale * (left [4] + right [4]) ;
+	output [5] = scale * (left [5] + right [5]) ;
+} /* calc_output_hex */
+
+static int
+sinc_hex_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
+{	SINC_FILTER *filter ;
+	double		input_index, src_ratio, count, float_increment, terminate, rem ;
+	increment_t	increment, start_filter_index ;
+	int			half_filter_chan_len, samples_in_hand ;
+
+	if (psrc->private_data == NULL)
+		return SRC_ERR_NO_PRIVATE ;
+
+	filter = (SINC_FILTER*) psrc->private_data ;
+
+	/* If there is not a problem, this will be optimised out. */
+	if (sizeof (filter->buffer [0]) != sizeof (data->data_in [0]))
+		return SRC_ERR_SIZE_INCOMPATIBILITY ;
+
+	filter->in_count = data->input_frames * filter->channels ;
+	filter->out_count = data->output_frames * filter->channels ;
+	filter->in_used = filter->out_gen = 0 ;
+
+	src_ratio = psrc->last_ratio ;
+
+	/* Check the sample rate ratio wrt the buffer len. */
+	count = (filter->coeff_half_len + 2.0) / filter->index_inc ;
+	if (MIN (psrc->last_ratio, data->src_ratio) < 1.0)
+		count /= MIN (psrc->last_ratio, data->src_ratio) ;
+
+	/* Maximum coefficientson either side of center point. */
+	half_filter_chan_len = filter->channels * (lrint (count) + 1) ;
+
+	input_index = psrc->last_position ;
+	float_increment = filter->index_inc ;
+
+	rem = fmod_one (input_index) ;
+	filter->b_current = (filter->b_current + filter->channels * lrint (input_index - rem)) % filter->b_len ;
+	input_index = rem ;
+
+	terminate = 1.0 / src_ratio + 1e-20 ;
+
+	/* Main processing loop. */
+	while (filter->out_gen < filter->out_count)
+	{
+		/* Need to reload buffer? */
+		samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
+
+		if (samples_in_hand <= half_filter_chan_len)
+		{	prepare_data (filter, data, half_filter_chan_len) ;
+
+			samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
+			if (samples_in_hand <= half_filter_chan_len)
+				break ;
+			} ;
+
+		/* This is the termination condition. */
+		if (filter->b_real_end >= 0)
+		{	if (filter->b_current + input_index + terminate >= filter->b_real_end)
+				break ;
+			} ;
+
+		if (filter->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
+			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / filter->out_count ;
+
+		float_increment = filter->index_inc * 1.0 ;
+		if (src_ratio < 1.0)
+			float_increment = filter->index_inc * src_ratio ;
+
+		increment = double_to_fp (float_increment) ;
+
+		start_filter_index = double_to_fp (input_index * float_increment) ;
+
+		calc_output_hex (filter, increment, start_filter_index, float_increment / filter->index_inc, data->data_out + filter->out_gen) ;
+		filter->out_gen += 6 ;
+
+		/* Figure out the next index. */
+		input_index += 1.0 / src_ratio ;
+		rem = fmod_one (input_index) ;
+
+		filter->b_current = (filter->b_current + filter->channels * lrint (input_index - rem)) % filter->b_len ;
+		input_index = rem ;
+		} ;
+
+	psrc->last_position = input_index ;
+
+	/* Save current ratio rather then target ratio. */
+	psrc->last_ratio = src_ratio ;
+
+	data->input_frames_used = filter->in_used / filter->channels ;
+	data->output_frames_gen = filter->out_gen / filter->channels ;
+
+	return SRC_ERR_NO_ERROR ;
+} /* sinc_hex_vari_process */
+
+static inline void
 calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index, int channels, double scale, float * output)
 {	double		fraction, icoeff ;
 	/* The following line is 1999 ISO Standard C. If your compiler complains, get a better compiler. */
@@ -732,9 +897,41 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 
 		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
 
+		/*
+		**	Duff's Device.
+		**	See : http://en.wikipedia.org/wiki/Duff's_device
+		*/
 		ch = channels ;
-		while (-- ch >= 0)
-			left [ch] += icoeff * filter->buffer [data_index + ch] ;
+		do
+		{
+			switch (ch % 8)
+			{	default :
+					ch -- ;
+					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 7 :
+					ch -- ;
+					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 6 :
+					ch -- ;
+					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 5 :
+					ch -- ;
+					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 4 :
+					ch -- ;
+					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 3 :
+					ch -- ;
+					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 2 :
+					ch -- ;
+					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 1 :
+					ch -- ;
+					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+				} ;
+			}
+		while (ch > 0) ;
 
 		filter_index -= increment ;
 		data_index = data_index + channels ;
@@ -755,8 +952,36 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
 
 		ch = channels ;
-		while (-- ch >= 0)
-			right [ch] += icoeff * filter->buffer [data_index + ch] ;
+		do
+		{
+			switch (ch % 8)
+			{	default :
+					ch -- ;
+					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 7 :
+					ch -- ;
+					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 6 :
+					ch -- ;
+					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 5 :
+					ch -- ;
+					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 4 :
+					ch -- ;
+					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 3 :
+					ch -- ;
+					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 2 :
+					ch -- ;
+					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+				case 1 :
+					ch -- ;
+					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+				} ;
+			}
+		while (ch > 0) ;
 
 		filter_index -= increment ;
 		data_index = data_index - channels ;
@@ -764,8 +989,36 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 	while (filter_index > MAKE_INCREMENT_T (0)) ;
 
 	ch = channels ;
-	while (-- ch >= 0)
-		output [ch] = scale * (left [ch] + right [ch]) ;
+		do
+		{
+			switch (ch % 8)
+			{	default :
+					ch -- ;
+					output [ch] = scale * (left [ch] + right [ch]) ;
+				case 7 :
+					ch -- ;
+					output [ch] = scale * (left [ch] + right [ch]) ;
+				case 6 :
+					ch -- ;
+					output [ch] = scale * (left [ch] + right [ch]) ;
+				case 5 :
+					ch -- ;
+					output [ch] = scale * (left [ch] + right [ch]) ;
+				case 4 :
+					ch -- ;
+					output [ch] = scale * (left [ch] + right [ch]) ;
+				case 3 :
+					ch -- ;
+					output [ch] = scale * (left [ch] + right [ch]) ;
+				case 2 :
+					ch -- ;
+					output [ch] = scale * (left [ch] + right [ch]) ;
+				case 1 :
+					ch -- ;
+					output [ch] = scale * (left [ch] + right [ch]) ;
+				} ;
+			}
+		while (ch > 0) ;
 
 	return ;
 } /* calc_output_multi */
