@@ -30,7 +30,7 @@
 #define	BUFFER_LEN		50000
 #define	BLOCK_LEN		(12)
 
-#define	MAX_CHANNELS	6
+#define	MAX_CHANNELS	10
 
 static void simple_test (int converter, int channel_count, double target_snr) ;
 static void process_test (int converter, int channel_count, double target_snr) ;

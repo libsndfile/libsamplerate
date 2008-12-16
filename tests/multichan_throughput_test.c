@@ -100,7 +100,7 @@ throughput_test (int converter, int channels, long best_throughput)
 
 static void
 single_run (void)
-{	const int max_channels = 7 ;
+{	const int max_channels = 10 ;
 	int k ;
 
 	printf ("\n    CPU : ") ;
