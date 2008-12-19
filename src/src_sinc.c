@@ -989,36 +989,36 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 	while (filter_index > MAKE_INCREMENT_T (0)) ;
 
 	ch = channels ;
-		do
-		{
-			switch (ch % 8)
-			{	default :
-					ch -- ;
-					output [ch] = scale * (left [ch] + right [ch]) ;
-				case 7 :
-					ch -- ;
-					output [ch] = scale * (left [ch] + right [ch]) ;
-				case 6 :
-					ch -- ;
-					output [ch] = scale * (left [ch] + right [ch]) ;
-				case 5 :
-					ch -- ;
-					output [ch] = scale * (left [ch] + right [ch]) ;
-				case 4 :
-					ch -- ;
-					output [ch] = scale * (left [ch] + right [ch]) ;
-				case 3 :
-					ch -- ;
-					output [ch] = scale * (left [ch] + right [ch]) ;
-				case 2 :
-					ch -- ;
-					output [ch] = scale * (left [ch] + right [ch]) ;
-				case 1 :
-					ch -- ;
-					output [ch] = scale * (left [ch] + right [ch]) ;
-				} ;
-			}
-		while (ch > 0) ;
+	do
+	{
+		switch (ch % 8)
+		{	default :
+				ch -- ;
+				output [ch] = scale * (left [ch] + right [ch]) ;
+			case 7 :
+				ch -- ;
+				output [ch] = scale * (left [ch] + right [ch]) ;
+			case 6 :
+				ch -- ;
+				output [ch] = scale * (left [ch] + right [ch]) ;
+			case 5 :
+				ch -- ;
+				output [ch] = scale * (left [ch] + right [ch]) ;
+			case 4 :
+				ch -- ;
+				output [ch] = scale * (left [ch] + right [ch]) ;
+			case 3 :
+				ch -- ;
+				output [ch] = scale * (left [ch] + right [ch]) ;
+			case 2 :
+				ch -- ;
+				output [ch] = scale * (left [ch] + right [ch]) ;
+			case 1 :
+				ch -- ;
+				output [ch] = scale * (left [ch] + right [ch]) ;
+			} ;
+		}
+	while (ch > 0) ;
 
 	return ;
 } /* calc_output_multi */
