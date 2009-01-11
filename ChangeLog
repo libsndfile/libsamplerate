@@ -1,3 +1,15 @@
+2009-01-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * doc/win32.html
+    Update win32 compile instructions to explain that this release cannot be
+    compiled using the microsoft compiler.
+
+    * NEWS README doc/*.html
+    Updates for 0.1.5 release.
+
+    * Makefile.am configure.ac
+    Remove Win32 directory from distributed tarball.
+ 
 2008-12-16  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/multi_channel_test.c tests/multichan_throughput_test.c

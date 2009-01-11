@@ -1,3 +1,6 @@
+Version 0.1.5 (2009-01-11)
+  * Optimisation resulting dramatic throughput improvements.
+
 Version 0.1.4 (2008-07-02)
   * Fix bug which causes a segfault with extremely low conversion ratios.
 
@@ -20,4 +23,4 @@ Version 0.1.0 (2004-03-14)
   * Added a pair of functions for doing short to float and float to short
     conversions on an arrays of data.
   * Many minor bug fixes.
-  
+
