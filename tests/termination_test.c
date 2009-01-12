@@ -127,7 +127,7 @@ init_term_test (int converter, double src_ratio)
 		exit (1) ;
 		} ;
 
-	if (src_data.input_frames_used != input_len)
+	if (abs (src_data.input_frames_used - input_len) > 1)
 	{	printf ("\n\nLine %d : input_frames_used should be %d, is %ld.\n\n",
 					 __LINE__, input_len, src_data.input_frames_used) ;
 		printf ("\tsrc_ratio  : %.4f\n", src_ratio) ;
