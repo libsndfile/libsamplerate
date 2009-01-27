@@ -1,3 +1,6 @@
+Version 0.1.6 (2009-01-27)
+  * Minor bug fix in test suite (account for rounding error on x86_64).
+
 Version 0.1.5 (2009-01-11)
   * Optimisation resulting dramatic throughput improvements.
 

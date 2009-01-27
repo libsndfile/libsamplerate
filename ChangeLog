@@ -1,3 +1,8 @@
+2009-01-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * configure.ac NEWS README doc/*.html
+    Updates for 0.1.6 release.
+
 2009-01-12  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/termination_test.c
