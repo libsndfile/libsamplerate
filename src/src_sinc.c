@@ -66,6 +66,9 @@ typedef struct
 
 	int		b_current, b_end, b_real_end, b_len ;
 
+	/* Sure hope noone does more than 128 channels at once. */
+	double left_calc [128], right_calc [128] ;
+
 	/* C99 struct flexible array. */
 	float	buffer [] ;
 } SINC_FILTER ;
@@ -168,7 +171,9 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	temp_filter.sinc_magic_marker = SINC_MAGIC_MARKER ;
 	temp_filter.channels = psrc->channels ;
 
-	if (psrc->channels == 1)
+	if (psrc->channels > ARRAY_LEN (temp_filter.left_calc))
+		return SRC_ERR_BAD_CHANNEL_COUNT ;
+	else if (psrc->channels == 1)
 	{	psrc->const_process = sinc_mono_vari_process ;
 		psrc->vari_process = sinc_mono_vari_process ;
 		}
@@ -876,9 +881,12 @@ static inline void
 calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index, int channels, double scale, float * output)
 {	double		fraction, icoeff ;
 	/* The following line is 1999 ISO Standard C. If your compiler complains, get a better compiler. */
-	double		left [channels], right [channels] ;
+	double		*left, *right ;
 	increment_t	filter_index, max_filter_index ;
 	int			data_index, coeff_count, indx, ch ;
+
+	left = filter->left_calc ;
+	right = filter->right_calc ;
 
 	/* Convert input parameters into fixed point. */
 	max_filter_index = int_to_fp (filter->coeff_half_len) ;
@@ -889,7 +897,7 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 	filter_index = filter_index + coeff_count * increment ;
 	data_index = filter->b_current - channels * coeff_count ;
 
-	memset (left, 0, sizeof (left)) ;
+	memset (left, 0, sizeof (left [0]) * channels) ;
 
 	do
 	{	fraction = fp_to_double (filter_index) ;
@@ -944,7 +952,7 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 	filter_index = filter_index + coeff_count * increment ;
 	data_index = filter->b_current + channels * (1 + coeff_count) ;
 
-	memset (right, 0, sizeof (right)) ;
+	memset (right, 0, sizeof (right [0]) * channels) ;
 	do
 	{	fraction = fp_to_double (filter_index) ;
 		indx = fp_to_int (filter_index) ;

@@ -1,3 +1,9 @@
+2009-01-30  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/src_sinc.c
+    Replace C99 "variable length arrays" with arrays allocated on the heap so
+    that libsamplerate can be compiled with crappy compilers like MSVC.
+
 2009-01-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac NEWS README doc/*.html
@@ -20,7 +26,7 @@
 
     * Makefile.am configure.ac
     Remove Win32 directory from distributed tarball.
- 
+
 2008-12-16  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/multi_channel_test.c tests/multichan_throughput_test.c
