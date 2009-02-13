@@ -34,6 +34,8 @@ typedef	long	int32_t ;
 #endif
 
 #define	SRC_MAX_RATIO			256
+#define	SRC_MAX_RATIO_STR		"256"
+
 #define	SRC_MIN_RATIO_DIFF		(1e-20)
 
 #define	MAX(a,b)	(((a) > (b)) ? (a) : (b))

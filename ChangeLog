@@ -1,3 +1,8 @@
+2009-02-13  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    *  src/common.h src/samplerate.c
+    Fix SRC_ERR_BAD_SRC_RATIO error string. Thanks David Cournapeau.
+
 2009-01-30  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/src_sinc.c
