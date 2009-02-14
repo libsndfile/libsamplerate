@@ -46,6 +46,12 @@ typedef	long	int32_t ;
 
 #define	MAKE_MAGIC(a,b,c,d,e,f)	((a) + ((b) << 4) + ((c) << 8) + ((d) << 12) + ((e) << 16) + ((f) << 20))
 
+#ifdef __GNUC__
+#	define WARN_UNUSED	__attribute__ ((warn_unused_result))
+#else
+#	define WARN_UNUSED
+#endif
+
 
 #include "samplerate.h"
 
