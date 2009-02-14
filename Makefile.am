@@ -3,9 +3,9 @@
 DISTCHECK_CONFIGURE_FLAGS = --enable-gcc-werror
 
 SUBDIRS = src doc examples tests
-DIST_SUBDIRS = $(SUBDIRS)
+DIST_SUBDIRS = Win32 $(SUBDIRS)
 
-EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in
+EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat
  
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = samplerate.pc

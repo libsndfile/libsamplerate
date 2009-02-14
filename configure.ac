@@ -3,7 +3,7 @@
 dnl Require autoconf version >= 2.57)
 AC_PREREQ(2.57)
 
-AC_INIT([libsamplerate],[0.1.7pre1],[erikd@mega-nerd.com])
+AC_INIT([libsamplerate],[0.1.7],[erikd@mega-nerd.com])
 
 # Put config stuff in Cfg.
 AC_CONFIG_AUX_DIR(Cfg)
@@ -273,7 +273,7 @@ AC_SUBST(HAVE_SNDFILE)
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
-AC_CONFIG_FILES([Makefile src/Version_script \
+AC_CONFIG_FILES([Makefile src/Version_script Win32/Makefile Win32/Makefile.mingw \
 			src/Makefile examples/Makefile tests/Makefile doc/Makefile \
 			libsamplerate.spec samplerate.pc])
 AC_OUTPUT
