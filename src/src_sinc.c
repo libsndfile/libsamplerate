@@ -79,7 +79,7 @@ static int sinc_quad_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static int sinc_stereo_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static int sinc_mono_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 
-static void prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len) ;
+static int prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len) WARN_UNUSED ;
 
 static void sinc_reset (SRC_PRIVATE *psrc) ;
 
@@ -226,7 +226,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	** a better way. Need to look at prepare_data () at the same time.
 	*/
 
-	temp_filter.b_len = 2 * lrint (1.0 + temp_filter.coeff_half_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO) ;
+	temp_filter.b_len = lrint (2.5 * temp_filter.coeff_half_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO) ;
 	temp_filter.b_len = MAX (temp_filter.b_len, 4096) ;
 	temp_filter.b_len *= temp_filter.channels ;
 
@@ -371,7 +371,8 @@ sinc_mono_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 
 		if (samples_in_hand <= half_filter_chan_len)
-		{	prepare_data (filter, data, half_filter_chan_len) ;
+		{	if ((psrc->error = prepare_data (filter, data, half_filter_chan_len)) != 0)
+				return psrc->error ;
 
 			samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 			if (samples_in_hand <= half_filter_chan_len)
@@ -519,7 +520,8 @@ sinc_stereo_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 
 		if (samples_in_hand <= half_filter_chan_len)
-		{	prepare_data (filter, data, half_filter_chan_len) ;
+		{	if ((psrc->error = prepare_data (filter, data, half_filter_chan_len)) != 0)
+				return psrc->error ;
 
 			samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 			if (samples_in_hand <= half_filter_chan_len)
@@ -672,7 +674,8 @@ sinc_quad_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 
 		if (samples_in_hand <= half_filter_chan_len)
-		{	prepare_data (filter, data, half_filter_chan_len) ;
+		{	if ((psrc->error = prepare_data (filter, data, half_filter_chan_len)) != 0)
+				return psrc->error ;
 
 			samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 			if (samples_in_hand <= half_filter_chan_len)
@@ -831,7 +834,8 @@ sinc_hex_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 
 		if (samples_in_hand <= half_filter_chan_len)
-		{	prepare_data (filter, data, half_filter_chan_len) ;
+		{	if ((psrc->error = prepare_data (filter, data, half_filter_chan_len)) != 0)
+				return psrc->error ;
 
 			samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 			if (samples_in_hand <= half_filter_chan_len)
@@ -1077,7 +1081,8 @@ sinc_multichan_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 
 		if (samples_in_hand <= half_filter_chan_len)
-		{	prepare_data (filter, data, half_filter_chan_len) ;
+		{	if ((psrc->error = prepare_data (filter, data, half_filter_chan_len)) != 0)
+				return psrc->error ;
 
 			samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len ;
 			if (samples_in_hand <= half_filter_chan_len)
@@ -1126,12 +1131,12 @@ sinc_multichan_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 /*----------------------------------------------------------------------------------------
 */
 
-static void
+static int
 prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len)
 {	int len = 0 ;
 
 	if (filter->b_real_end >= 0)
-		return ;	/* This doesn't make sense, so return. */
+		return 0 ;	/* Should be terminating. Just return. */
 
 	if (filter->b_current == 0)
 	{	/* Initial state. Set up zeros at the start of the buffer and
@@ -1160,6 +1165,9 @@ prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len)
 
 	len = MIN (filter->in_count - filter->in_used, len) ;
 	len -= (len % filter->channels) ;
+
+	if  (len < 0 || filter->b_end + len > filter->b_len)
+		return SRC_ERR_SINC_PREPARE_DATA_BAD_LEN ;
 
 	memcpy (filter->buffer + filter->b_end, data->data_in + filter->in_used,
 						len * sizeof (filter->buffer [0])) ;
@@ -1190,7 +1198,7 @@ prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len)
 		filter->b_end += len ;
 		} ;
 
-	return ;
+	return 0 ;
 } /* prepare_data */
 
 
