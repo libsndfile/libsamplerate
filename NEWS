@@ -1,3 +1,7 @@
+Version 0.1.7 (2009-02-14)
+  * Fix a segfault which occurs when memcpy is passed a bad length parameter.
+  * Fix compilation under MSVC.
+
 Version 0.1.6 (2009-01-27)
   * Minor bug fix in test suite (account for rounding error on x86_64).
 

@@ -16,6 +16,12 @@
     * doc/win32.html Makefile.am configure.ac
     Reinstate Win32/MSVC compile instructions.
 
+    * doc/*.html
+    Update for new release.
+
+    * configure.ac
+    Verison 0.1.7.
+
 2009-02-13  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/common.h src/samplerate.c

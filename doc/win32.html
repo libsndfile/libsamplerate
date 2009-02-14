@@ -6,7 +6,7 @@
 	Secret Rabbit Code (aka libsamplerate)
 	</TITLE>
 	<META NAME="Author"      CONTENT="Erik de Castro Lopo (erikd AT mega-nerd DOT com)">
-    <META NAME="Version"     CONTENT="libsamplerate-0.1.6">
+    <META NAME="Version"     CONTENT="libsamplerate-0.1.7">
 	<META NAME="Description" CONTENT="The Secret Rabbit Code Home Page">
 	<META NAME="Keywords"    CONTENT="libsamplerate sound resample audio dsp Linux">
 	<LINK REL=StyleSheet HREF="SRC.css" TYPE="text/css" MEDIA="all">
@@ -57,36 +57,93 @@ Author :<BR>Erik de Castro Lopo
 <TD VALIGN="top">
 <DIV CLASS="block">
 
-<h1><b>Compiling for Win32.</b></h1>
-<p>
-Version 0.1.5 of libsamplerate brought in optimisations which depend on a
-feature of the 1999 ISO C Standard which in 2009, is still not supported by
-the Microsoft compiler.
-That means you cannot compile version 0.1.5 or later with this compiler.
-</p>
+<H1><B>Compiling on Win32.</B></H1>
+<P>
+For Win32 there is a Microsoft Visual C++ compatible makefile in the <B>Win32\</B>
+directory and a MSDOS batch file in the top level directory of the distribution. 
+</P>
+<P>
+To build the examples programs you will need to download and compile
+	<A HREF="http://www.mega-nerd.com/libsndfile/">libsndfile</A>
+and there are instructions for compiling it on Win32
+	<A HREF="http://www.mega-nerd.com/libsndfile/win32.html">here</A>.
+This is optional as SecretRabbitCode can be compiled and used with installing 
+libsndfile.
+</P>
+<P>
+Making the libsamplerate DLL on Win32 involves the following:
+</P>
+<OL>
+	<LI> Using WinZip in the GUI, open the libsamplerate-0.X.Y.tar.gz file and 
+			extract the files into a directory. The following example assumes 
+		<B>C:\</B>.
+	<LI> In the directory containing the extracted files, find the file 
+	    	<B>Win32\Makefile.msvc</B> and open it in a text editor (ie Notepad or 
+			similar). 
+	<LI> Find the line which starts with <B>MSVCDir</B> and modify the directory
+		    path to point to the location of MSVC++ on your machine. This allows the
+			makefile to inform the compiler of the location of the standard header
+			files.
+    <LI> Copy <B>libsndfile.dll</B> and <B>libsndfile.lib</B> from the directory
+			libsndfile was compiled in to the the directory containing libsamplerate.
+    <LI> Copy the header file <B>Win32/sndfile.h</B> to the <B>Win32</B> directory
+			under the libsamplerate directory.
+	<LI> Open a DOS window (Win9X) or Command Shell (WinNT and WinXP?) and cd into 
+			the libsamplerate-0.X.Y directory.
+	<LI> Make sure that the program <B>nmake</B> (which is part of the MSCV++ 
+			package) is in a directory which is part of your <B>PATH</B> variable.
+	<LI> Type in the command 
+		<PRE>    C:\libsamplerate-0.X.Y> make
+		</PRE>
+			and press &lt;return&gt;. You should now see a a large number of compile
+			commands as libsamplerate.dll is built. 
+	<LI> To check that the built DLL has been compiled correctly type in and run the
+			command
+		<PRE>    C:\libsamplerate-0.X.Y> make check
+		</PRE>
+			which will compile a set of test programs and run them. 
+			If any of the programs fail the error message will be help in debugging 
+			the problem.
+			(Note that some of the tests require libsndfile or libfftw/librfftw and
+			are not able to run on Win32).
+</OL>
+<P>
+At the end of the above procedure, you will find the DLL, <B>libsamplerate.dll</B>, a
+LIB file <B>libsamplerate.lib</B> in the current directory. These two files, along
+with the header file <B>samplerate.h</B> (in the <B>src\</B> directory) are all that 
+you need to copy to your project in order to use libsamplerate.
+</P>
 
-<p>
-This leaves windows users with three options for compiling libsndfile:
-</p>
-
-<ul>
-<li> Use the Intel ICC compiler with the <b><tt>-c99</tt></b> command line
-	option to enable C99 mode.
-	</li>
-<li> Use the GNU GCC compiler from either MinGW or Cygwin.
-	</li>
-<li> Cross compile from  Linux to windows using the MinGW cross compiler
-	available on Linux distributions like Debian, Ubuntu  and Fedora.
-	</li>
-</ul>
-
-<br/>
-<h2>Compile Problems</h2>
-<p>
-If you run into compile problems using any of the above compilers, you should
+<H2><BR>Compile Problems</H2>
+<P>
+If you run into compile problems using the above procedure, you should 
 	<A HREF="lists.html"> join the main mailing list </A>
-and post your problem and/or questions there.
-</p>
+and post your problem and/or questions there. 
+Please include any error messages generated during step 6 above.
+</P>
+
+<P>
+If you are using some other method to compile the libsamplerate DLL you are 
+probably on your own.
+</P>
+<BR>
+
+<!--
+
+From here:
+
+	http://www.gimp.org/~tml/gimp/win32/downloads.html
+
+Download these files:
+
+	gettext-runtime-0.13.1.zip
+	glib-2.4.5-20040903.zip
+	libiconv-1.9.1.bin.woe32.zip
+	pkgconfig-0.15.zip
+
+and install them.
+
+-->
 
 <!-- <A HREF="mailto:aldel@mega-nerd.com">For the spam bots</A> -->
 
