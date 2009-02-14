@@ -80,6 +80,7 @@ enum
 	SRC_ERR_BAD_MODE,
 	SRC_ERR_NULL_CALLBACK,
 	SRC_ERR_NO_VARIABLE_RATIO,
+	SRC_ERR_SINC_PREPARE_DATA_BAD_LEN,
 
 	/* This must be the last error number. */
 	SRC_ERR_MAX_ERROR

@@ -424,6 +424,8 @@ src_strerror (int error)
 				return "Callback function pointer is NULL in src_callback_read ()." ;
 		case SRC_ERR_NO_VARIABLE_RATIO :
 				return "This converter only allows constant conversion ratios." ;
+		case SRC_ERR_SINC_PREPARE_DATA_BAD_LEN :
+				return "Internal error : Bad length in prepare_data ()." ;
 
 		case SRC_ERR_MAX_ERROR :
 				return "Placeholder. No error defined for this error number." ;
