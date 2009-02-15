@@ -11,7 +11,7 @@
     This bug has zero security implications beyond the ability to cause a
     program hitting this bug to exit immediately with a segfault.
     See : http://www.mega-nerd.com/erikd/Blog/2009/Feb/14/index.html
-    Thanks to David Cournapeau for the bug report.
+    Thanks to David Cournapeau and Lev Givon for the bug report.
 
     * doc/win32.html Makefile.am configure.ac
     Reinstate Win32/MSVC compile instructions.
