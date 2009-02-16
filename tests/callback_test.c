@@ -137,11 +137,11 @@ callback_test (int converter, double src_ratio)
 
 	src_state = src_delete (src_state) ;
 
-	if (fabs (read_total - src_ratio * ARRAY_LEN (test_callback_data.data)) > src_ratio)
+	if (fabs (read_total / src_ratio - ARRAY_LEN (test_callback_data.data)) > 2.0)
 	{	printf ("\n\nLine %d : input / output length mismatch.\n\n", __LINE__) ;
 		printf ("    input len  : %d\n", ARRAY_LEN (test_callback_data.data)) ;
-		printf ("    output len : %ld (should be %g +/- %g)\n\n", read_total,
-					floor (0.5 + src_ratio * ARRAY_LEN (test_callback_data.data)), ceil (src_ratio)) ;
+		printf ("    output len : %ld (should be %g +/- 2)\n\n", read_total,
+					floor (0.5 + src_ratio * ARRAY_LEN (test_callback_data.data))) ;
 		exit (1) ;
 		} ;
 
