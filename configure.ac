@@ -273,7 +273,8 @@ AC_SUBST(HAVE_SNDFILE)
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
-AC_CONFIG_FILES([Makefile src/Version_script Win32/Makefile Win32/Makefile.mingw \
+AC_CONFIG_FILES([Makefile M4/Makefile src/Version_script \
+			Win32/Makefile Win32/Makefile.mingw \
 			src/Makefile examples/Makefile tests/Makefile doc/Makefile \
 			libsamplerate.spec samplerate.pc])
 AC_OUTPUT

@@ -1,3 +1,8 @@
+2009-02-17  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * Makefile.am configure.ac M4/*
+	Add M4 directory.
+
 2009-02-14  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/common.h src/samplerate.c
