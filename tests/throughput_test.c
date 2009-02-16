@@ -94,7 +94,7 @@ throughput_test (int converter, long best_throughput)
 	{	best_throughput = MAX (throughput, best_throughput) ;
 		printf ("%5.2f          %10ld       %10ld\n", duration, throughput, best_throughput) ;
 		}
-		
+
 
 	return best_throughput ;
 } /* throughput_test */

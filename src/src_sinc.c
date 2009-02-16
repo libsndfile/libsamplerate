@@ -1166,7 +1166,7 @@ prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len)
 	len = MIN (filter->in_count - filter->in_used, len) ;
 	len -= (len % filter->channels) ;
 
-	if  (len < 0 || filter->b_end + len > filter->b_len)
+	if (len < 0 || filter->b_end + len > filter->b_len)
 		return SRC_ERR_SINC_PREPARE_DATA_BAD_LEN ;
 
 	memcpy (filter->buffer + filter->b_end, data->data_in + filter->in_used,

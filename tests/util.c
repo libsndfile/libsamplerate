@@ -179,7 +179,7 @@ print_cpu_name (void)
 	while (fgets (buffer, sizeof (buffer), file) != NULL)
 		if (strstr (buffer, "model name") == buffer)
 		{	const char * cptr ;
-	
+
 			if ((cptr = strchr (buffer, ':')) != NULL)
 			{	cptr ++ ;
 				while (isspace (cptr [0])) cptr ++ ;
