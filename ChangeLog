@@ -1,7 +1,7 @@
-2009-02-17  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+2009-02-26  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
-    * Makefile.am configure.ac M4/*
-	Add M4 directory.
+    * Win32/Makefile.msvc
+    Add /Zm1000 to the CFLAGS as suggested by Kun Niu.
 
 2009-02-14  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
