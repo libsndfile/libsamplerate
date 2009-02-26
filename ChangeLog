@@ -3,6 +3,9 @@
     * Win32/Makefile.msvc
     Add /Zm1000 to the CFLAGS as suggested by Kun Niu.
 
+    * doc/api_full.html doc/api_callback.html
+    Improve explanation of use of src_set_ratio() function.
+
 2009-02-14  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/common.h src/samplerate.c

@@ -168,12 +168,24 @@ separate, unrelated pieces of audio.
 <PRE>
       int src_set_ratio (SRC_STATE *state, double new_ratio) ;
 </PRE>
+
+<p>
+When using the <B>src_process</B> or <B>src_callback_process</B> APIs and 
+updating the <B>src_ratio</B> field of the <B>SRC_STATE</B> struct, the library
+will try to smoothly transition between the conversion ratio of the last call
+and the conversion ratio of the current call.
+<p/>
+
 <P>
-The <B>src_set_ratio</B> function allows the modification of the conversion
-ratio between calls to <B>src_process</B>.
-This allows a step response in the conversion ratio.
-It returns non-zero on error and the error return value can be decoded into 
-a text string using the function documented 
+If the user want to bypass this smooth transition and achieve a step response in
+the conversion ratio, the <B>src_set_ratio</B> function can be used to set the
+starting conversion ratio of the next call to <B>src_process</B> or
+<B>src_callback_process</B>.
+<p/>
+
+<P>
+This function returns non-zero on error and the error return value can be
+decoded into a text string using the function documented 
 <A HREF="api_misc.html#ErrorReporting">here</A>.</P>
 
 <!-- <A HREF="mailto:aldel@mega-nerd.com">For the spam bots</A> -->
