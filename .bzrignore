@@ -8,8 +8,11 @@
 *.wav
 .depend
 .deps
+.git*
 .libs
 Cfg
+Hack
+Images
 M4/libtool.m4
 M4/ltoptions.m4
 M4/ltsugar.m4
@@ -35,6 +38,7 @@ examples/varispeed-play
 install-sh
 libsamplerate.spec
 libtool
+localinstall.py
 ltmain.sh
 missing
 samplerate.pc
