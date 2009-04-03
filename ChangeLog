@@ -1,3 +1,10 @@
+2009-04-03  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/samplerate.h
+    Move src_ratio field to the start of the SRC_DATA struct to ensure it gets
+    aligned correctly when either the library or client code gets compiled with
+    -malign-double.
+
 2009-02-26  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * Win32/Makefile.msvc

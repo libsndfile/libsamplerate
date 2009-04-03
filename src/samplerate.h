@@ -40,14 +40,14 @@ typedef struct SRC_STATE_tag SRC_STATE ;
 
 /* SRC_DATA is used to pass data to src_simple() and src_process(). */
 typedef struct
-{	float	*data_in, *data_out ;
+{	double	src_ratio ;
+
+	float	*data_in, *data_out ;
 
 	long	input_frames, output_frames ;
 	long	input_frames_used, output_frames_gen ;
 
 	int		end_of_input ;
-
-	double	src_ratio ;
 } SRC_DATA ;
 
 /* SRC_CB_DATA is used with callback based API. */
