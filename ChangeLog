@@ -1,3 +1,8 @@
+2009-04-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * M4/check_signal.m4 M4/clip_mode.m4 M4/lrint.m4 M4/lrintf.m4
+    New files used instead of acinclude.m4.
+
 2009-04-03  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/samplerate.h
