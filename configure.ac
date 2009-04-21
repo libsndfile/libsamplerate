@@ -38,7 +38,7 @@ AC_LANG([C])
 #  6. If any interfaces have been removed since the last public release, then set age
 #     to 0.
 
-SHARED_VERSION_INFO="1:7:1"
+SHARED_VERSION_INFO="1:0:0"
 
 AC_PROG_CC
 AM_PROG_CC_C_O
