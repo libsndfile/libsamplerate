@@ -1,3 +1,9 @@
+2009-06-25  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/samplerate.h
+    Change definition of SRC_STATE to be kinder to some slightly broken
+    compilers. Thanks to Rob Brown for suggesting this fix.
+
 2009-04-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * M4/check_signal.m4 M4/clip_mode.m4 M4/lrint.m4 M4/lrintf.m4

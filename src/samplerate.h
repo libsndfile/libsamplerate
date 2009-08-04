@@ -36,6 +36,7 @@ extern "C" {
 
 
 /* Opaque data type SRC_STATE. */
+struct SRC_STATE_tag ;
 typedef struct SRC_STATE_tag SRC_STATE ;
 
 /* SRC_DATA is used to pass data to src_simple() and src_process(). */
