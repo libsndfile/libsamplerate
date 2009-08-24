@@ -1194,6 +1194,9 @@ prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len)
 		filter->b_real_end = filter->b_end ;
 		len = half_filter_chan_len + 5 ;
 
+		if (len < 0 || filter->b_end + len > filter->b_len)
+			len = filter->b_len - filter->b_end ;
+
 		memset (filter->buffer + filter->b_end, 0, len * sizeof (filter->buffer [0])) ;
 		filter->b_end += len ;
 		} ;
