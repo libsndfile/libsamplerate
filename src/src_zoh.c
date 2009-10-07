@@ -56,6 +56,9 @@ zoh_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	double		src_ratio, input_index, rem ;
 	int			ch ;
 
+	if (data->input_frames <= 0)
+		return SRC_ERR_NO_ERROR ;
+
 	if (psrc->private_data == NULL)
 		return SRC_ERR_NO_PRIVATE ;
 

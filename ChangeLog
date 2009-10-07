@@ -3,6 +3,10 @@
     * tests/misc_test.c
     Add zero_input_test() from debian bug #506722.
 
+    * src/src_linear.c src/src_zoh.c
+    Fix for bug in zero_input_test(). Both these converters crashed if the
+    input_frames field of SRC_DATA was zero.
+
 2009-09-16  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * M4/endian.m4
