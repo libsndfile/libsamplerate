@@ -1,3 +1,8 @@
+2009-10-07  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/misc_test.c
+    Add zero_input_test() from debian bug #506722.
+
 2009-09-16  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * M4/endian.m4

@@ -27,6 +27,7 @@
 static void name_test (void) ;
 static void error_test (void) ;
 static void src_ratio_test (void) ;
+static void zero_input_test (int converter) ;
 
 int
 main (void)
@@ -42,6 +43,11 @@ main (void)
 
 	src_ratio_test () ;
 
+	zero_input_test (SRC_ZERO_ORDER_HOLD) ;
+	zero_input_test (SRC_LINEAR) ;
+	zero_input_test (SRC_SINC_FASTEST) ;
+
+	puts ("") ;
 	return 0 ;
 } /* main */
 
@@ -135,3 +141,35 @@ error_test (void)
 
 	return ;
 } /* error_test */
+
+static void
+zero_input_test (int converter)
+{	SRC_DATA data ;
+	SRC_STATE *state ;
+	float out [100] ;
+	int error ;
+
+	printf ("    %s (%-26s) ........ ", __func__, src_get_name (converter)) ;
+	fflush (stdout) ;
+
+	if ((state = src_new (converter, 1, &error)) == NULL)
+	{	printf ("\n\nLine %d : src_new failed : %s.\n\n", __LINE__, src_strerror (error)) ;
+		exit (1) ;
+		} ;
+
+	data.data_in = (float *) 0xdeadbeef ;
+	data.input_frames = 0 ;
+	data.data_out = out ;
+	data.output_frames = ARRAY_LEN (out) ;
+	data.end_of_input = 0 ;
+	data.src_ratio = 1.0 ;
+
+	if ((error = src_process (state, &data)))
+	{	printf ("\n\nLine %d : src_new failed : %s.\n\n", __LINE__, src_strerror (error)) ;
+		exit (1) ;
+		} ;
+
+	state = src_delete (state) ;
+
+	puts ("ok") ;
+} /* zero_input_test */
