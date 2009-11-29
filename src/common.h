@@ -46,6 +46,18 @@ typedef	long	int32_t ;
 
 #define	MAKE_MAGIC(a,b,c,d,e,f)	((a) + ((b) << 4) + ((c) << 8) + ((d) << 12) + ((e) << 16) + ((f) << 20))
 
+/*
+** Inspiration : http://sourcefrog.net/weblog/software/languages/C/unused.html
+*/
+#ifdef UNUSED
+#elif defined (__GNUC__)
+#	define UNUSED(x) UNUSED_ ## x __attribute__ ((unused))
+#elif defined (__LCLINT__)
+#	define UNUSED(x) /*@unused@*/ x
+#else
+#	define UNUSED(x) x
+#endif
+
 #ifdef __GNUC__
 #	define WARN_UNUSED	__attribute__ ((warn_unused_result))
 #else
