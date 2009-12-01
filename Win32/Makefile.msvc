@@ -6,7 +6,7 @@
 # PROG_LINK_FLAGS=/nologo /incremental:no /libpath:"$(MSVCDir)\Lib" /pdb:"libsamplerate-0.pdb" /machine:I386 /exetype:dynamic
 
 MSVCDir="C:\Progra~1\Micros~1.Net\Vc7"
-CFLAGS=/nologo /MD /W1 /GX /O2 /I "$(MSVCDir)\Include" /I "$(MSVCDir)\PlatformSDK\Include" /I . /I "Win32" /I "src" /D "WIN32" /D "_USRDLL" /YX /FD /Zm1000
+CFLAGS=/nologo /MD /W1 /GX /O2 /Zm200 /I "$(MSVCDir)\Include" /I "$(MSVCDir)\PlatformSDK\Include" /I . /I "Win32" /I "src" /D "WIN32" /D "_USRDLL" /YX /FD /Zm1000
 PROG_LINK_FLAGS=/nologo /incremental:no /libpath:"$(MSVCDir)\Lib" /libpath:"$(MSVCDir)\PlatformSDK\Lib" /pdb:"libsamplerate-0.pdb" /machine:I386 /exetype:dynamic
 
 CPP=cl.exe
