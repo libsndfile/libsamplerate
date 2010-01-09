@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2009 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2010 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -83,10 +83,10 @@ simple_test (int converter)
 		float out [olen] ;
 		double ratio = (1.0 * olen) / ilen ;
 		SRC_DATA src_data =
-		{	ratio,
-			in, out,
+		{	in, out,
 			ilen, olen,
-			0, 0, 0
+			0, 0, 0,
+			ratio
 		} ;
 
 		error = src_simple (&src_data, converter, 1) ;

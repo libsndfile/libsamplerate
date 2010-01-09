@@ -5,6 +5,12 @@
     due to clipping of the output when the format is FLAC. This problem arises
     due to libsndfile's in ability to seek in a FLAC file during write.
 
+    * src/samplerate.h tests/termination_test.c
+    Revert change that moved the src_ratio field to the start of SRC_DATA
+    struct. This change does have some merit, but is not worth it considering
+    that its an API change. This idea will be reconsidered when the API does
+    change.
+
 2009-12-01  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/win32.html
