@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2009 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2010 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ static double apply_gain (float * data, long frames, int channels, double max, d
 
 int
 main (int argc, char *argv [])
-{	SNDFILE	*infile, *outfile ;
+{	SNDFILE	*infile, *outfile = NULL ;
 	SF_INFO sfinfo ;
 
 	sf_count_t	count ;
@@ -137,28 +137,31 @@ main (int argc, char *argv [])
 	/* Delete the output file length to zero if already exists. */
 	remove (argv [argc - 1]) ;
 
-	if ((outfile = sf_open (argv [argc - 1], SFM_WRITE, &sfinfo)) == NULL)
-	{	printf ("Error : Not able to open output file '%s'\n", argv [argc - 1]) ;
-		sf_close (infile) ;
-		exit (1) ;
-		} ;
-
-	if (max_speed)
-	{	/* This is mainly for the comparison program tests/src-evaluate.c */
-		sf_command (outfile, SFC_SET_ADD_PEAK_CHUNK, NULL, SF_FALSE) ;
-		}
-	else
-	{	/* Update the file header after every write. */
-		sf_command (outfile, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) ;
-		} ;
-
-	sf_command (outfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
-
 	printf ("Output file   : %s\n", argv [argc - 1]) ;
 	printf ("Sample Rate   : %d\n", sfinfo.samplerate) ;
 
 	do
+	{	sf_close (outfile) ;
+
+		if ((outfile = sf_open (argv [argc - 1], SFM_WRITE, &sfinfo)) == NULL)
+		{	printf ("Error : Not able to open output file '%s'\n", argv [argc - 1]) ;
+			sf_close (infile) ;
+			exit (1) ;
+			} ;
+
+		if (max_speed)
+		{	/* This is mainly for the comparison program tests/src-evaluate.c */
+			sf_command (outfile, SFC_SET_ADD_PEAK_CHUNK, NULL, SF_FALSE) ;
+			}
+		else
+		{	/* Update the file header after every write. */
+			sf_command (outfile, SFC_SET_UPDATE_HEADER_AUTO, NULL, SF_TRUE) ;
+			} ;
+
+		sf_command (outfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
+
 		count = sample_rate_convert (infile, outfile, converter, src_ratio, sfinfo.channels, &gain) ;
+		}
 	while (count < 0) ;
 
 	printf ("Output Frames : %ld\n\n", (long) count) ;
@@ -239,8 +242,6 @@ sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double sr
 	if (max > 1.0)
 	{	*gain = 1.0 / max ;
 		printf ("\nOutput has clipped. Restarting conversion to prevent clipping.\n\n") ;
-		output_count = 0 ;
-		sf_command (outfile, SFC_FILE_TRUNCATE, &output_count, sizeof (output_count)) ;
 		return -1 ;
 		} ;
 

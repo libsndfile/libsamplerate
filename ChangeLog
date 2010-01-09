@@ -1,3 +1,10 @@
+2010-01-10  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * examples/sndfile-resample.c
+    Prevent creation of double length output files when conversion is restarted
+    due to clipping of the output when the format is FLAC. This problem arises
+    due to libsndfile's in ability to seek in a FLAC file during write.
+
 2009-12-01  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * doc/win32.html
