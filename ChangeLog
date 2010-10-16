@@ -6,6 +6,9 @@
     * configure.ac
     Add AM_SILENT_RULES.
 
+    * doc/download.html
+    Add a GPG signature.
+
 2010-09-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/float_cast.h
