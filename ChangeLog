@@ -3,6 +3,9 @@
     * src/fastest_coeffs.h src/high_qual_coeffs.h src/mid_qual_coeffs.h
     Fix typo in comments.
 
+    * configure.ac
+    Add AM_SILENT_RULES.
+
 2010-09-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/float_cast.h

@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2009 Erik de Castro Lopo (erikd AT mega-nerd DOT com).
+# Copyright (C) 2002-2010 Erik de Castro Lopo (erikd AT mega-nerd DOT com).
 
 dnl Require autoconf version >= 2.57)
 AC_PREREQ(2.57)
@@ -14,6 +14,8 @@ AC_CANONICAL_TARGET([])
 AC_CONFIG_MACRO_DIR([M4])
 
 AM_INIT_AUTOMAKE($PACKAGE_NAME,$PACKAGE_VERSION)
+AM_SILENT_RULES([yes])
+
 AC_CONFIG_HEADER(src/config.h)
 
 
