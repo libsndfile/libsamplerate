@@ -1,3 +1,13 @@
+2010-10-16  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/fastest_coeffs.h src/high_qual_coeffs.h src/mid_qual_coeffs.h
+    Fix typo in comments.
+
+2010-09-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/float_cast.h
+    Add lrint/lrintf version for Win64. Thanks to Dmitry Baikov.
+
 2010-01-10  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * examples/sndfile-resample.c
