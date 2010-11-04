@@ -1,3 +1,8 @@
+2010-11-04  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/*.[ch]
+    Fix typo in comments.
+
 2010-10-16  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/fastest_coeffs.h src/high_qual_coeffs.h src/mid_qual_coeffs.h

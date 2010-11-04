@@ -17,7 +17,7 @@
 */
 
 /*
-** This code is part of Secret Rabibt Code aka libsamplerate. A commercial
+** This code is part of Secret Rabbit Code aka libsamplerate. A commercial
 ** use license for this code is available, please see:
 **		http://www.mega-nerd.com/SRC/procedure.html
 */
