@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2009 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -16,25 +16,25 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 */
 
-/* 
-** This is the Win32 specific config.h header file. 
+/*
+** This is the Win32 specific config.h header file.
 **
-** On Unix (including MacOSX), this header file is automatically generated 
+** On Unix (including MacOSX), this header file is automatically generated
 ** during the configure process while on Win32 this has to be hand edited
 ** to keep it up to date.
 **
 ** This is also a good file to add Win32 specific things.
 */
 
-/* 
-** MSVC++ assumes that all floating point constants without a trailing 
-** letter 'f' are double precision. 
+/*
+** MSVC++ assumes that all floating point constants without a trailing
+** letter 'f' are double precision.
 **
 ** If this assumption is incorrect and one of these floating point constants
 ** is assigned to a float variable MSVC++ generates a warning.
 **
 ** Since there are currently about 25000 of these warnings generated in
-** src/src_sinc.c this slows down compile times considerably. The 
+** src/src_sinc.c this slows down compile times considerably. The
 ** following #pragma disables the warning.
 */
 
@@ -197,7 +197,7 @@
 /* Extra Win32 hacks. */
 
 /*
-**	Microsoft's compiler still does not support the 1999 ISO C Standard 
+**	Microsoft's compiler still does not support the 1999 ISO C Standard
 **	which includes 'inline'.
 */
 

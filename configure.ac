@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2010 Erik de Castro Lopo (erikd AT mega-nerd DOT com).
+# Copyright (C) 2002-2011 Erik de Castro Lopo (erikd AT mega-nerd DOT com).
 
 dnl Require autoconf version >= 2.57)
 AC_PREREQ(2.57)

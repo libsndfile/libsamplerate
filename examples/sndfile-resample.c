@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2010 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -275,7 +275,7 @@ usage_exit (const char *progname)
 	if ((cptr = strrchr (progname, '\\')) != NULL)
 		progname = cptr + 1 ;
 
-	
+
 	sf_command (NULL, SFC_GET_LIB_VERSION, lsf_ver, sizeof (lsf_ver)) ;
 
 	printf ("\n"
