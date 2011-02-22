@@ -198,7 +198,7 @@ get_cpu_name (void)
 		} ;
 
 	while (fgets (buffer, sizeof (buffer), file) != NULL)
-		if (strstr (buffer, search) == buffer)
+		if (strstr (buffer, search))
 		{	char *src, *dest ;
 
 			if ((src = strchr (buffer, ':')) != NULL)
