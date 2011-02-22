@@ -103,8 +103,7 @@ static void
 single_run (void)
 {
 
-	printf ("\n    CPU : ") ;
-	print_cpu_name () ;
+	printf ("\n    CPU name : %s\n", get_cpu_name ()) ;
 
 	puts (
 		"\n"
@@ -147,8 +146,7 @@ multi_run (int run_count)
 		sleep (10) ;
 		} ;
 
-	printf ("\n    CPU name : ") ;
-	print_cpu_name () ;
+	printf ("\n    CPU name : %s\n", get_cpu_name ()) ;
 
 	puts (
 		"\n"

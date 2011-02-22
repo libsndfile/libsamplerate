@@ -4,6 +4,9 @@
     Rename functio print_cpu_name() to get_cpu_name(). Add code for Mac OSX and
     FreeBSD.
 
+    * tests/multichan_throughput_test.c tests/throughput_test.c
+    Update to use get_cpu_name().
+
 2010-11-04  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/*.[ch]
