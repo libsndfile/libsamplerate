@@ -166,34 +166,65 @@ reverse_data (float *data, int datalen)
 
 } /* reverse_data */
 
-void
-print_cpu_name (void)
-{	char buffer [512] ;
-	FILE * file ;
+const char *
+get_cpu_name (void)
+{
+	const char *name = "Unknown", *search = NULL ;
+	static char buffer [512] ;
+	FILE * file = NULL ;
+	int is_pipe = 0 ;
 
-	if ((file = fopen ("/proc/cpuinfo", "r")) == NULL)
-	{	puts ("Unknown") ;
-		return ;
+#if defined (__linux__)
+	file = fopen ("/proc/cpuinfo", "r") ;
+	search = "model name" ;
+#elif defined (__APPLE__)
+	file = popen ("/usr/sbin/system_profiler -detailLevel full SPHardwareDataType", "r") ;
+	search = "Processor Name" ;
+	is_pipe = 1 ;
+#elif defined (__FreeBSD__)
+	file = popen ("sysctl -a", "r") ;
+	search = "hw.model" ;
+	is_pipe = 1 ;
+#else
+	file = NULL ;
+#endif
+
+	if (file == NULL)
+		return name ;
+
+	if (search == NULL)
+	{	printf ("Error : search is NULL in function %s.\n", __func__) ;
+		return name ;
 		} ;
 
 	while (fgets (buffer, sizeof (buffer), file) != NULL)
-		if (strstr (buffer, "model name") == buffer)
-		{	const char * cptr ;
+		if (strstr (buffer, search) == buffer)
+		{	char *src, *dest ;
 
-			if ((cptr = strchr (buffer, ':')) != NULL)
-			{	cptr ++ ;
-				while (isspace (cptr [0])) cptr ++ ;
-				printf ("%s", cptr) ;
-				goto complete ;
+			if ((src = strchr (buffer, ':')) != NULL)
+			{	src ++ ;
+				while (isspace (src [0]))
+					src ++ ;
+				name = src ;
+
+				/* Remove consecutive spaces. */
+				src ++ ;
+				for (dest = src ; src [0] ; src ++)
+				{	if (isspace (src [0]) && isspace (dest [-1]))
+						continue ;
+					dest [0] = src [0] ;
+					dest ++ ;
+					} ;
+				dest [0] = 0 ;
+				break ;
 				} ;
 			} ;
 
-	fclose (file) ;
-	puts ("Unknown") ;
-	return ;
+	if (is_pipe)
+		pclose (file) ;
+	else
+		fclose (file) ;
 
-complete :
-	fclose (file) ;
-	return ;
-} /* print_cpu_name */
+	return name ;
+} /* get_cpu_name */
 

@@ -1,3 +1,9 @@
+2011-02-22  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * tests/util.[ch]
+    Rename functio print_cpu_name() to get_cpu_name(). Add code for Mac OSX and
+    FreeBSD.
+
 2010-11-04  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/*.[ch]

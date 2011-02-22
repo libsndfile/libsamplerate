@@ -35,7 +35,7 @@ void reverse_data (float *data, int datalen) ;
 
 double calculate_snr (float *data, int len, int expected_peaks) ;
 
-void print_cpu_name (void) ;
+const char * get_cpu_name (void) ;
 
 #if OS_IS_WIN32
 /*
