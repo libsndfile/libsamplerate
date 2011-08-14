@@ -1,9 +1,10 @@
 # Copyright (C) 2002-2011 Erik de Castro Lopo (erikd AT mega-nerd DOT com).
 
-dnl Require autoconf version >= 2.57)
+dnl Require autoconf version
 AC_PREREQ(2.57)
 
-AC_INIT([libsamplerate],[0.1.8pre1],[erikd@mega-nerd.com])
+AC_INIT([libsamplerate],[0.1.8pre1],[erikd@mega-nerd.com],
+		[libsamplerate],[http://www.mega-nerd.com/libsamplerate/])
 
 # Put config stuff in Cfg.
 AC_CONFIG_AUX_DIR(Cfg)
@@ -12,17 +13,29 @@ AC_CONFIG_SRCDIR([src/samplerate.c])
 AC_CANONICAL_TARGET([])
 
 AC_CONFIG_MACRO_DIR([M4])
+AC_CONFIG_HEADERS([src/config.h])
 
 AM_INIT_AUTOMAKE($PACKAGE_NAME,$PACKAGE_VERSION)
 AM_SILENT_RULES([yes])
-
-AC_CONFIG_HEADER(src/config.h)
-
 
 dnl Add parameters for aclocal
 AC_SUBST(ACLOCAL_AMFLAGS, "-I M4")
 
 AC_LANG([C])
+
+AC_PROG_CC
+AM_PROG_CC_C_O
+AC_PROG_CXX
+AC_PROG_SED
+
+# Do not check for F77.
+define([AC_LIBTOOL_LANG_F77_CONFIG], [:])dnl
+
+AM_PROG_LIBTOOL
+LT_PROG_RC
+
+AC_PROG_INSTALL
+AC_PROG_LN_S
 
 #------------------------------------------------------------------------------------
 # Rules for library version information:
@@ -42,15 +55,9 @@ AC_LANG([C])
 
 SHARED_VERSION_INFO="1:8:1"
 
-AC_PROG_CC
-AM_PROG_CC_C_O
 
-# Do not check for F77.
-define([AC_LIBTOOL_LANG_F77_CONFIG], [:])dnl
 
-AM_PROG_LIBTOOL
 
-AC_PROG_INSTALL
 
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
@@ -214,7 +221,8 @@ if test $ac_cv_c_compiler_gnu = yes ; then
 			temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall//"`
 			CFLAGS=$temp_CFLAGS
 			;;
-		linux*)
+
+		linux*|kfreebsd*-gnu*|gnu*)
 			SHLIB_VERSION_ARG="-Wl,--version-script=Version_script"
 			;;
 		*)
