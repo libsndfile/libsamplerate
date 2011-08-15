@@ -9,10 +9,13 @@
     * examples/audio_out.c tests/callback_hang_test.c
     Fix compiler warnings.
 
+    * NEWS README Win32/config.h doc/*.html
+    Updates for 0.1.8 release.
+
 2011-02-22  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/util.[ch]
-    Rename functio print_cpu_name() to get_cpu_name(). Add code for Mac OSX and
+    Rename function print_cpu_name() to get_cpu_name(). Add code for Mac OSX and
     FreeBSD.
 
     * tests/multichan_throughput_test.c tests/throughput_test.c

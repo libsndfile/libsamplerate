@@ -1,3 +1,6 @@
+Version 0.1.8 (2011-08-15)
+  * Minor bug fixes and upates.
+
 Version 0.1.7 (2009-02-14)
   * Fix a segfault which occurs when memcpy is passed a bad length parameter.
   * Fix compilation under MSVC.
