@@ -3,7 +3,7 @@
 dnl Require autoconf version
 AC_PREREQ(2.57)
 
-AC_INIT([libsamplerate],[0.1.8pre1],[erikd@mega-nerd.com],
+AC_INIT([libsamplerate],[0.1.8],[erikd@mega-nerd.com],
 		[libsamplerate],[http://www.mega-nerd.com/libsamplerate/])
 
 # Put config stuff in Cfg.

@@ -12,6 +12,9 @@
     * NEWS README Win32/config.h doc/*.html
     Updates for 0.1.8 release.
 
+    * configure.ac
+    Release 0.1.8.
+
 2011-02-22  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/util.[ch]
