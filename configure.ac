@@ -262,10 +262,20 @@ case "$target_os" in
 		;;
 	esac
 
+htmldocdir=$prefix/share/doc/libsamplerate0-dev/html
+
+if test $prefix = "NONE" ; then
+	htmldocdir=/usr/local/share/doc/libsamplerate0-dev/html
+else
+	htmldocdir=$prefix/share/doc/libsamplerate0-dev/html
+	fi
+
 #====================================================================================
 # Now use the information from the checking stage.
 
 AC_DEFINE_UNQUOTED(OS_IS_WIN32, ${os_is_win32}, [Set to 1 if compiling for Win32])
+
+AC_SUBST(htmldocdir)
 
 AC_SUBST(SHLIB_VERSION_ARG)
 AC_SUBST(SHARED_VERSION_INFO)
@@ -297,6 +307,10 @@ AC_MSG_RESULT([
   Configuration summary :
 
     Version : ..................... ${VERSION}
+
+    Host CPU : .................... ${host_cpu}
+    Host Vendor : ................. ${host_vendor}
+    Host OS : ..................... ${host_os}
 ])
 
 if test x$ac_cv_c_compiler_gnu = xyes ; then
