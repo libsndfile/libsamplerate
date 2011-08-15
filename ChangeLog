@@ -1,3 +1,14 @@
+2011-08-15  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * configure.ac
+    Add symbol support for kfreebsd-*-gnu-*.
+
+    * configure.ac doc/Makefile.am
+    Improve installation of html docs.
+
+    * examples/audio_out.c tests/callback_hang_test.c
+    Fix compiler warnings.
+
 2011-02-22  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/util.[ch]

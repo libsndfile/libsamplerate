@@ -74,14 +74,10 @@ callback_hang_test (int converter)
 	SRC_STATE	*src_state ;
 
 	double src_ratio = 1.0 ;
-	long out_count ;
-	int current_out ;
 	int k, error ;
 
 	printf ("\tcallback_hang_test  (%-28s) ....... ", src_get_name (converter)) ;
 	fflush (stdout) ;
-
-	current_out = 0 ;
 
 	/* Perform sample rate conversion. */
 	src_state = src_callback_new (input_callback, converter, 1, &error, NULL) ;
@@ -93,7 +89,7 @@ callback_hang_test (int converter)
 	for (k = 0 ; k < ARRAY_LEN (pairs) ; k++)
 	{	alarm (1) ;
 		src_ratio = pairs [k].ratio ;
-		out_count = src_callback_read (src_state, src_ratio, pairs [k].count, output) ;
+		src_callback_read (src_state, src_ratio, pairs [k].count, output) ;
 		} ;
 
 	src_state = src_delete (src_state) ;

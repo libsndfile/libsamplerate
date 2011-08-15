@@ -118,7 +118,7 @@ linux_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_
 {	LINUX_AUDIO_OUT *linux_out ;
 	static float float_buffer [BUFFER_LEN] ;
 	static short buffer [BUFFER_LEN] ;
-	int		k, readcount, ignored ;
+	int		k, readcount ;
 
 	if ((linux_out = (LINUX_AUDIO_OUT*) audio_out) == NULL)
 	{	printf ("linux_play : AUDIO_OUT is NULL.\n") ;
@@ -133,7 +133,7 @@ linux_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_
 	while ((readcount = callback (callback_data, float_buffer, BUFFER_LEN / linux_out->channels)))
 	{	for (k = 0 ; k < readcount * linux_out->channels ; k++)
 			buffer [k] = lrint (32767.0 * float_buffer [k]) ;
-		ignored = write (linux_out->fd, buffer, readcount * linux_out->channels * sizeof (short)) ;
+		(void) write (linux_out->fd, buffer, readcount * linux_out->channels * sizeof (short)) ;
 		} ;
 
 	return ;
