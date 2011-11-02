@@ -176,7 +176,7 @@ timewarp_convert (SNDFILE *infile, SNDFILE *outfile, int converter, int channels
 		src_data.input_frames -= src_data.input_frames_used ;
 		} ;
 
-	src_state = src_delete (src_state) ;
+	src_delete (src_state) ;
 
 	return output_count ;
 } /* timewarp_convert */

@@ -237,7 +237,7 @@ sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double sr
 		src_data.input_frames -= src_data.input_frames_used ;
 		} ;
 
-	src_state = src_delete (src_state) ;
+	src_delete (src_state) ;
 
 	if (max > 1.0)
 	{	*gain = 1.0 / max ;

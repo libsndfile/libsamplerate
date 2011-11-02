@@ -6,6 +6,10 @@
     * examples/audio_out.[ch]
     On Linux used ALSA instead of OSS when available.
 
+    * src/samplerate.c src/src_linear.c src/src_zoh.c \
+            examples/sndfile-resample.c examples/timewarp-file.c
+    Fix warnings from the Goanna static analysis tool.
+
 2011-08-15  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac
