@@ -25,6 +25,13 @@
 
 #include "audio_out.h"
 
+#if HAVE_ALSA_ASOUNDLIB_H
+	#define ALSA_PCM_NEW_HW_PARAMS_API
+	#define ALSA_PCM_NEW_SW_PARAMS_API
+	#include <alsa/asoundlib.h>
+	#include <sys/time.h>
+#endif
+
 #if (HAVE_SNDFILE)
 
 #include <float_cast.h>
@@ -36,129 +43,396 @@
 #define MAKE_MAGIC(a,b,c,d,e,f,g,h)		\
 			((a) + ((b) << 1) + ((c) << 2) + ((d) << 3) + ((e) << 4) + ((f) << 5) + ((g) << 6) + ((h) << 7))
 
+typedef	struct AUDIO_OUT_s
+{	int magic ;
+} AUDIO_OUT ;
+
+
 /*------------------------------------------------------------------------------
-**	Linux/OSS functions for playing a sound.
+**	Linux (ALSA and OSS) functions for playing a sound.
 */
 
 #if defined (__linux__)
+
+#if HAVE_ALSA_ASOUNDLIB_H
+
+#define	ALSA_MAGIC		MAKE_MAGIC ('L', 'n', 'x', '-', 'A', 'L', 'S', 'A')
+
+typedef struct
+{	int magic ;
+	snd_pcm_t * dev ;
+	int channels ;
+} ALSA_AUDIO_OUT ;
+
+static int alsa_write_float (snd_pcm_t *alsa_dev, float *data, int frames, int channels) ;
+
+static AUDIO_OUT *
+alsa_open (int channels, unsigned samplerate)
+{	ALSA_AUDIO_OUT *alsa_out ;
+	const char * device = "default" ;
+	snd_pcm_hw_params_t *hw_params ;
+	snd_pcm_uframes_t buffer_size ;
+	snd_pcm_uframes_t alsa_period_size, alsa_buffer_frames ;
+	snd_pcm_sw_params_t *sw_params ;
+
+	int err ;
+
+	alsa_period_size = 1024 ;
+	alsa_buffer_frames = 4 * alsa_period_size ;
+
+	if ((alsa_out = calloc (1, sizeof (ALSA_AUDIO_OUT))) == NULL)
+	{	perror ("alsa_open : malloc ") ;
+		exit (1) ;
+		} ;
+
+	alsa_out->magic	= ALSA_MAGIC ;
+	alsa_out->channels = channels ;
+
+	if ((err = snd_pcm_open (&alsa_out->dev, device, SND_PCM_STREAM_PLAYBACK, 0)) < 0)
+	{	fprintf (stderr, "cannot open audio device \"%s\" (%s)\n", device, snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	snd_pcm_nonblock (alsa_out->dev, 0) ;
+
+	if ((err = snd_pcm_hw_params_malloc (&hw_params)) < 0)
+	{	fprintf (stderr, "cannot allocate hardware parameter structure (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_hw_params_any (alsa_out->dev, hw_params)) < 0)
+	{	fprintf (stderr, "cannot initialize hardware parameter structure (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_hw_params_set_access (alsa_out->dev, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0)
+	{	fprintf (stderr, "cannot set access type (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_hw_params_set_format (alsa_out->dev, hw_params, SND_PCM_FORMAT_FLOAT)) < 0)
+	{	fprintf (stderr, "cannot set sample format (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_hw_params_set_rate_near (alsa_out->dev, hw_params, &samplerate, 0)) < 0)
+	{	fprintf (stderr, "cannot set sample rate (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_hw_params_set_channels (alsa_out->dev, hw_params, channels)) < 0)
+	{	fprintf (stderr, "cannot set channel count (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_hw_params_set_buffer_size_near (alsa_out->dev, hw_params, &alsa_buffer_frames)) < 0)
+	{	fprintf (stderr, "cannot set buffer size (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_hw_params_set_period_size_near (alsa_out->dev, hw_params, &alsa_period_size, 0)) < 0)
+	{	fprintf (stderr, "cannot set period size (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_hw_params (alsa_out->dev, hw_params)) < 0)
+	{	fprintf (stderr, "cannot set parameters (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	/* extra check: if we have only one period, this code won't work */
+	snd_pcm_hw_params_get_period_size (hw_params, &alsa_period_size, 0) ;
+	snd_pcm_hw_params_get_buffer_size (hw_params, &buffer_size) ;
+	if (alsa_period_size == buffer_size)
+	{	fprintf (stderr, "Can't use period equal to buffer size (%lu == %lu)", alsa_period_size, buffer_size) ;
+		goto catch_error ;
+		} ;
+
+	snd_pcm_hw_params_free (hw_params) ;
+
+	if ((err = snd_pcm_sw_params_malloc (&sw_params)) != 0)
+	{	fprintf (stderr, "%s: snd_pcm_sw_params_malloc: %s", __func__, snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_sw_params_current (alsa_out->dev, sw_params)) != 0)
+	{	fprintf (stderr, "%s: snd_pcm_sw_params_current: %s", __func__, snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	/* note: set start threshold to delay start until the ring buffer is full */
+	snd_pcm_sw_params_current (alsa_out->dev, sw_params) ;
+
+	if ((err = snd_pcm_sw_params_set_start_threshold (alsa_out->dev, sw_params, buffer_size)) < 0)
+	{	fprintf (stderr, "cannot set start threshold (%s)\n", snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	if ((err = snd_pcm_sw_params (alsa_out->dev, sw_params)) != 0)
+	{	fprintf (stderr, "%s: snd_pcm_sw_params: %s", __func__, snd_strerror (err)) ;
+		goto catch_error ;
+		} ;
+
+	snd_pcm_sw_params_free (sw_params) ;
+
+	snd_pcm_reset (alsa_out->dev) ;
+
+catch_error :
+
+	if (err < 0 && alsa_out->dev != NULL)
+	{	snd_pcm_close (alsa_out->dev) ;
+		return NULL ;
+		} ;
+
+	return (AUDIO_OUT *) alsa_out ;
+} /* alsa_open */
+
+static void
+alsa_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_data)
+{	static float buffer [BUFFER_LEN] ;
+	ALSA_AUDIO_OUT *alsa_out ;
+	int	read_frames ;
+
+	if ((alsa_out = (ALSA_AUDIO_OUT*) audio_out) == NULL)
+	{	printf ("alsa_close : AUDIO_OUT is NULL.\n") ;
+		return ;
+		} ;
+
+	if (alsa_out->magic != ALSA_MAGIC)
+	{	printf ("alsa_close : Bad magic number.\n") ;
+		return ;
+		} ;
+
+	while ((read_frames = callback (callback_data, buffer, BUFFER_LEN / alsa_out->channels)))
+		alsa_write_float (alsa_out->dev, buffer, read_frames, alsa_out->channels) ;
+
+	return ;
+} /* alsa_play */
+
+static int
+alsa_write_float (snd_pcm_t *alsa_dev, float *data, int frames, int channels)
+{	static	int epipe_count = 0 ;
+
+	int total = 0 ;
+	int retval ;
+
+	if (epipe_count > 0)
+		epipe_count -- ;
+
+	while (total < frames)
+	{	retval = snd_pcm_writei (alsa_dev, data + total * channels, frames - total) ;
+
+		if (retval >= 0)
+		{	total += retval ;
+			if (total == frames)
+				return total ;
+
+			continue ;
+			} ;
+
+		switch (retval)
+		{	case -EAGAIN :
+					puts ("alsa_write_float: EAGAIN") ;
+					continue ;
+					break ;
+
+			case -EPIPE :
+					if (epipe_count > 0)
+					{	printf ("alsa_write_float: EPIPE %d\n", epipe_count) ;
+						if (epipe_count > 140)
+							return retval ;
+						} ;
+					epipe_count += 100 ;
+
+#if 0
+					if (0)
+					{	snd_pcm_status_t *status ;
+
+						snd_pcm_status_alloca (&status) ;
+						if ((retval = snd_pcm_status (alsa_dev, status)) < 0)
+							fprintf (stderr, "alsa_out: xrun. can't determine length\n") ;
+						else if (snd_pcm_status_get_state (status) == SND_PCM_STATE_XRUN)
+						{	struct timeval now, diff, tstamp ;
+
+							gettimeofday (&now, 0) ;
+							snd_pcm_status_get_trigger_tstamp (status, &tstamp) ;
+							timersub (&now, &tstamp, &diff) ;
+
+							fprintf (stderr, "alsa_write_float xrun: of at least %.3f msecs. resetting stream\n",
+									diff.tv_sec * 1000 + diff.tv_usec / 1000.0) ;
+							}
+						else
+							fprintf (stderr, "alsa_write_float: xrun. can't determine length\n") ;
+						} ;
+#endif
+
+					snd_pcm_prepare (alsa_dev) ;
+					break ;
+
+			case -EBADFD :
+					fprintf (stderr, "alsa_write_float: Bad PCM state.n") ;
+					return 0 ;
+					break ;
+
+			case -ESTRPIPE :
+					fprintf (stderr, "alsa_write_float: Suspend event.n") ;
+					return 0 ;
+					break ;
+
+			case -EIO :
+					puts ("alsa_write_float: EIO") ;
+					return 0 ;
+
+			default :
+					fprintf (stderr, "alsa_write_float: retval = %d\n", retval) ;
+					return 0 ;
+					break ;
+			} ; /* switch */
+		} ; /* while */
+
+	return total ;
+} /* alsa_write_float */
+
+static void
+alsa_close (AUDIO_OUT *audio_out)
+{	ALSA_AUDIO_OUT *alsa_out ;
+
+	if ((alsa_out = (ALSA_AUDIO_OUT*) audio_out) == NULL)
+	{	printf ("alsa_close : AUDIO_OUT is NULL.\n") ;
+		return ;
+		} ;
+
+	if (alsa_out->magic != ALSA_MAGIC)
+	{	printf ("alsa_close : Bad magic number.\n") ;
+		return ;
+		} ;
+
+	memset (alsa_out, 0, sizeof (ALSA_AUDIO_OUT)) ;
+
+	free (alsa_out) ;
+
+	return ;
+} /* alsa_close */
+
+#endif /* HAVE_ALSA_ASOUNDLIB_H */
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/soundcard.h>
 
-#define	LINUX_MAGIC		MAKE_MAGIC ('L', 'i', 'n', 'u', 'x', 'O', 'S', 'S')
+#define	OSS_MAGIC		MAKE_MAGIC ('L', 'i', 'n', 'u', 'x', 'O', 'S', 'S')
 
 typedef struct
 {	int magic ;
 	int fd ;
 	int channels ;
-} LINUX_AUDIO_OUT ;
+} OSS_AUDIO_OUT ;
 
-static AUDIO_OUT *linux_open (int channels, int samplerate) ;
-static void linux_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_data) ;
-static void linux_close (AUDIO_OUT *audio_out) ;
+static AUDIO_OUT *opensoundsys_open (int channels, int samplerate) ;
+static void opensoundsys_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_data) ;
+static void opensoundsys_close (AUDIO_OUT *audio_out) ;
 
 
 static AUDIO_OUT *
-linux_open (int channels, int samplerate)
-{	LINUX_AUDIO_OUT	*linux_out ;
+opensoundsys_open (int channels, int samplerate)
+{	OSS_AUDIO_OUT	*opensoundsys_out ;
 	int stereo, fmt, error ;
 
-	if ((linux_out = malloc (sizeof (LINUX_AUDIO_OUT))) == NULL)
-	{	perror ("linux_open : malloc ") ;
+	if ((opensoundsys_out = calloc (1, sizeof (OSS_AUDIO_OUT))) == NULL)
+	{	perror ("opensoundsys_open : malloc ") ;
 		exit (1) ;
 		} ;
 
-	linux_out->magic	= LINUX_MAGIC ;
-	linux_out->channels = channels ;
+	opensoundsys_out->magic	= OSS_MAGIC ;
+	opensoundsys_out->channels = channels ;
 
-	if ((linux_out->fd = open ("/dev/dsp", O_WRONLY, 0)) == -1)
-	{	perror ("linux_open : open ") ;
+	if ((opensoundsys_out->fd = open ("/dev/dsp", O_WRONLY, 0)) == -1)
+	{	perror ("opensoundsys_open : open ") ;
 		exit (1) ;
 		} ;
 
 	stereo = 0 ;
-	if (ioctl (linux_out->fd, SNDCTL_DSP_STEREO, &stereo) == -1)
+	if (ioctl (opensoundsys_out->fd, SNDCTL_DSP_STEREO, &stereo) == -1)
 	{ 	/* Fatal error */
-		perror ("linux_open : stereo ") ;
+		perror ("opensoundsys_open : stereo ") ;
 		exit (1) ;
 		} ;
 
-	if (ioctl (linux_out->fd, SNDCTL_DSP_RESET, 0))
-	{	perror ("linux_open : reset ") ;
+	if (ioctl (opensoundsys_out->fd, SNDCTL_DSP_RESET, 0))
+	{	perror ("opensoundsys_open : reset ") ;
 		exit (1) ;
 		} ;
 
 	fmt = CPU_IS_BIG_ENDIAN ? AFMT_S16_BE : AFMT_S16_LE ;
-	if (ioctl (linux_out->fd, SNDCTL_DSP_SETFMT, &fmt) != 0)
-	{	perror ("linux_open_dsp_device : set format ") ;
+	if (ioctl (opensoundsys_out->fd, SNDCTL_DSP_SETFMT, &fmt) != 0)
+	{	perror ("opensoundsys_open_dsp_device : set format ") ;
 	    exit (1) ;
   		} ;
 
-	if ((error = ioctl (linux_out->fd, SNDCTL_DSP_CHANNELS, &channels)) != 0)
-	{	perror ("linux_open : channels ") ;
+	if ((error = ioctl (opensoundsys_out->fd, SNDCTL_DSP_CHANNELS, &channels)) != 0)
+	{	perror ("opensoundsys_open : channels ") ;
 		exit (1) ;
 		} ;
 
-	if ((error = ioctl (linux_out->fd, SNDCTL_DSP_SPEED, &samplerate)) != 0)
-	{	perror ("linux_open : sample rate ") ;
+	if ((error = ioctl (opensoundsys_out->fd, SNDCTL_DSP_SPEED, &samplerate)) != 0)
+	{	perror ("opensoundsys_open : sample rate ") ;
 		exit (1) ;
 		} ;
 
-	if ((error = ioctl (linux_out->fd, SNDCTL_DSP_SYNC, 0)) != 0)
-	{	perror ("linux_open : sync ") ;
+	if ((error = ioctl (opensoundsys_out->fd, SNDCTL_DSP_SYNC, 0)) != 0)
+	{	perror ("opensoundsys_open : sync ") ;
 		exit (1) ;
 		} ;
 
-	return 	(AUDIO_OUT*) linux_out ;
-} /* linux_open */
+	return 	(AUDIO_OUT*) opensoundsys_out ;
+} /* opensoundsys_open */
 
 static void
-linux_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_data)
-{	LINUX_AUDIO_OUT *linux_out ;
+opensoundsys_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_data)
+{	OSS_AUDIO_OUT *opensoundsys_out ;
 	static float float_buffer [BUFFER_LEN] ;
 	static short buffer [BUFFER_LEN] ;
-	int		k, readcount ;
+	int		k, read_frames ;
 
-	if ((linux_out = (LINUX_AUDIO_OUT*) audio_out) == NULL)
-	{	printf ("linux_play : AUDIO_OUT is NULL.\n") ;
+	if ((opensoundsys_out = (OSS_AUDIO_OUT*) audio_out) == NULL)
+	{	printf ("opensoundsys_play : AUDIO_OUT is NULL.\n") ;
 		return ;
 		} ;
 
-	if (linux_out->magic != LINUX_MAGIC)
-	{	printf ("linux_play : Bad magic number.\n") ;
+	if (opensoundsys_out->magic != OSS_MAGIC)
+	{	printf ("opensoundsys_play : Bad magic number.\n") ;
 		return ;
 		} ;
 
-	while ((readcount = callback (callback_data, float_buffer, BUFFER_LEN / linux_out->channels)))
-	{	for (k = 0 ; k < readcount * linux_out->channels ; k++)
+	while ((read_frames = callback (callback_data, float_buffer, BUFFER_LEN / opensoundsys_out->channels)))
+	{	for (k = 0 ; k < read_frames * opensoundsys_out->channels ; k++)
 			buffer [k] = lrint (32767.0 * float_buffer [k]) ;
-		(void) write (linux_out->fd, buffer, readcount * linux_out->channels * sizeof (short)) ;
+		(void) write (opensoundsys_out->fd, buffer, read_frames * opensoundsys_out->channels * sizeof (short)) ;
 		} ;
 
 	return ;
-} /* linux_play */
+} /* opensoundsys_play */
 
 static void
-linux_close (AUDIO_OUT *audio_out)
-{	LINUX_AUDIO_OUT *linux_out ;
+opensoundsys_close (AUDIO_OUT *audio_out)
+{	OSS_AUDIO_OUT *opensoundsys_out ;
 
-	if ((linux_out = (LINUX_AUDIO_OUT*) audio_out) == NULL)
-	{	printf ("linux_close : AUDIO_OUT is NULL.\n") ;
+	if ((opensoundsys_out = (OSS_AUDIO_OUT*) audio_out) == NULL)
+	{	printf ("opensoundsys_close : AUDIO_OUT is NULL.\n") ;
 		return ;
 		} ;
 
-	if (linux_out->magic != LINUX_MAGIC)
-	{	printf ("linux_close : Bad magic number.\n") ;
+	if (opensoundsys_out->magic != OSS_MAGIC)
+	{	printf ("opensoundsys_close : Bad magic number.\n") ;
 		return ;
 		} ;
 
-	memset (linux_out, 0, sizeof (LINUX_AUDIO_OUT)) ;
+	memset (opensoundsys_out, 0, sizeof (OSS_AUDIO_OUT)) ;
 
-	free (linux_out) ;
+	free (opensoundsys_out) ;
 
 	return ;
-} /* linux_close */
+} /* opensoundsys_close */
 
 #endif /* __linux__ */
 
@@ -206,7 +480,7 @@ macosx_open (int channels, int samplerate)
 	OSStatus	err ;
 	size_t 		count ;
 
-	if ((macosx_out = malloc (sizeof (MACOSX_AUDIO_OUT))) == NULL)
+	if ((macosx_out = calloc (1, sizeof (MACOSX_AUDIO_OUT))) == NULL)
 	{	perror ("macosx_open : malloc ") ;
 		exit (1) ;
 		} ;
@@ -417,7 +691,7 @@ win32_open (int channels, int samplerate)
 	WAVEFORMATEX wf ;
 	int error ;
 
-	if ((win32_out = malloc (sizeof (WIN32_AUDIO_OUT))) == NULL)
+	if ((win32_out = calloc (1, sizeof (WIN32_AUDIO_OUT))) == NULL)
 	{	perror ("win32_open : malloc ") ;
 		exit (1) ;
 		} ;
@@ -619,7 +893,7 @@ solaris_open (int channels, int samplerate)
 	audio_info_t		audio_info ;
 	int					error ;
 
-	if ((solaris_out = malloc (sizeof (SOLARIS_AUDIO_OUT))) == NULL)
+	if ((solaris_out = calloc (1, sizeof (SOLARIS_AUDIO_OUT))) == NULL)
 	{	perror ("solaris_open : malloc ") ;
 		exit (1) ;
 		} ;
@@ -657,7 +931,7 @@ solaris_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callbac
 {	SOLARIS_AUDIO_OUT *solaris_out ;
 	static float float_buffer [BUFFER_LEN] ;
 	static short buffer [BUFFER_LEN] ;
-	int		k, readcount ;
+	int		k, read_frames ;
 
 	if ((solaris_out = (SOLARIS_AUDIO_OUT*) audio_out) == NULL)
 	{	printf ("solaris_play : AUDIO_OUT is NULL.\n") ;
@@ -669,10 +943,10 @@ solaris_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callbac
 		return ;
 		} ;
 
-	while ((readcount = callback (callback_data, float_buffer, BUFFER_LEN / solaris_out->channels)))
-	{	for (k = 0 ; k < readcount * solaris_out->channels ; k++)
+	while ((read_frames = callback (callback_data, float_buffer, BUFFER_LEN / solaris_out->channels)))
+	{	for (k = 0 ; k < read_frames * solaris_out->channels ; k++)
 			buffer [k] = lrint (32767.0 * float_buffer [k]) ;
-		write (solaris_out->fd, buffer, readcount * solaris_out->channels * sizeof (short)) ;
+		write (solaris_out->fd, buffer, read_frames * solaris_out->channels * sizeof (short)) ;
 		} ;
 
 	return ;
@@ -709,7 +983,11 @@ AUDIO_OUT *
 audio_open (int channels, int samplerate)
 {
 #if defined (__linux__)
-	return linux_open (channels, samplerate) ;
+	#if HAVE_ALSA_ASOUNDLIB_H
+		if (access ("/proc/asound/cards", R_OK) == 0)
+			return alsa_open (channels, samplerate) ;
+	#endif
+		return opensoundsys_open (channels, samplerate) ;
 #elif (defined (__MACH__) && defined (__APPLE__))
 	return macosx_open (channels, samplerate) ;
 #elif (defined (sun) && defined (unix))
@@ -747,7 +1025,11 @@ audio_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_
 		} ;
 
 #if defined (__linux__)
-	linux_play (callback, audio_out, callback_data) ;
+	#if HAVE_ALSA_ASOUNDLIB_H
+		if (audio_out->magic == ALSA_MAGIC)
+			alsa_play (callback, audio_out, callback_data) ;
+	#endif
+		opensoundsys_play (callback, audio_out, callback_data) ;
 #elif (defined (__MACH__) && defined (__APPLE__))
 	macosx_play (callback, audio_out, callback_data) ;
 #elif (defined (sun) && defined (unix))
@@ -768,7 +1050,11 @@ void
 audio_close (AUDIO_OUT *audio_out)
 {
 #if defined (__linux__)
-	linux_close (audio_out) ;
+	#if HAVE_ALSA_ASOUNDLIB_H
+		if (audio_out->magic == ALSA_MAGIC)
+			alsa_close (audio_out) ;
+	#endif
+	opensoundsys_close (audio_out) ;
 #elif (defined (__MACH__) && defined (__APPLE__))
 	macosx_close (audio_out) ;
 #elif (defined (sun) && defined (unix))
