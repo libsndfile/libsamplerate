@@ -10,7 +10,7 @@ INCLUDES = -I$(srcdir)/$(SAMPLERATEDIR) @OS_SPECIFIC_INCLUDES@
 
 OS_SPECIFIC_LINKS = @OS_SPECIFIC_LINKS@
 
-SNDFILE_LIBS = @SNDFILE_LIBS@
+SNDFILE_LIBS = @SNDFILE_LIBS@ @ALSA_LIBS@
 AM_CFLAGS = @SNDFILE_CFLAGS@
 
 #===============================================================================

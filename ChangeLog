@@ -1,3 +1,8 @@
+2011-11-02  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * configure.ac examples/Makefile.am
+    Detect ALSA and use it in varispeed-play.
+
 2011-08-15  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac

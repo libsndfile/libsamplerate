@@ -185,6 +185,19 @@ else
 	fi
 
 #====================================================================================
+# Check for ALSA.
+
+ALSA_LIBS=""
+
+if test x$enable_alsa != xno ; then
+	AC_CHECK_HEADERS(alsa/asoundlib.h)
+	if test x$ac_cv_header_alsa_asoundlib_h = xyes ; then
+		ALSA_LIBS="-lasound"
+		enable_alsa=yes
+		fi
+	fi
+
+#====================================================================================
 # Check for libfftw3 which is required for the test and example programs.
 
 if test $ac_arg_fftw = "Y" ; then
@@ -293,6 +306,8 @@ AC_SUBST(HAVE_SNDFILE)
 AC_SUBST(SNDFILE_CFLAGS)
 AC_SUBST(SNDFILE_LIBS)
 
+AC_SUBST(ALSA_LIBS)
+
 AC_CONFIG_FILES([Makefile M4/Makefile src/Version_script \
 			Win32/Makefile Win32/Makefile.mingw \
 			src/Makefile examples/Makefile tests/Makefile doc/Makefile \
@@ -322,9 +337,10 @@ if test x$ac_cv_c_compiler_gnu = xyes ; then
 AC_MSG_RESULT([
   Extra tools required for testing and examples :
 
-    Use FFTW : .................... ${ac_cv_fftw3}])
+    Have FFTW : ................... ${ac_cv_fftw3}])
 
-AC_MSG_RESULT([    Have libsndfile : ............. ${ac_cv_sndfile}
+AC_MSG_RESULT([    Have libsndfile : ............. ${ac_cv_sndfile}])
+AC_MSG_RESULT([    Have ALSA : ................... ${ac_cv_header_alsa_asoundlib_h}
 ])
 
 AC_MSG_RESULT([  Installation directories :
