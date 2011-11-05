@@ -34,12 +34,13 @@
 
 #define ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
 
-#define	BUFFER_LEN		4096
-#define	INPUT_FRAMES	100
+#define	BUFFER_LEN			4096
+#define	VARISPEED_BLOCK_LEN	64
 
 #define	MIN(a,b)		((a) < (b) ? (a) : (b))
 
-#define	MAGIC_NUMBER	((int) ('S' << 16) + ('R' << 8) + ('C'))
+#define	SRC_MAGIC		((int) ('S' << 16) + ('R' << 8) + ('C'))
+#define	SNDFILE_MAGIC	((int) ('s' << 24) + ('n' << 20) + ('d' << 16) + ('f' << 12) + ('i' << 8) + ('l' << 4) + 'e')
 
 #ifndef	M_PI
 #define	M_PI			3.14159265358979323846264338
@@ -48,22 +49,27 @@
 
 typedef struct
 {	int			magic ;
-
 	SNDFILE 	*sndfile ;
 	SF_INFO 	sfinfo ;
 
-	SRC_STATE	*src_state ;
-	SRC_DATA	src_data ;
+	float		buffer	[BUFFER_LEN] ;
+} SNDFILE_CB_DATA ;
+
+typedef struct
+{	int			magic ;
+
+	SNDFILE_CB_DATA	sf ;
 
 	int			freq_point ;
-	int			buffer_out_start, buffer_out_end ;
 
-	float		buffer_in	[BUFFER_LEN] ;
-	float		buffer_out	[BUFFER_LEN] ;
-} CALLBACK_DATA ;
+	SRC_STATE	*src_state ;
 
-static int varispeed_get_data (CALLBACK_DATA *data, float *samples, int frames) ;
+} SRC_CB_DATA ;
+
+static int varispeed_get_data (SRC_CB_DATA *data, float *samples, int frames) ;
 static void varispeed_play (const char *filename, int converter) ;
+
+static long src_input_callback (void *cb_data, float **data) ;
 
 int
 main (int argc, char *argv [])
@@ -121,25 +127,22 @@ main (int argc, char *argv [])
 
 static void
 varispeed_play (const char *filename, int converter)
-{	CALLBACK_DATA	*data ;
+{	SRC_CB_DATA		data ;
 	AUDIO_OUT		*audio_out ;
 	int				error ;
 
-	/* Allocate memory for the callback data. */
-	if ((data = calloc (1, sizeof (CALLBACK_DATA))) == NULL)
-	{	printf ("\n\n%s:%d Calloc failed!\n", __FILE__, __LINE__) ;
-		exit (1) ;
-		} ;
+	memset (&data, 0, sizeof (data)) ;
 
-	data->magic = MAGIC_NUMBER ;
+	data.magic = SRC_MAGIC ;
+	data.sf.magic = SNDFILE_MAGIC ;
 
-	if ((data->sndfile = sf_open (filename, SFM_READ, &data->sfinfo)) == NULL)
+	if ((data.sf.sndfile = sf_open (filename, SFM_READ, &data.sf.sfinfo)) == NULL)
 	{	puts (sf_strerror (NULL)) ;
 		exit (1) ;
 		} ;
 
 	/* Initialize the sample rate converter. */
-	if ((data->src_state = src_new (converter, data->sfinfo.channels, &error)) == NULL)
+	if ((data.src_state = src_callback_new (src_input_callback, converter, data.sf.sfinfo.channels, &error, &data.sf)) == NULL)
 	{	printf ("\n\nError : src_new() failed : %s.\n\n", src_strerror (error)) ;
 		exit (1) ;
 		} ;
@@ -153,107 +156,76 @@ varispeed_play (const char *filename, int converter)
 		"\n",
 		filename, src_get_name (converter)) ;
 
-	if ((audio_out = audio_open (data->sfinfo.channels, data->sfinfo.samplerate)) == NULL)
+	if ((audio_out = audio_open (data.sf.sfinfo.channels, data.sf.sfinfo.samplerate)) == NULL)
 	{	printf ("\n\nError : audio_open () failed.\n") ;
 		exit (1) ;
 		} ;
 
-	/* Set up sample rate converter info. */
-	data->src_data.end_of_input = 0 ; /* Set this later. */
-
-	/* Start with zero to force load in while loop. */
-	data->src_data.input_frames = 0 ;
-	data->src_data.data_in = data->buffer_in ;
-
-	/* Start with output frames also zero. */
-	data->src_data.output_frames_gen = 0 ;
-
-	data->buffer_out_start = data->buffer_out_end = 0 ;
-	data->src_data.src_ratio = 1.0 ;
-
 	/* Pass the data and the callbacl function to audio_play */
-	audio_play ((get_audio_callback_t) varispeed_get_data, audio_out, data) ;
+	audio_play ((get_audio_callback_t) varispeed_get_data, audio_out, &data) ;
 
 	/* Cleanup */
 	audio_close (audio_out) ;
-	sf_close (data->sndfile) ;
-	src_delete (data->src_state) ;
-
-	free (data) ;
+	sf_close (data.sf.sndfile) ;
+	src_delete (data.src_state) ;
 
 } /* varispeed_play */
+
+static long
+src_input_callback (void *cb_data, float **audio)
+{	SNDFILE_CB_DATA * data = (SNDFILE_CB_DATA *) cb_data ;
+	const int input_frames = ARRAY_LEN (data->buffer) / data->sfinfo.channels ;
+	int		read_frames ;
+
+	if (data->magic != SNDFILE_MAGIC)
+	{	printf ("\n\n%s:%d Eeeek, something really bad happened!\n", __FILE__, __LINE__) ;
+		exit (1) ;
+		} ;
+
+	for (read_frames = 0 ; read_frames < input_frames ; )
+	{	sf_count_t position ;
+
+		read_frames += sf_readf_float (data->sndfile, data->buffer + read_frames * data->sfinfo.channels, input_frames - read_frames) ;
+
+		position = sf_seek (data->sndfile, 0, SEEK_CUR) ;
+
+		if (position < 0 || position == data->sfinfo.frames)
+			sf_seek (data->sndfile, 0, SEEK_SET) ;
+		} ;
+
+	*audio = & (data->buffer [0]) ;
+
+	return input_frames ;
+} /* src_input_callback */
+
 
 /*==============================================================================
 */
 
 static int
-varispeed_get_data (CALLBACK_DATA *data, float *samples, int frames)
-{	int		error, readframes, frame_count, direct_out ;
+varispeed_get_data (SRC_CB_DATA *data, float *samples, int out_frames)
+{	float	*output ;
+	int		rc, out_frame_count ;
 
-	if (data->magic != MAGIC_NUMBER)
+	if (data->magic != SRC_MAGIC)
 	{	printf ("\n\n%s:%d Eeeek, something really bad happened!\n", __FILE__, __LINE__) ;
 		exit (1) ;
 		} ;
 
-	frame_count = 0 ;
+	for (out_frame_count = 0 ; out_frame_count < out_frames ; out_frame_count += VARISPEED_BLOCK_LEN)
+	{	double	src_ratio = 1.0 - 0.5 * sin (data->freq_point * 2 * M_PI / 20000) ;
 
-	if (data->buffer_out_start < data->buffer_out_end)
-	{	frame_count = MIN (data->buffer_out_end - data->buffer_out_start, frames) ;
-		memcpy (samples, data->buffer_out + data->sfinfo.channels * data->buffer_out_start, data->sfinfo.channels * frame_count * sizeof (float)) ;
-		data->buffer_out_start += frame_count ;
-		} ;
-
-	data->buffer_out_start = data->buffer_out_end = 0 ;
-
-	while (frame_count < frames)
-	{
-		/* Read INPUT_FRAMES frames worth looping at end of file. */
-		for (readframes = 0 ; readframes < INPUT_FRAMES ; )
-		{	sf_count_t position ;
-
-			readframes += sf_readf_float (data->sndfile, data->buffer_in + data->sfinfo.channels * readframes, INPUT_FRAMES - readframes) ;
-
-			position = sf_seek (data->sndfile, 0, SEEK_CUR) ;
-
-			if (position < 0 || position == data->sfinfo.frames)
-				sf_seek (data->sndfile, 0, SEEK_SET) ;
-			} ;
-
-		data->src_data.input_frames = readframes ;
-
-		data->src_data.src_ratio = 1.0 - 0.5 * sin (data->freq_point * 2 * M_PI / 20000) ;
 		data->freq_point ++ ;
 
-		direct_out = (data->src_data.src_ratio * readframes < frames - frame_count) ? 1 : 0 ;
+		output = samples + out_frame_count * data->sf.sfinfo.channels ;
 
-		if (direct_out)
-		{	data->src_data.data_out = samples + frame_count * data->sfinfo.channels ;
-			data->src_data.output_frames = frames - frame_count ;
-			}
-		else
-		{	data->src_data.data_out = data->buffer_out ;
-			data->src_data.output_frames = BUFFER_LEN / data->sfinfo.channels ;
-			} ;
-
-		if ((error = src_process (data->src_state, &data->src_data)))
-		{	printf ("\nError : %s\n\n", src_strerror (error)) ;
+		if ((rc = src_callback_read (data->src_state, src_ratio, VARISPEED_BLOCK_LEN, output)) < VARISPEED_BLOCK_LEN)
+		{	printf ("\nError : src_callback_read short output (%d instead of %d)\n\n", rc, VARISPEED_BLOCK_LEN) ;
 			exit (1) ;
 			} ;
-
-		if (direct_out)
-		{	frame_count += data->src_data.output_frames_gen ;
-			continue ;
-			} ;
-
-		memcpy (samples + frame_count * data->sfinfo.channels, data->buffer_out, (frames - frame_count) * data->sfinfo.channels * sizeof (float)) ;
-
-		data->buffer_out_start = frames - frame_count ;
-		data->buffer_out_end = data->src_data.output_frames_gen ;
-
-		frame_count += frames - frame_count ;
 		} ;
 
-	return frame_count ;
+	return out_frames ;
 } /* varispeed_get_data */
 
 /*==============================================================================

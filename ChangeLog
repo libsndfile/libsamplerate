@@ -3,6 +3,10 @@
     * src/samplerate.h
     Removed unused typedef struct SRC_CB_DATA.
 
+    * examples/varispeed-play.c
+    Rewrite to use the callback version of the API. This new version is far
+    simpler and far easier to understand.
+
 2011-11-02  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac examples/Makefile.am
