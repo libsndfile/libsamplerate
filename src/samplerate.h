@@ -50,12 +50,6 @@ typedef struct
 	double	src_ratio ;
 } SRC_DATA ;
 
-/* SRC_CB_DATA is used with callback based API. */
-typedef struct
-{	long	frames ;
-	float	*data_in ;
-} SRC_CB_DATA ;
-
 /*
 ** User supplied callback function type for use with src_callback_new()
 ** and src_callback_read(). First parameter is the same pointer that was

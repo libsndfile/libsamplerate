@@ -1,3 +1,8 @@
+2011-11-05  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/samplerate.h
+    Removed unused typedef struct SRC_CB_DATA.
+
 2011-11-02  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * configure.ac examples/Makefile.am
