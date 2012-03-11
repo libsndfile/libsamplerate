@@ -1,3 +1,9 @@
+2012-03-11  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/samplerate.c
+    Fix error message for error SRC_ERR_BAD_DATA_PTR. Thanks for oneman in
+    #xiph on Freenode.
+
 2011-11-05  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/samplerate.h

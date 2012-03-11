@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -389,7 +389,7 @@ src_strerror (int error)
 		case SRC_ERR_BAD_DATA :
 				return "SRC_DATA pointer is NULL." ;
 		case SRC_ERR_BAD_DATA_PTR :
-				return "SRC_DATA->data_out is NULL." ;
+				return "SRC_DATA->data_out or SRC_DATA->data_in is NULL." ;
 		case SRC_ERR_NO_PRIVATE :
 				return "Internal error. No private data." ;
 
