@@ -4,6 +4,9 @@
     Fix error message for error SRC_ERR_BAD_DATA_PTR. Thanks for oneman in
     #xiph on Freenode.
 
+    * examples/audio_out.c
+    Minor tweaks to Windows and OSX code.
+
 2011-11-05  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/samplerate.h

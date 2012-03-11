@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 1999-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 1999-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -610,7 +610,7 @@ macosx_audio_out_callback (AudioDeviceID device, const AudioTimeStamp* current_t
 	const AudioBufferList* data_in, const AudioTimeStamp* time_in,
 	AudioBufferList* data_out, const AudioTimeStamp* time_out, void* client_data)
 {	MACOSX_AUDIO_OUT	*macosx_out ;
-	int		k, size, sample_count, read_count ;
+	int		k, size, frame_count, read_count ;
 	float	*buffer ;
 
 	if ((macosx_out = (MACOSX_AUDIO_OUT*) client_data) == NULL)
@@ -624,14 +624,14 @@ macosx_audio_out_callback (AudioDeviceID device, const AudioTimeStamp* current_t
 		} ;
 
 	size = data_out->mBuffers [0].mDataByteSize ;
-	sample_count = size / sizeof (float) / macosx_out->channels ;
+	frame_count = size / sizeof (float) / macosx_out->channels ;
 
 	buffer = (float*) data_out->mBuffers [0].mData ;
 
-	read_count = macosx_out->callback (macosx_out->callback_data, buffer, sample_count) ;
+	read_count = macosx_out->callback (macosx_out->callback_data, buffer, frame_count) ;
 
-	if (read_count < sample_count)
-	{	memset (&(buffer [read_count]), 0, (sample_count - read_count) * sizeof (float)) ;
+	if (read_count < frame_count)
+	{	memset (&(buffer [read_count]), 0, (frame_count - read_count) * sizeof (float)) ;
 		macosx_out->done_playing = 1 ;
 		} ;
 
@@ -811,7 +811,7 @@ win32_close (AUDIO_OUT *audio_out)
 static DWORD CALLBACK
 win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD data, DWORD param1, DWORD param2)
 {	WIN32_AUDIO_OUT	*win32_out ;
-	int		read_count, sample_count, k ;
+	int		read_count, frame_count, k ;
 	short	*sptr ;
 
 	/*
@@ -834,8 +834,9 @@ win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD data, DWORD param1, DW
 
 	/* Do the actual audio. */
 	sample_count = win32_out->bufferlen ;
+	frame_count = sample_count / win32_out->channels ;
 
-	read_count = win32_out->callback (win32_out->callback_data, win32_out->float_buffer, sample_count) ;
+	read_count = win32_out->callback (win32_out->callback_data, win32_out->float_buffer, frame_count) ;
 
 	sptr = (short*) win32_out->whdr [win32_out->current].lpData ;
 
