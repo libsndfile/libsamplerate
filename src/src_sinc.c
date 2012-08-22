@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -388,10 +388,7 @@ sinc_mono_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (filter->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
 			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / filter->out_count ;
 
-		float_increment = filter->index_inc * 1.0 ;
-		if (src_ratio < 1.0)
-			float_increment = filter->index_inc * src_ratio ;
-
+		float_increment = filter->index_inc * (src_ratio < 1.0 ? src_ratio : 1.0) ;
 		increment = double_to_fp (float_increment) ;
 
 		start_filter_index = double_to_fp (input_index * float_increment) ;
@@ -537,10 +534,7 @@ sinc_stereo_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (filter->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
 			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / filter->out_count ;
 
-		float_increment = filter->index_inc * 1.0 ;
-		if (src_ratio < 1.0)
-			float_increment = filter->index_inc * src_ratio ;
-
+		float_increment = filter->index_inc * (src_ratio < 1.0 ? src_ratio : 1.0) ;
 		increment = double_to_fp (float_increment) ;
 
 		start_filter_index = double_to_fp (input_index * float_increment) ;
@@ -691,10 +685,7 @@ sinc_quad_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (filter->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
 			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / filter->out_count ;
 
-		float_increment = filter->index_inc * 1.0 ;
-		if (src_ratio < 1.0)
-			float_increment = filter->index_inc * src_ratio ;
-
+		float_increment = filter->index_inc * (src_ratio < 1.0 ? src_ratio : 1.0) ;
 		increment = double_to_fp (float_increment) ;
 
 		start_filter_index = double_to_fp (input_index * float_increment) ;
@@ -851,10 +842,7 @@ sinc_hex_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (filter->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
 			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / filter->out_count ;
 
-		float_increment = filter->index_inc * 1.0 ;
-		if (src_ratio < 1.0)
-			float_increment = filter->index_inc * src_ratio ;
-
+		float_increment = filter->index_inc * (src_ratio < 1.0 ? src_ratio : 1.0) ;
 		increment = double_to_fp (float_increment) ;
 
 		start_filter_index = double_to_fp (input_index * float_increment) ;
@@ -1098,10 +1086,7 @@ sinc_multichan_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (filter->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
 			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / filter->out_count ;
 
-		float_increment = filter->index_inc * 1.0 ;
-		if (src_ratio < 1.0)
-			float_increment = filter->index_inc * src_ratio ;
-
+		float_increment = filter->index_inc * (src_ratio < 1.0 ? src_ratio : 1.0) ;
 		increment = double_to_fp (float_increment) ;
 
 		start_filter_index = double_to_fp (input_index * float_increment) ;
