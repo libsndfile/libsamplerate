@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2006-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2006-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -42,6 +42,7 @@ main (void)
 	printf ("    Sinc interpolator               : ") ;
 	varispeed_test (SRC_SINC_FASTEST, 115.0) ;
 
+	fftw_cleanup () ;
 	puts ("") ;
 
 	return 0 ;

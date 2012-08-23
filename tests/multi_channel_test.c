@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -23,6 +23,15 @@
 #include <string.h>
 #include <math.h>
 #include <assert.h>
+
+#if (HAVE_FFTW3)
+#include <fftw3.h>
+#else
+static inline void
+fftw_cleanup (void)
+{	return ;
+}
+#endif
 
 #include <samplerate.h>
 
@@ -65,6 +74,7 @@ main (void)
 		callback_test	(SRC_SINC_FASTEST, k, target) ;
 		} ;
 
+	fftw_cleanup () ;
 	puts ("") ;
 
 	return 0 ;

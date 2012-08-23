@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -25,6 +25,8 @@
 #include <time.h>
 
 #if (HAVE_FFTW3)
+
+#include <fftw3.h>
 
 #include <samplerate.h>
 
@@ -177,6 +179,8 @@ main (int argc, char *argv [])
 
 		printf ("    Measured -3dB rolloff point      : %5.2f %%.\n\n", freq3dB) ;
 		} ;
+
+	fftw_cleanup () ;
 
 	return 0 ;
 } /* main */
