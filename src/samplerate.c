@@ -35,11 +35,6 @@
 static int psrc_set_converter (SRC_PRIVATE	*psrc, int converter_type) ;
 
 
-static inline int
-is_bad_src_ratio (double ratio)
-{	return (ratio < (1.0 / SRC_MAX_RATIO) || ratio > (1.0 * SRC_MAX_RATIO)) ;
-} /* is_bad_src_ratio */
-
 SRC_STATE *
 src_new (int converter_type, int channels, int *error)
 {	SRC_PRIVATE	*psrc ;

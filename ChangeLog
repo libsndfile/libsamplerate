@@ -2,6 +2,7 @@
 
     * src/common.h src/samplerate.c
     Add SRC_ERR_BAD_INTERNAL_STATE error number and string.
+    Move function is_bad_src_ratio() to common.h.
 
 2012-08-23  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 

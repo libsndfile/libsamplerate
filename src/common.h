@@ -166,5 +166,11 @@ fmod_one (double x)
 	return res ;
 } /* fmod_one */
 
+static inline int
+is_bad_src_ratio (double ratio)
+{	return (ratio < (1.0 / SRC_MAX_RATIO) || ratio > (1.0 * SRC_MAX_RATIO)) ;
+} /* is_bad_src_ratio */
+
+
 #endif	/* COMMON_H_INCLUDED */
 
