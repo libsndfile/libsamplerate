@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -78,6 +78,10 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	priv->in_used = priv->out_gen = 0 ;
 
 	src_ratio = psrc->last_ratio ;
+
+	if (is_bad_src_ratio (src_ratio))
+		return SRC_ERR_BAD_INTERNAL_STATE ;
+
 	input_index = psrc->last_position ;
 
 	/* Calculate samples before first sample in input array. */

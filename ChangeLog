@@ -4,6 +4,9 @@
     Add SRC_ERR_BAD_INTERNAL_STATE error number and string.
     Move function is_bad_src_ratio() to common.h.
 
+    * src/src_linear.c src/src_sinc.c src/src_zoh.c
+    Validate internally stashed src_ratio value.
+
 2012-08-23  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/multi_channel_test.c tests/snr_bw_test.c tests/varispeed_test.c

@@ -347,6 +347,9 @@ sinc_mono_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 	src_ratio = psrc->last_ratio ;
 
+	if (is_bad_src_ratio (src_ratio))
+		return SRC_ERR_BAD_INTERNAL_STATE ;
+
 	/* Check the sample rate ratio wrt the buffer len. */
 	count = (filter->coeff_half_len + 2.0) / filter->index_inc ;
 	if (MIN (psrc->last_ratio, data->src_ratio) < 1.0)
@@ -492,6 +495,9 @@ sinc_stereo_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	filter->in_used = filter->out_gen = 0 ;
 
 	src_ratio = psrc->last_ratio ;
+
+	if (is_bad_src_ratio (src_ratio))
+		return SRC_ERR_BAD_INTERNAL_STATE ;
 
 	/* Check the sample rate ratio wrt the buffer len. */
 	count = (filter->coeff_half_len + 2.0) / filter->index_inc ;
@@ -643,6 +649,9 @@ sinc_quad_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	filter->in_used = filter->out_gen = 0 ;
 
 	src_ratio = psrc->last_ratio ;
+
+	if (is_bad_src_ratio (src_ratio))
+		return SRC_ERR_BAD_INTERNAL_STATE ;
 
 	/* Check the sample rate ratio wrt the buffer len. */
 	count = (filter->coeff_half_len + 2.0) / filter->index_inc ;
@@ -800,6 +809,9 @@ sinc_hex_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	filter->in_used = filter->out_gen = 0 ;
 
 	src_ratio = psrc->last_ratio ;
+
+	if (is_bad_src_ratio (src_ratio))
+		return SRC_ERR_BAD_INTERNAL_STATE ;
 
 	/* Check the sample rate ratio wrt the buffer len. */
 	count = (filter->coeff_half_len + 2.0) / filter->index_inc ;
@@ -1044,6 +1056,9 @@ sinc_multichan_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 	filter->in_used = filter->out_gen = 0 ;
 
 	src_ratio = psrc->last_ratio ;
+
+	if (is_bad_src_ratio (src_ratio))
+		return SRC_ERR_BAD_INTERNAL_STATE ;
 
 	/* Check the sample rate ratio wrt the buffer len. */
 	count = (filter->coeff_half_len + 2.0) / filter->index_inc ;
