@@ -1,3 +1,8 @@
+2012-08-27  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/common.h src/samplerate.c
+    Add SRC_ERR_BAD_INTERNAL_STATE error number and string.
+
 2012-08-23  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/multi_channel_test.c tests/snr_bw_test.c tests/varispeed_test.c

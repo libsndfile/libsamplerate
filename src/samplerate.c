@@ -426,6 +426,8 @@ src_strerror (int error)
 				return "This converter only allows constant conversion ratios." ;
 		case SRC_ERR_SINC_PREPARE_DATA_BAD_LEN :
 				return "Internal error : Bad length in prepare_data ()." ;
+		case SRC_ERR_BAD_INTERNAL_STATE :
+				return "Error : Someone is trampling on my internal state." ;
 
 		case SRC_ERR_MAX_ERROR :
 				return "Placeholder. No error defined for this error number." ;

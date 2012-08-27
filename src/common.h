@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -99,6 +99,7 @@ enum
 	SRC_ERR_NULL_CALLBACK,
 	SRC_ERR_NO_VARIABLE_RATIO,
 	SRC_ERR_SINC_PREPARE_DATA_BAD_LEN,
+	SRC_ERR_BAD_INTERNAL_STATE,
 
 	/* This must be the last error number. */
 	SRC_ERR_MAX_ERROR
