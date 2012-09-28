@@ -16,6 +16,8 @@
 ** Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -24,6 +26,12 @@
 #include <samplerate.h>
 
 #include "util.h"
+
+#if HAVE_FFTW3
+#include <fftw3.h>
+#else
+#define fftw_cleanup()
+#endif
 
 #define	BUFFER_LEN		(1 << 16)
 
