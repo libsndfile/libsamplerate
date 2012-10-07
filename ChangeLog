@@ -1,3 +1,9 @@
+2012-10-07  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * examples/sndfile-resample.c
+    Add a --no-normalize cmd line option. Thanks to Adriano Moura for the
+    patch.
+
 2012-09-28  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * tests/varispeed_test.c

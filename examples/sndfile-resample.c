@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2011 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@
 #define	BUFFER_LEN		4096	/*-(1<<16)-*/
 
 static void usage_exit (const char *progname) ;
-static sf_count_t sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double src_ratio, int channels, double * gain) ;
+static sf_count_t sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double src_ratio, int channels, double * gain, int normalize) ;
 static double apply_gain (float * data, long frames, int channels, double max, double gain) ;
 
 int
@@ -42,6 +42,7 @@ main (int argc, char *argv [])
 {	SNDFILE	*infile, *outfile = NULL ;
 	SF_INFO sfinfo ;
 
+	int normalize = 1 ;
 	sf_count_t	count ;
 	double		src_ratio = -1.0, gain = 1.0 ;
 	int			new_sample_rate = -1, k, converter, max_speed = SF_FALSE ;
@@ -69,6 +70,8 @@ main (int argc, char *argv [])
 	for (k = 1 ; k < argc - 2 ; k++)
 	{	if (strcmp (argv [k], "--max-speed") == 0)
 			max_speed = SF_TRUE ;
+		else if (strcmp (argv [k], "--no-normalize") == 0)
+			normalize = 0 ;
 		else if (strcmp (argv [k], "-to") == 0)
 		{	k ++ ;
 			new_sample_rate = atoi (argv [k]) ;
@@ -160,7 +163,7 @@ main (int argc, char *argv [])
 
 		sf_command (outfile, SFC_SET_CLIPPING, NULL, SF_TRUE) ;
 
-		count = sample_rate_convert (infile, outfile, converter, src_ratio, sfinfo.channels, &gain) ;
+		count = sample_rate_convert (infile, outfile, converter, src_ratio, sfinfo.channels, &gain, normalize) ;
 		}
 	while (count < 0) ;
 
@@ -176,7 +179,7 @@ main (int argc, char *argv [])
 */
 
 static sf_count_t
-sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double src_ratio, int channels, double * gain)
+sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double src_ratio, int channels, double * gain, int normalize)
 {	static float input [BUFFER_LEN] ;
 	static float output [BUFFER_LEN] ;
 
@@ -239,7 +242,7 @@ sample_rate_convert (SNDFILE *infile, SNDFILE *outfile, int converter, double sr
 
 	src_delete (src_state) ;
 
-	if (max > 1.0)
+	if (normalize && max > 1.0)
 	{	*gain = 1.0 / max ;
 		printf ("\nOutput has clipped. Restarting conversion to prevent clipping.\n\n") ;
 		return -1 ;
@@ -300,6 +303,9 @@ usage_exit (const char *progname)
 
 	for (k = 0 ; (cptr = src_get_name (k)) != NULL ; k++)
 		printf ("       %d : %s%s\n", k, cptr, k == DEFAULT_CONVERTER ? " (default)" : "") ;
+
+	puts ("\n"
+		"  The --no-normalize option disables clipping check and normalization.") ;
 
 	puts ("") ;
 
