@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2013 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -130,7 +130,7 @@ typedef struct SRC_PRIVATE_tag
 	src_callback_t	callback_func ;
 	void			*user_callback_data ;
 	long			saved_frames ;
-	float			*saved_data ;
+	const float		*saved_data ;
 } SRC_PRIVATE ;
 
 /* In src_sinc.c */

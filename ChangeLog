@@ -1,3 +1,8 @@
+2013-01-16  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/samplerate.h src/common.h
+    Make SRC_DATA const correct. Thanks to Nikos Chantziaras for the suggestion.
+
 2012-10-07  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * examples/sndfile-resample.c
