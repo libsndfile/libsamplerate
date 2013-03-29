@@ -1,3 +1,14 @@
+2013-03-29  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
+
+    * src/src_sinc.c
+    Fix a read beyond end of coefficent array problem uncovered by gcc-4.8's
+    -fsanitize=address feature and reported by Cristian Rodríguez.
+
+    Since this is reading filter coefficients from rodata memory and no write
+    is possible, is is not exploitable from a security point of view.
+
+    Solution was to reduce the half_coeff_len value for each filter by one.
+
 2013-01-16  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>
 
     * src/samplerate.h src/common.h
