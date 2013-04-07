@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2002-2012 Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (C) 2002-2013 Erik de Castro Lopo <erikd@mega-nerd.com>
 **
 ** This program is free software; you can redistribute it and/or modify
 ** it under the terms of the GNU General Public License as published by
@@ -288,6 +288,20 @@ src_set_ratio (SRC_STATE *state, double new_ratio)
 
 	return SRC_ERR_NO_ERROR ;
 } /* src_set_ratio */
+
+int
+src_get_channels (SRC_STATE *state)
+{	SRC_PRIVATE *psrc ;
+
+	psrc = (SRC_PRIVATE*) state ;
+
+	if (psrc == NULL)
+		return SRC_ERR_BAD_STATE ;
+	if (psrc->vari_process == NULL || psrc->const_process == NULL)
+		return SRC_ERR_BAD_PROC_PTR ;
+
+	return psrc->channels ;
+} /* src_get_channels */
 
 int
 src_reset (SRC_STATE *state)

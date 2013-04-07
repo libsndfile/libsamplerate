@@ -132,6 +132,13 @@ const char *src_get_version (void) ;
 int src_set_ratio (SRC_STATE *state, double new_ratio) ;
 
 /*
+**	Get the current channel count.
+**	Returns negative on error, positive channel count otherwise
+*/
+
+int src_get_channels (SRC_STATE *state) ;
+
+/*
 **	Reset the internal SRC state.
 **	Does not modify the quality settings.
 **	Does not free any memory allocations.
