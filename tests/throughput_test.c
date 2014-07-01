@@ -72,7 +72,11 @@ throughput_test (int converter, long best_throughput)
 		total_frames += src_data.output_frames_gen ;
 
 		clock_time = clock () - start_time ;
+#ifdef __GNU__ /* Clock resolution is 10ms on GNU/Hurd */
+		duration = (10000.0 * clock_time) / CLOCKS_PER_SEC ;
+#else
 		duration = (1.0 * clock_time) / CLOCKS_PER_SEC ;
+#endif
 	}
 	while (duration < 3.0) ;
 
