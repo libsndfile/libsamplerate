@@ -4,11 +4,11 @@
 *.la
 *.lo
 *.mat
+*.o
 *.s
 *.wav
 .depend
 .deps
-.git*
 .libs
 Cfg
 Hack
