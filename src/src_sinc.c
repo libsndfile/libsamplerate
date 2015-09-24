@@ -384,7 +384,7 @@ sinc_mono_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 
 		/* This is the termination condition. */
 		if (filter->b_real_end >= 0)
-		{	if (filter->b_current + input_index + terminate >= filter->b_real_end)
+		{	if (filter->b_current + input_index + terminate > filter->b_real_end)
 				break ;
 			} ;
 
