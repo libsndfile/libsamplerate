@@ -204,10 +204,19 @@ log_mag_spectrum (double *input, int len, double *magnitude)
 
 	fftw_destroy_plan (plan) ;
 
-	/* (k < N/2 rounded up) */
 	maxval = 0.0 ;
 	for (k = 1 ; k < len / 2 ; k++)
-	{	magnitude [k] = sqrt (magnitude [k] * magnitude [k] + magnitude [len - k - 1] * magnitude [len - k - 1]) ;
+	{	/*
+		** From : http://www.fftw.org/doc/Real_002dto_002dReal-Transform-Kinds.html#Real_002dto_002dReal-Transform-Kinds
+		**
+		** FFTW_R2HC computes a real-input DFT with output in “halfcomplex” format, i.e. real and imaginary parts
+		** for a transform of size n stored as:
+		**
+		**      r0, r1, r2, ..., rn/2, i(n+1)/2-1, ..., i2, i1
+		*/
+		double re = magnitude [k] ;
+		double im = magnitude [len - k] ;
+		magnitude [k] = sqrt (re * re + im * im) ;
 		maxval = (maxval < magnitude [k]) ? magnitude [k] : maxval ;
 		} ;
 
