@@ -142,7 +142,7 @@ sinc_get_description (int src_enum)
 			return "Band limited sinc interpolation, medium quality, 121dB SNR, 90% BW." ;
 
 		case SRC_SINC_BEST_QUALITY :
-			return "Band limited sinc interpolation, best quality, 145dB SNR, 96% BW." ;
+			return "Band limited sinc interpolation, best quality, 144dB SNR, 96% BW." ;
 
 		default :
 			break ;
