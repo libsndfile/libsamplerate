@@ -223,7 +223,7 @@ snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose)
 	else
 	{	input_len = BUFFER_LEN ;
 		output_len = (int) ceil (BUFFER_LEN * test_data->src_ratio) ;
-		output_len &= ((-1) << 4) ;
+		output_len &= ((~0u) << 4) ;
 		if (output_len > MAX_SPEC_LEN)
 			output_len = MAX_SPEC_LEN ;
 		input_len = (int) ceil (output_len / test_data->src_ratio) ;
