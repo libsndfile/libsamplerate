@@ -1,4 +1,4 @@
-This is libsamplerate, 0.1.8
+This is libsamplerate, 0.1.9
 
 libsamplerate (also known as Secret Rabbit Code) is a library for
 perfroming sample rate conversion of audio data.
@@ -10,24 +10,24 @@ The doc/ directory contains the libsamplerate documentation.
 The examples/ directory contains examples of how to write code using
 libsamplerate.
 
-The tests/ directory contains programs which link against 
+The tests/ directory contains programs which link against
 libsamplerate and test its functionality.
 
 The Win32/ directory contains files and documentation to allow
-libsamplerate to compile under Win32 with the Microsoft Visual C++ 
+libsamplerate to compile under Win32 with the Microsoft Visual C++
 compiler.
 
 Win32
 -----
-There are detailed instructions for building libsamplerate on Win32 
+There are detailed instructions for building libsamplerate on Win32
 in the file
 
 	doc/win32.html
-	
+
 
 MacOSX
 ------
-Building on MacOSX should be the same as building it on any other 
+Building on MacOSX should be the same as building it on any other
 Unix.
 
 
@@ -39,11 +39,11 @@ the following three commands :
 		./configure
 		make
 		make install
-		
+
 CONTACTS
 --------
 
-libsamplerate was written by Erik de Castro Lopo (erikd AT mega-nerd DOT com).  
+libsamplerate was written by Erik de Castro Lopo (erikd AT mega-nerd DOT com).
 The libsamplerate home page is at :
 
 	http://www.mega-nerd.com/libsamplerate/
