@@ -102,6 +102,9 @@ AC_ARG_ENABLE(cpu-clip,
 		AC_HELP_STRING([--disable-cpu-clip], [disable tricky cpu specific clipper]),
 		ac_arg_cpu_clip="N", ac_arg_cpu_clip="Y")
 
+AC_ARG_ENABLE(alsa,
+                AC_HELP_STRING([--disable-alsa], [disable ALSA support in the varispeed-play example program]))
+
 #====================================================================================
 # Check types and their sizes.
 
@@ -195,6 +198,10 @@ if test x$enable_alsa != xno ; then
 	if test x$ac_cv_header_alsa_asoundlib_h = xyes ; then
 		ALSA_LIBS="-lasound"
 		enable_alsa=yes
+        elif test x$enable_alsa = xyes ; then
+                AC_MSG_ERROR(["ALSA headers not found"])
+        else
+                enable_alsa=no
 		fi
 	fi
 
@@ -341,7 +348,7 @@ AC_MSG_RESULT([
     Have FFTW : ................... ${ac_cv_fftw3}])
 
 AC_MSG_RESULT([    Have libsndfile : ............. ${ac_cv_sndfile}])
-AC_MSG_RESULT([    Have ALSA : ................... ${ac_cv_header_alsa_asoundlib_h}
+AC_MSG_RESULT([    Have ALSA : ................... ${enable_alsa}
 ])
 
 AC_MSG_RESULT([  Installation directories :
