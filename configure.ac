@@ -330,7 +330,7 @@ AC_MSG_RESULT([
 ])
 
 if test x$ac_cv_c_compiler_gnu = xyes ; then
-	echo -e "  Tools :\n"
+	echo "  Tools :"
 	echo "    Compiler is GCC : ............. ${ac_cv_c_compiler_gnu}"
 	echo "    GCC major version : ........... ${GCC_MAJOR_VERSION}"
 	fi
@@ -353,7 +353,7 @@ AC_MSG_RESULT([  Installation directories :
 
 if test x$prefix != "x/usr" ; then
 	echo "Compiling some other packages against ${PACKAGE} may require "
-	echo -e "the addition of \"${prefix}/lib/pkgconfig\" to the "
-	echo -e "PKG_CONFIG_PATH environment variable.\n"
+	echo "the addition of \"${prefix}/lib/pkgconfig\" to the "
+	echo "PKG_CONFIG_PATH environment variable.\n"
 	fi
 
