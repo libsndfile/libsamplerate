@@ -53,11 +53,12 @@ AC_PROG_LN_S
 #  6. If any interfaces have been removed since the last public release, then set age
 #     to 0.
 
-SHARED_VERSION_INFO="1:8:1"
+CLEAN_VERSION=`echo $PACKAGE_VERSION | $SED "s/p.*//"`
+VERSION_MINOR=`echo $CLEAN_VERSION | $SED "s/.*\.//"`
 
+SHARED_VERSION_INFO="1:$VERSION_MINOR:0"
 
-
-
+#------------------------------------------------------------------------------------
 
 AC_PROG_MAKE_SET
 AC_PROG_LN_S
