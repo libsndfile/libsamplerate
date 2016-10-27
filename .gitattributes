@@ -1,0 +1,10 @@
+*.ac text eol=lf
+*.am text eol=lf
+*.m4 text eol=lf
+*.pc text eol=lf
+*.spec text eol=lf
+*.sh text eol=lf
+
+*.bat text eol=crlf
+*.def text eol=crlf
+*.msvc text eol=crlf
