@@ -1,0 +1,67 @@
+/*
+** Copyright (c) 2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+** All rights reserved.
+**
+** This code is released under 2-clause BSD license. Please see the
+** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
+*/
+
+/* Target processor clips on negative float to int conversion. */
+#define CPU_CLIPS_NEGATIVE 0
+
+/* Target processor clips on positive float to int conversion. */
+#define CPU_CLIPS_POSITIVE 0
+
+/* Target processor is big endian. */
+#define CPU_IS_BIG_ENDIAN ${CPU_IS_BIG_ENDIAN}
+
+/* Target processor is little endian. */
+#define CPU_IS_LITTLE_ENDIAN ${CPU_IS_LITTLE_ENDIAN}
+
+/* Define to 1 if you have the `alarm' function. */
+#define HAVE_ALARM ${HAVE_ALARM}
+
+/* Set to 1 if you have libfftw3. */
+#define HAVE_FFTW3 ${HAVE_FFTW3}
+
+/* Define if you have C99's lrint function. */
+#define HAVE_LRINT ${HAVE_LRINT}
+
+/* Define if you have C99's lrintf function. */
+#define HAVE_LRINTF ${HAVE_LRINTF}
+ 
+/* Define if you have signal SIGALRM. */
+/* #undef HAVE_SIGALRM */
+
+/* Define to 1 if you have the `signal' function. */
+#define HAVE_SIGNAL ${HAVE_SIGNAL}
+
+/* Set to 1 if you have libsndfile. */
+#define HAVE_SNDFILE ${HAVE_SNDFILE}
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#define HAVE_STDINT_H ${HAVE_STDINT_H}
+
+/* Define to 1 if you have the <sys/times.h> header file. */
+#define HAVE_SYS_TIMES_H ${HAVE_SYS_TIMES_H}
+
+/* Set to 1 if compiling for Win32 */
+#define OS_IS_WIN32 ${OS_IS_WIN32}
+
+/* Name of package */
+#define PACKAGE "libsamplerate"
+
+/* Version number of package */
+#define VERSION "0.1.8"
+
+/* The size of `double', as computed by sizeof. */
+#define SIZEOF_DOUBLE ${SIZEOF_DOUBLE}
+
+/* The size of `float', as computed by sizeof. */
+#define SIZEOF_FLOAT ${SIZEOF_FLOAT}
+
+/* The size of `int', as computed by sizeof. */
+#define SIZEOF_INT ${SIZEOF_INT}
+
+/* The size of `long', as computed by sizeof. */
+#define SIZEOF_LONG ${SIZEOF_LONG}

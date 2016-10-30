@@ -1,4 +1,4 @@
-*.cm*
+# *.cm* # This line is broken it matches all files.
 *.dat
 *.gz
 *.la
@@ -28,6 +28,7 @@ aclocal.m4
 autom4te.cache
 compile
 config.*
+!/config.h.in
 configure
 depcomp
 doc/ChangeLog
