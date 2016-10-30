@@ -70,6 +70,13 @@ else()
 	set(HAVE_SYS_TIMES_H 0)
 endif()
 
+check_include_files(alsa/asoundlib.h IS_ALSA_ASOUNDLIB)
+if(IS_ALSA_ASOUNDLIB)
+	set(HAVE_ALSA_ASOUNDLIB_H 1)
+else()
+	set(HAVE_ALSA_ASOUNDLIB_H 0)
+endif()
+
 include(CheckTypeSize)
 check_type_size("double" SIZEOF_DOUBLE)
 check_type_size("float" SIZEOF_FLOAT)

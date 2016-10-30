@@ -21,6 +21,9 @@
 /* Define to 1 if you have the `alarm' function. */
 #define HAVE_ALARM ${HAVE_ALARM}
 
+/* Define to 1 if you have the <alsa/asoundlib.h> header file. */
+#define HAVE_ALSA_ASOUNDLIB_H ${HAVE_ALSA_ASOUNDLIB_H}
+
 /* Set to 1 if you have libfftw3. */
 #define HAVE_FFTW3 ${HAVE_FFTW3}
 
