@@ -823,8 +823,7 @@ win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD data, DWORD param1, DW
 		return 0 ;
 
 	/* Do the actual audio. */
-	sample_count = win32_out->bufferlen ;
-	frame_count = sample_count / win32_out->channels ;
+	frame_count = win32_out->bufferlen / win32_out->channels ;
 
 	read_count = win32_out->callback (win32_out->callback_data, win32_out->float_buffer, frame_count) ;
 
