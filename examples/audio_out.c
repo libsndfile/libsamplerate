@@ -33,11 +33,6 @@
 #define MAKE_MAGIC(a,b,c,d,e,f,g,h)		\
 			((a) + ((b) << 1) + ((c) << 2) + ((d) << 3) + ((e) << 4) + ((f) << 5) + ((g) << 6) + ((h) << 7))
 
-typedef	struct AUDIO_OUT_s
-{	int magic ;
-} AUDIO_OUT ;
-
-
 /*------------------------------------------------------------------------------
 **	Linux (ALSA and OSS) functions for playing a sound.
 */
