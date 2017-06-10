@@ -1,8 +1,21 @@
-noinst_PROGRAMS = misc_test termination_test simple_test callback_test \
+check_PROGRAMS = misc_test termination_test simple_test callback_test \
 					reset_test multi_channel_test snr_bw_test \
 					float_short_test varispeed_test callback_hang_test \
 					src-evaluate throughput_test multichan_throughput_test \
 					downsample_test
+TESTS = \
+	misc_test \
+	termination_test \
+	callback_hang_test \
+	downsample_test \
+	simple_test \
+	callback_test \
+	reset_test \
+	multi_channel_test \
+	varispeed_test \
+	float_short_test \
+	snr_bw_test \
+	throughput_test
 
 SAMPLRATEDIR =../src
 INCLUDES = -I$(srcdir)/$(SAMPLRATEDIR)
@@ -60,25 +73,3 @@ multichan_throughput_test_LDADD  = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS
 src_evaluate_SOURCES = src-evaluate.c calc_snr.c util.c
 src_evaluate_CFLAGS = @SNDFILE_CFLAGS@ @FFTW3_CFLAGS@
 src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
-
-#===============================================================================
-
-check: $(noinst_PROGRAMS)
-	date
-	uname -a
-	./misc_test
-	./termination_test
-	./callback_hang_test
-	./downsample_test
-	./simple_test
-	./callback_test
-	./reset_test
-	./multi_channel_test
-	./varispeed_test
-	./float_short_test
-	./snr_bw_test
-	./throughput_test
-	@echo "-----------------------------------------------------------------"
-	@echo "  ${PACKAGE}-${VERSION} passed all tests."
-	@echo "-----------------------------------------------------------------"
-
