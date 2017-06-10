@@ -900,24 +900,31 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 			{	default :
 					ch -- ;
 					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 7 :
 					ch -- ;
 					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 6 :
 					ch -- ;
 					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 5 :
 					ch -- ;
 					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 4 :
 					ch -- ;
 					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 3 :
 					ch -- ;
 					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 2 :
 					ch -- ;
 					left [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 1 :
 					ch -- ;
 					left [ch] += icoeff * filter->buffer [data_index + ch] ;
@@ -950,24 +957,31 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 			{	default :
 					ch -- ;
 					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 7 :
 					ch -- ;
 					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 6 :
 					ch -- ;
 					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 5 :
 					ch -- ;
 					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 4 :
 					ch -- ;
 					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 3 :
 					ch -- ;
 					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 2 :
 					ch -- ;
 					right [ch] += icoeff * filter->buffer [data_index + ch] ;
+					/* Falls through. */
 				case 1 :
 					ch -- ;
 					right [ch] += icoeff * filter->buffer [data_index + ch] ;
@@ -987,24 +1001,31 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 		{	default :
 				ch -- ;
 				output [ch] = scale * (left [ch] + right [ch]) ;
+				/* Falls through. */
 			case 7 :
 				ch -- ;
 				output [ch] = scale * (left [ch] + right [ch]) ;
+				/* Falls through. */
 			case 6 :
 				ch -- ;
 				output [ch] = scale * (left [ch] + right [ch]) ;
+				/* Falls through. */
 			case 5 :
 				ch -- ;
 				output [ch] = scale * (left [ch] + right [ch]) ;
+				/* Falls through. */
 			case 4 :
 				ch -- ;
 				output [ch] = scale * (left [ch] + right [ch]) ;
+				/* Falls through. */
 			case 3 :
 				ch -- ;
 				output [ch] = scale * (left [ch] + right [ch]) ;
+				/* Falls through. */
 			case 2 :
 				ch -- ;
 				output [ch] = scale * (left [ch] + right [ch]) ;
+				/* Falls through. */
 			case 1 :
 				ch -- ;
 				output [ch] = scale * (left [ch] + right [ch]) ;
