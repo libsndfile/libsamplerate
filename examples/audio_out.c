@@ -392,7 +392,7 @@ opensoundsys_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *ca
 	while ((read_frames = callback (callback_data, float_buffer, BUFFER_LEN / opensoundsys_out->channels)))
 	{	for (k = 0 ; k < read_frames * opensoundsys_out->channels ; k++)
 			buffer [k] = lrint (32767.0 * float_buffer [k]) ;
-		(void) write (opensoundsys_out->fd, buffer, read_frames * opensoundsys_out->channels * sizeof (short)) ;
+		if (write (opensoundsys_out->fd, buffer, read_frames * opensoundsys_out->channels * sizeof (short))) {}
 		} ;
 
 	return ;

@@ -183,7 +183,7 @@ usage_exit (const char *progname, const RESAMPLE_PROG *prog, int count)
 
 static const char*
 get_machine_details (void)
-{	static char namestr [256] ;
+{	static char namestr [262] ;
 
 	struct utsname name ;
 
