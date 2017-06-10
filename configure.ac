@@ -297,7 +297,7 @@ AC_SUBST(SNDFILE_LIBS)
 
 AC_SUBST(ALSA_LIBS)
 
-AC_CONFIG_FILES([Makefile M4/Makefile src/Version_script \
+AC_CONFIG_FILES([Makefile src/Version_script \
 			Win32/Makefile Win32/Makefile.mingw \
 			src/Makefile examples/Makefile tests/Makefile doc/Makefile \
 			libsamplerate.spec samplerate.pc])

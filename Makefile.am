@@ -2,7 +2,7 @@
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-gcc-werror
 
-SUBDIRS = M4 src doc examples tests
+SUBDIRS = src doc examples tests
 DIST_SUBDIRS = Win32 $(SUBDIRS)
 
 EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat
