@@ -3,7 +3,7 @@
 
 bin_PROGRAMS = sndfile-resample
 
-noinst_PROGRAMS = varispeed-play timewarp-file
+check_PROGRAMS = varispeed-play timewarp-file
 
 SAMPLERATEDIR =../src
 INCLUDES = -I$(srcdir)/$(SAMPLERATEDIR) @OS_SPECIFIC_INCLUDES@

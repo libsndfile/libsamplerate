@@ -49,3 +49,5 @@ stamp-h1
 tests/*_test
 tests/benchmark
 tests/src-evaluate
+tests/*.log
+tests/*.trs
