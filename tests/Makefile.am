@@ -39,15 +39,15 @@ reset_test_SOURCES = reset_test.c util.c util.h
 reset_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
 multi_channel_test_SOURCES = multi_channel_test.c util.c calc_snr.c
-multi_channel_test_CFLAGS = @FFTW3_CFLAGS@
+multi_channel_test_CFLAGS = $(FFTW3_CFLAGS)
 multi_channel_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 snr_bw_test_SOURCES = snr_bw_test.c calc_snr.c util.c util.h
-snr_bw_test_CFLAGS = @FFTW3_CFLAGS@
+snr_bw_test_CFLAGS = $(FFTW3_CFLAGS)
 snr_bw_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 callback_test_SOURCES = callback_test.c util.c util.h
-callback_test_CFLAGS = @FFTW3_CFLAGS@
+callback_test_CFLAGS = $(FFTW3_CFLAGS)
 callback_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
 float_short_test_SOURCES = float_short_test.c util.c util.h
@@ -57,19 +57,19 @@ downsample_test_SOURCES = downsample_test.c util.c util.h
 downsample_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la
 
 varispeed_test_SOURCES = varispeed_test.c util.c util.h calc_snr.c
-varispeed_test_CFLAGS = @FFTW3_CFLAGS@
+varispeed_test_CFLAGS = $(FFTW3_CFLAGS)
 varispeed_test_LDADD = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 # This program is for evaluating other sample rate converters.
 
-throughput_test_CFLAGS = $(AM_CFLAGS) @FFTW3_CFLAGS@
+throughput_test_CFLAGS = $(AM_CFLAGS) $(FFTW3_CFLAGS)
 throughput_test_SOURCES = throughput_test.c  util.c calc_snr.c
 throughput_test_LDADD  = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
-multichan_throughput_test_CFLAGS = $(AM_CFLAGS) @FFTW3_CFLAGS@
+multichan_throughput_test_CFLAGS = $(AM_CFLAGS) $(FFTW3_CFLAGS)
 multichan_throughput_test_SOURCES = multichan_throughput_test.c  util.c calc_snr.c
 multichan_throughput_test_LDADD  = $(SAMPLRATEDIR)/libsamplerate.la $(FFTW3_LIBS)
 
 src_evaluate_SOURCES = src-evaluate.c calc_snr.c util.c
-src_evaluate_CFLAGS = @SNDFILE_CFLAGS@ @FFTW3_CFLAGS@
+src_evaluate_CFLAGS = $(SNDFILE_CFLAGS) $(FFTW3_CFLAGS)
 src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
