@@ -264,20 +264,10 @@ AS_CASE([$target_os],
 		OS_SPECIFIC_LINKS=""
 	])
 
-htmldocdir=$prefix/share/doc/libsamplerate0-dev/html
-
-AS_IF([test "x$prefix" = "xNONE"], [
-		htmldocdir=/usr/local/share/doc/libsamplerate0-dev/html
-	], [
-		htmldocdir=$prefix/share/doc/libsamplerate0-dev/html
-	])
-
 #====================================================================================
 # Now use the information from the checking stage.
 
 AC_DEFINE_UNQUOTED([OS_IS_WIN32], [${os_is_win32}], [Set to 1 if compiling for Win32])
-
-AC_SUBST(htmldocdir)
 
 AC_SUBST(SHLIB_VERSION_ARG)
 AC_SUBST(SHARED_VERSION_INFO)
