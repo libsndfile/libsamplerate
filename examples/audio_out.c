@@ -43,7 +43,7 @@
 
 #define	ALSA_MAGIC		MAKE_MAGIC ('L', 'n', 'x', '-', 'A', 'L', 'S', 'A')
 
-typedef struct
+typedef struct AUDIO_OUT
 {	int magic ;
 	snd_pcm_t * dev ;
 	int channels ;
