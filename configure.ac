@@ -15,23 +15,16 @@ AC_CANONICAL_TARGET([])
 AC_CONFIG_MACRO_DIR([M4])
 AC_CONFIG_HEADERS([src/config.h])
 
-AM_INIT_AUTOMAKE($PACKAGE_NAME,$PACKAGE_VERSION)
-AM_SILENT_RULES([yes])
-
-dnl Add parameters for aclocal
-AC_SUBST(ACLOCAL_AMFLAGS, "-I M4")
+AM_INIT_AUTOMAKE
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_LANG([C])
 
 AC_PROG_CC
-AM_PROG_CC_C_O
 AC_PROG_CXX
 AC_PROG_SED
 
-# Do not check for F77.
-define([AC_LIBTOOL_LANG_F77_CONFIG], [:])dnl
-
-AM_PROG_LIBTOOL
+LT_INIT
 LT_PROG_RC
 
 AC_PROG_INSTALL
@@ -64,15 +57,15 @@ AC_PROG_MAKE_SET
 AC_PROG_LN_S
 AC_PROG_MKDIR_P
 
-if test "x-$build_os-$host_os-$target_os" = x-mingw32-mingw32-mingw32 ; then
-	AC_CHECK_PROG(DLLTOOL, dlltool, dlltool)
-	AC_CHECK_PROG(DLLWRAP, dllwrap, dllwrap)
-	AC_CHECK_PROG(PEXPORTS, pexports, pexports)
-	fi
+AS_IF([test "x$build_os$host_os$target_os" = "xmingw32mingw32mingw32"], [
+		AC_CHECK_PROG(DLLTOOL, dlltool, dlltool)
+		AC_CHECK_PROG(DLLWRAP, dllwrap, dllwrap)
+		AC_CHECK_PROG(PEXPORTS, pexports, pexports)
+	])
 
 AC_HEADER_STDC
 
-AC_CHECK_HEADERS(stdint.h sys/times.h)
+AC_CHECK_HEADERS([stdint.h sys/times.h])
 
 #====================================================================================
 # Couple of initializations here. Fill in real values later.
@@ -83,27 +76,27 @@ SHLIB_VERSION_ARG=""
 # Finished checking, handle options.
 
 AC_ARG_ENABLE(gcc-werror,
-	AC_HELP_STRING([--enable-gcc-werror], [enable -Werror in all Makefiles]),
+	AS_HELP_STRING([--enable-gcc-werror], [enable -Werror in all Makefiles]),
 	ac_arg_gcc_werror=yes, ac_arg_gcc_werror=no)
 
 AC_ARG_ENABLE(gcc-pipe,
-		AC_HELP_STRING([--disable-gcc-pipe], [disable gcc -pipe option ]),
-		ac_arg_gcc_pipe="N", ac_arg_gcc_pipe="Y")
+	AS_HELP_STRING([--disable-gcc-pipe], [disable gcc -pipe option ]),
+	ac_arg_gcc_pipe="N", ac_arg_gcc_pipe="Y")
 
 AC_ARG_ENABLE(gcc-opt,
-		AC_HELP_STRING([--disable-gcc-opt], [disable gcc optimisations ]),
-		ac_arg_gcc_opt="N", ac_arg_gcc_opt="Y")
+	AS_HELP_STRING([--disable-gcc-opt], [disable gcc optimisations ]),
+	ac_arg_gcc_opt="N", ac_arg_gcc_opt="Y")
 
 AC_ARG_ENABLE(fftw,
-		AC_HELP_STRING([--disable-fftw], [disable usage of FFTW ]),
-		ac_arg_fftw="N", ac_arg_fftw="Y")
+	AS_HELP_STRING([--disable-fftw], [disable usage of FFTW ]),
+	ac_arg_fftw="N", ac_arg_fftw="Y")
 
 AC_ARG_ENABLE(cpu-clip,
-		AC_HELP_STRING([--disable-cpu-clip], [disable tricky cpu specific clipper]),
-		ac_arg_cpu_clip="N", ac_arg_cpu_clip="Y")
+	AS_HELP_STRING([--disable-cpu-clip], [disable tricky cpu specific clipper]),
+	ac_arg_cpu_clip="N", ac_arg_cpu_clip="Y")
 
 AC_ARG_ENABLE(alsa,
-                AC_HELP_STRING([--disable-alsa], [disable ALSA support in the varispeed-play example program]))
+	AS_HELP_STRING([--disable-alsa], [disable ALSA support in the varispeed-play example program]))
 
 #====================================================================================
 # Check types and their sizes.
@@ -137,25 +130,21 @@ AC_C99_FUNC_LRINT
 AC_C99_FUNC_LRINTF
 # AC_C99_FUNC_LLRINT  Don't need this (yet?).
 
-case "x$ac_cv_c99_lrint$ac_cv_c99_lrintf" in
-	xyesyes)
-		;;
-	*)
-		AC_MSG_WARN([[*** Missing C99 standard functions lrint() and lrintf().]])
+AS_IF([test "x$ac_cv_c99_lrint$ac_cv_c99_lrintf" != "xyesyes"], [
+		AC_MSG_WARN([[*** Missing C99 standard functions lrint() and/or lrintf().]])
 		AC_MSG_WARN([[*** This may cause benign compiler warnings on some systems (ie Solaris).]])
-		;;
-	esac
+	])
 
 #====================================================================================
 # Determine if the processor can do clipping on float to int conversions.
 
-if test x$ac_arg_cpu_clip = "xY" ; then
-	AC_C_CLIP_MODE
-else
-	echo "checking processor clipping capabilities... disabled"
-	ac_cv_c_clip_positive=0
-	ac_cv_c_clip_negative=0
-	fi
+AS_IF([test "x$ac_arg_cpu_clip" = "xY"], [
+		AC_C_CLIP_MODE
+	], [
+		AS_ECHO(["checking processor clipping capabilities... disabled"])
+		ac_cv_c_clip_positive=0
+		ac_cv_c_clip_negative=0
+	])
 
 AC_DEFINE_UNQUOTED(CPU_CLIPS_POSITIVE, ${ac_cv_c_clip_positive},
 	[Target processor clips on positive float to int conversion.])
@@ -166,101 +155,96 @@ AC_DEFINE_UNQUOTED(CPU_CLIPS_NEGATIVE, ${ac_cv_c_clip_negative},
 # Check for libsndfile which is required for the test and example programs.
 
 AC_ARG_ENABLE(sndfile,
-	AC_HELP_STRING([--disable-sndfile], [disable support for sndfile (default=autodetect)]),
+	AS_HELP_STRING([--disable-sndfile], [disable support for sndfile (default=autodetect)]),
 	[ enable_sndfile=$enableval ], [ enable_sndfile=yes ])
 
 # Check for pkg-config outside the if statement.
 PKG_PROG_PKG_CONFIG
 
-if test "x$enable_sndfile" = "xyes"; then
-	PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.6, ac_cv_sndfile=1, ac_cv_sndfile=0)
-else
-	ac_cv_sndfile=0
-fi
+AS_IF([test "x$enable_sndfile" = "xyes"], [
+		PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.6, ac_cv_sndfile=1, ac_cv_sndfile=0)
+	], [
+		ac_cv_sndfile=0
+	])
 
-AC_DEFINE_UNQUOTED([HAVE_SNDFILE],$ac_cv_sndfile,[Set to 1 if you have libsndfile.])
+AC_DEFINE_UNQUOTED([HAVE_SNDFILE], [$ac_cv_sndfile], [Set to 1 if you have libsndfile.])
 
-if test x$ac_cv_sndfile = x1 ; then
-	ac_cv_sndfile=yes
-	HAVE_SNDFILE=1
-else
-	ac_cv_sndfile=no
-	HAVE_SNDFILE=0
-	fi
+AS_IF([test "x$ac_cv_sndfile" = "x1"], [
+		ac_cv_sndfile=yes
+		HAVE_SNDFILE=1
+	], [
+		ac_cv_sndfile=no
+		HAVE_SNDFILE=0
+	])
 
 #====================================================================================
 # Check for ALSA.
 
 ALSA_LIBS=""
 
-if test x$enable_alsa != xno ; then
-	AC_CHECK_HEADERS(alsa/asoundlib.h)
-	if test x$ac_cv_header_alsa_asoundlib_h = xyes ; then
-		ALSA_LIBS="-lasound"
-		enable_alsa=yes
-        elif test x$enable_alsa = xyes ; then
-                AC_MSG_ERROR(["ALSA headers not found"])
-        else
-                enable_alsa=no
-		fi
-	fi
+AS_IF([test "x$enable_alsa" != "xno"], [
+		AC_CHECK_HEADERS(alsa/asoundlib.h)
+		AS_IF([test "x$ac_cv_header_alsa_asoundlib_h" = "xyes"], [
+				ALSA_LIBS="-lasound"
+				enable_alsa=yes
+			], [test "x$enable_alsa" = "xyes"], [
+				AC_MSG_ERROR(["ALSA headers not found"])
+			], [
+				enable_alsa=no
+			])
+	])
 
 #====================================================================================
 # Check for libfftw3 which is required for the test and example programs.
 
-if test $ac_arg_fftw = "Y" ; then
-	PKG_CHECK_MODULES(FFTW3, fftw3 >= 0.15.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
-	AC_DEFINE_UNQUOTED([HAVE_FFTW3],$ac_cv_fftw3,[Set to 1 if you have libfftw3.])
+AS_IF([test "x$ac_arg_fftw" = "xY"], [
+		PKG_CHECK_MODULES(FFTW3, fftw3 >= 0.15.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
+		AC_DEFINE_UNQUOTED([HAVE_FFTW3], [$ac_cv_fftw3], [Set to 1 if you have libfftw3.])
 
-	if test x$ac_cv_fftw3 = x1 ; then
-		ac_cv_fftw3=yes
-		HAVE_FFTW3=1
-		fi
-	fi
+		AS_IF([test "x$ac_cv_fftw3" = "x1"], [
+				ac_cv_fftw3=yes
+				HAVE_FFTW3=1
+			])
+	])
 
-if test x$ac_cv_fftw3 != xyes ; then
-	ac_cv_fftw3=no
-	HAVE_FFTW3=0
-	fi
+AS_IF([test "x$ac_cv_fftw3" != "xyes"], [
+		ac_cv_fftw3=no
+		HAVE_FFTW3=0
+	])
 
 #====================================================================================
 # GCC stuff.
 
-if test $ac_cv_c_compiler_gnu = yes ; then
-	CFLAGS="$CFLAGS -std=gnu99 -W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith"
-	# -Wundef -Wbad-function-cast -Wmissing-declarations -Wconversion -Winline"
-	if test "$ac_arg_gcc_opt" = "N" ; then
-		temp_CFLAGS=`echo $CFLAGS | sed "s/O2/O0/"`
-		CFLAGS=$temp_CFLAGS
-		AC_MSG_WARN([[*** Compiler optimisations switched off. ***]])
-		fi
+AS_IF([test "x$ac_cv_c_compiler_gnu" = "xyes"], [
+		CFLAGS="$CFLAGS -std=gnu99 -W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith"
+		# -Wundef -Wbad-function-cast -Wmissing-declarations -Wconversion -Winline"
+		AS_IF([test "x$ac_arg_gcc_opt" = "xN"], [
+				temp_CFLAGS=`echo $CFLAGS | sed "s/O2/O0/"`
+				CFLAGS=$temp_CFLAGS
+				AC_MSG_WARN([[*** Compiler optimisations switched off. ***]])
+			])
 
-	# Disable -Wall for Apple Darwin/Rhapsody.
-	# System headers on these systems are broken.
-	case "$target_os" in
-		darwin* | rhapsody*)
-			temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall//"`
-			CFLAGS=$temp_CFLAGS
-			;;
+		# Disable -Wall for Apple Darwin/Rhapsody.
+		# System headers on these systems are broken.
+		AS_CASE([$target_os],
+			[darwin* | rhapsody*], [
+				temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall//"`
+				CFLAGS=$temp_CFLAGS],
+			[linux*|kfreebsd*-gnu*|gnu*], [
+				SHLIB_VERSION_ARG="-Wl,--version-script=Version_script"
+			])
+		AS_IF([test "x$ac_arg_gcc_pipe" != "xN"], [
+				CFLAGS="$CFLAGS -pipe"
+			])
 
-		linux*|kfreebsd*-gnu*|gnu*)
-			SHLIB_VERSION_ARG="-Wl,--version-script=Version_script"
-			;;
-		*)
-			;;
-		esac
-	if test x$ac_arg_gcc_pipe != "xN" ; then
-	 	CFLAGS="$CFLAGS -pipe"
-	 	fi
+		AS_IF([test "x$ac_arg_gcc_werror" = "xyes"], [
+				CFLAGS="-Werror $CFLAGS"
+			])
 
-	if test x$ac_arg_gcc_werror = "xyes" ; then
-		CFLAGS="-Werror $CFLAGS"
-		fi
-
-	AC_DEFINE([COMPILER_IS_GCC],1, [Set to 1 if the compile is GNU GCC.])
-	GCC_MAJOR_VERSION=`$CC -dumpversion | sed "s/\..*//"`
-	AC_DEFINE_UNQUOTED([GCC_MAJOR_VERSION],${GCC_MAJOR_VERSION}, [Major version of GCC or 3 otherwise.])
-	fi
+		AC_DEFINE([COMPILER_IS_GCC],1, [Set to 1 if the compile is GNU GCC.])
+		GCC_MAJOR_VERSION=`$CC -dumpversion | sed "s/\..*//"`
+		AC_DEFINE_UNQUOTED([GCC_MAJOR_VERSION],${GCC_MAJOR_VERSION}, [Major version of GCC or 3 otherwise.])
+	])
 
 #====================================================================================
 # Find known target OS.
@@ -268,33 +252,30 @@ if test $ac_cv_c_compiler_gnu = yes ; then
 OS_SPECIFIC_INCLUDES=""
 os_is_win32=0
 
-case "$target_os" in
-	darwin* | rhapsody*)
+AS_CASE([$target_os],
+	[darwin* | rhapsody*], [
 		OS_SPECIFIC_INCLUDES="-fpascal-strings -I/Developer/Headers/FlatCarbon"
-		OS_SPECIFIC_LINKS="-framework CoreAudio"
-		;;
-	mingw32*)
+		OS_SPECIFIC_LINKS="-framework CoreAudio"],
+	[mingw32*], [
 		OS_SPECIFIC_LINKS="-lwinmm"
-		os_is_win32=1
-		;;
-	*)
+		os_is_win32=1],
+	[
 		OS_SPECIFIC_INCLUDES=""
 		OS_SPECIFIC_LINKS=""
-		;;
-	esac
+	])
 
 htmldocdir=$prefix/share/doc/libsamplerate0-dev/html
 
-if test $prefix = "NONE" ; then
-	htmldocdir=/usr/local/share/doc/libsamplerate0-dev/html
-else
-	htmldocdir=$prefix/share/doc/libsamplerate0-dev/html
-	fi
+AS_IF([test "x$prefix" = "xNONE"], [
+		htmldocdir=/usr/local/share/doc/libsamplerate0-dev/html
+	], [
+		htmldocdir=$prefix/share/doc/libsamplerate0-dev/html
+	])
 
 #====================================================================================
 # Now use the information from the checking stage.
 
-AC_DEFINE_UNQUOTED(OS_IS_WIN32, ${os_is_win32}, [Set to 1 if compiling for Win32])
+AC_DEFINE_UNQUOTED([OS_IS_WIN32], [${os_is_win32}], [Set to 1 if compiling for Win32])
 
 AC_SUBST(htmldocdir)
 
@@ -336,11 +317,11 @@ AC_MSG_RESULT([
     Host OS : ..................... ${host_os}
 ])
 
-if test x$ac_cv_c_compiler_gnu = xyes ; then
-	echo "  Tools :"
-	echo "    Compiler is GCC : ............. ${ac_cv_c_compiler_gnu}"
-	echo "    GCC major version : ........... ${GCC_MAJOR_VERSION}"
-	fi
+AS_IF([test "x$ac_cv_c_compiler_gnu" = "xyes"], [
+		AS_ECHO(["  Tools :"])
+		AS_ECHO(["    Compiler is GCC : ............. ${ac_cv_c_compiler_gnu}"])
+		AS_ECHO(["    GCC major version : ........... ${GCC_MAJOR_VERSION}"])
+	])
 
 AC_MSG_RESULT([
   Extra tools required for testing and examples :
@@ -348,8 +329,7 @@ AC_MSG_RESULT([
     Have FFTW : ................... ${ac_cv_fftw3}])
 
 AC_MSG_RESULT([    Have libsndfile : ............. ${ac_cv_sndfile}])
-AC_MSG_RESULT([    Have ALSA : ................... ${enable_alsa}
-])
+AC_MSG_RESULT([    Have ALSA : ................... ${enable_alsa}])
 
 AC_MSG_RESULT([  Installation directories :
 
@@ -358,9 +338,9 @@ AC_MSG_RESULT([  Installation directories :
     Pkgconfig directory : ......... ${prefix}/lib/pkgconfig
 ])
 
-if test x$prefix != "x/usr" ; then
-	echo "Compiling some other packages against ${PACKAGE} may require "
-	echo "the addition of \"${prefix}/lib/pkgconfig\" to the "
-	echo "PKG_CONFIG_PATH environment variable.\n"
-	fi
+AS_IF([test "x$prefix" != "x/usr"], [
+		AS_ECHO(["Compiling some other packages against ${PACKAGE} may require "])
+		AS_ECHO(["the addition of \"${prefix}/lib/pkgconfig\" to the "])
+		AS_ECHO(["PKG_CONFIG_PATH environment variable.\n"])
+	])
 
