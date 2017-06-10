@@ -6,6 +6,18 @@ AC_PREREQ(2.57)
 AC_INIT([libsamplerate],[0.1.9],[erikd@mega-nerd.com],
 		[libsamplerate],[http://www.mega-nerd.com/libsamplerate/])
 
+dnl Check whether we want to set defaults for CFLAGS, CPPFLAGS and LDFLAGS
+AC_MSG_CHECKING([whether configure should try to set CFLAGS/CPPFLAGS/LDFLAGS])
+AS_IF([test "x${CFLAGS+set}" = "xset" || test "x${CPPFLAGS+set}" = "xset" || test "x${LDFLAGS+set}" = "xset"], [
+		enable_flags_setting=no
+		: ${CFLAGS=""}
+	], [
+		enable_flags_setting=yes
+		dnl Set to empty flags so AC_PROG_CC does not add -g -O2
+		CFLAGS=""
+	])
+AC_MSG_RESULT([${enable_flags_setting}])
+
 # Put config stuff in Cfg.
 AC_CONFIG_AUX_DIR(Cfg)
 
@@ -19,9 +31,11 @@ AM_INIT_AUTOMAKE([foreign dist-bzip2 no-dist-gzip subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AC_LANG([C])
-
 AC_PROG_CC
-AC_PROG_CXX
+AC_PROG_CC_C99
+AX_COMPILER_VENDOR
+AX_COMPILER_VERSION
+
 AC_PROG_SED
 
 LT_INIT
@@ -75,27 +89,16 @@ SHLIB_VERSION_ARG=""
 #====================================================================================
 # Finished checking, handle options.
 
-AC_ARG_ENABLE(gcc-werror,
-	AS_HELP_STRING([--enable-gcc-werror], [enable -Werror in all Makefiles]),
-	ac_arg_gcc_werror=yes, ac_arg_gcc_werror=no)
+AC_ARG_ENABLE([werror],
+	AS_HELP_STRING([--enable-werror], [enable -Werror in all Makefiles]))
 
-AC_ARG_ENABLE(gcc-pipe,
-	AS_HELP_STRING([--disable-gcc-pipe], [disable gcc -pipe option ]),
-	ac_arg_gcc_pipe="N", ac_arg_gcc_pipe="Y")
+AC_ARG_ENABLE([fftw],
+	AS_HELP_STRING([--disable-fftw], [disable usage of FFTW ]))
 
-AC_ARG_ENABLE(gcc-opt,
-	AS_HELP_STRING([--disable-gcc-opt], [disable gcc optimisations ]),
-	ac_arg_gcc_opt="N", ac_arg_gcc_opt="Y")
+AC_ARG_ENABLE([cpu-clip],
+	AS_HELP_STRING([--disable-cpu-clip], [disable tricky cpu specific clipper]))
 
-AC_ARG_ENABLE(fftw,
-	AS_HELP_STRING([--disable-fftw], [disable usage of FFTW ]),
-	ac_arg_fftw="N", ac_arg_fftw="Y")
-
-AC_ARG_ENABLE(cpu-clip,
-	AS_HELP_STRING([--disable-cpu-clip], [disable tricky cpu specific clipper]),
-	ac_arg_cpu_clip="N", ac_arg_cpu_clip="Y")
-
-AC_ARG_ENABLE(alsa,
+AC_ARG_ENABLE([alsa],
 	AS_HELP_STRING([--disable-alsa], [disable ALSA support in the varispeed-play example program]))
 
 #====================================================================================
@@ -138,7 +141,7 @@ AS_IF([test "x$ac_cv_c99_lrint$ac_cv_c99_lrintf" != "xyesyes"], [
 #====================================================================================
 # Determine if the processor can do clipping on float to int conversions.
 
-AS_IF([test "x$ac_arg_cpu_clip" = "xY"], [
+AS_IF([test "x$enable_cpu_clip" != "xno"], [
 		AC_C_CLIP_MODE
 	], [
 		AS_ECHO(["checking processor clipping capabilities... disabled"])
@@ -154,15 +157,15 @@ AC_DEFINE_UNQUOTED(CPU_CLIPS_NEGATIVE, ${ac_cv_c_clip_negative},
 #====================================================================================
 # Check for libsndfile which is required for the test and example programs.
 
-AC_ARG_ENABLE(sndfile,
-	AS_HELP_STRING([--disable-sndfile], [disable support for sndfile (default=autodetect)]),
-	[ enable_sndfile=$enableval ], [ enable_sndfile=yes ])
+AC_ARG_ENABLE([sndfile],
+	AS_HELP_STRING([--disable-sndfile], [disable support for sndfile (default=autodetect)]))
 
 # Check for pkg-config outside the if statement.
 PKG_PROG_PKG_CONFIG
+PKG_INSTALLDIR
 
-AS_IF([test "x$enable_sndfile" = "xyes"], [
-		PKG_CHECK_MODULES(SNDFILE, sndfile >= 1.0.6, ac_cv_sndfile=1, ac_cv_sndfile=0)
+AS_IF([test "x$enable_sndfile" != "xno"], [
+		PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.6], [ac_cv_sndfile=1], [ac_cv_sndfile=0])
 	], [
 		ac_cv_sndfile=0
 	])
@@ -197,8 +200,8 @@ AS_IF([test "x$enable_alsa" != "xno"], [
 #====================================================================================
 # Check for libfftw3 which is required for the test and example programs.
 
-AS_IF([test "x$ac_arg_fftw" = "xY"], [
-		PKG_CHECK_MODULES(FFTW3, fftw3 >= 0.15.0, ac_cv_fftw3=1, ac_cv_fftw3=0)
+AS_IF([test "x$enable_fftw" != "xno"], [
+		PKG_CHECK_MODULES([FFTW3], [fftw3 >= 0.15.0], [ac_cv_fftw3=1], [ac_cv_fftw3=0])
 		AC_DEFINE_UNQUOTED([HAVE_FFTW3], [$ac_cv_fftw3], [Set to 1 if you have libfftw3.])
 
 		AS_IF([test "x$ac_cv_fftw3" = "x1"], [
@@ -213,17 +216,23 @@ AS_IF([test "x$ac_cv_fftw3" != "xyes"], [
 	])
 
 #====================================================================================
+# Compiler stuff.
+
+AS_IF([test "x$enable_flags_setting" = "xyes"], [
+		AX_APPEND_COMPILE_FLAGS([-O2 -pipe], [CFLAGS])
+	])
+
+AS_IF([test "x$enable_werror" = "xyes"], [
+		AX_APPEND_COMPILE_FLAGS([-Werror], [CFLAGS])
+	])
+
+AX_APPEND_COMPILE_FLAGS([-W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith], [CFLAGS])
+
+#====================================================================================
 # GCC stuff.
-
-AS_IF([test "x$ac_cv_c_compiler_gnu" = "xyes"], [
-		CFLAGS="$CFLAGS -std=gnu99 -W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith"
-		# -Wundef -Wbad-function-cast -Wmissing-declarations -Wconversion -Winline"
-		AS_IF([test "x$ac_arg_gcc_opt" = "xN"], [
-				temp_CFLAGS=`echo $CFLAGS | sed "s/O2/O0/"`
-				CFLAGS=$temp_CFLAGS
-				AC_MSG_WARN([[*** Compiler optimisations switched off. ***]])
-			])
-
+COMPILER_IS_GCC=0
+AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
+		# OS specific tweaks.
 		# Disable -Wall for Apple Darwin/Rhapsody.
 		# System headers on these systems are broken.
 		AS_CASE([$target_os],
@@ -233,17 +242,11 @@ AS_IF([test "x$ac_cv_c_compiler_gnu" = "xyes"], [
 			[linux*|kfreebsd*-gnu*|gnu*], [
 				SHLIB_VERSION_ARG="-Wl,--version-script=Version_script"
 			])
-		AS_IF([test "x$ac_arg_gcc_pipe" != "xN"], [
-				CFLAGS="$CFLAGS -pipe"
-			])
 
-		AS_IF([test "x$ac_arg_gcc_werror" = "xyes"], [
-				CFLAGS="-Werror $CFLAGS"
-			])
-
-		AC_DEFINE([COMPILER_IS_GCC],1, [Set to 1 if the compile is GNU GCC.])
+		COMPILER_IS_GCC=1
+		AC_DEFINE([COMPILER_IS_GCC], [1], [Set to 1 if the compile is GNU GCC.])
 		GCC_MAJOR_VERSION=`$CC -dumpversion | sed "s/\..*//"`
-		AC_DEFINE_UNQUOTED([GCC_MAJOR_VERSION],${GCC_MAJOR_VERSION}, [Major version of GCC or 3 otherwise.])
+		AC_DEFINE_UNQUOTED([GCC_MAJOR_VERSION], [${GCC_MAJOR_VERSION}], [Major version of GCC or 3 otherwise.])
 	])
 
 #====================================================================================
@@ -278,12 +281,7 @@ AC_SUBST(COMPILER_IS_GCC)
 AC_SUBST(GCC_MAJOR_VERSION)
 
 AC_SUBST(HAVE_FFTW3)
-AC_SUBST(FFTW3_CFLAGS)
-AC_SUBST(FFTW3_LIBS)
-
 AC_SUBST(HAVE_SNDFILE)
-AC_SUBST(SNDFILE_CFLAGS)
-AC_SUBST(SNDFILE_LIBS)
 
 AC_SUBST(ALSA_LIBS)
 
@@ -295,42 +293,43 @@ AC_OUTPUT
 
 #====================================================================================
 
+AX_RECURSIVE_EVAL([$libdir], [full_absolute_libdir])
+AX_RECURSIVE_EVAL([$bindir], [full_absolute_bindir])
+AX_RECURSIVE_EVAL([$pkgconfigdir], [full_absolute_pkgconfigdir])
+AX_RECURSIVE_EVAL([$htmldir], [full_absolute_htmldir])
 AC_MSG_RESULT([
 -=-=-=-=-=-=-=-=-=-= Configuration Complete =-=-=-=-=-=-=-=-=-=-=-
 
   Configuration summary :
 
-    Version : ..................... ${VERSION}
+    libsamplerate version : ............... ${VERSION}
 
-    Host CPU : .................... ${host_cpu}
-    Host Vendor : ................. ${host_vendor}
-    Host OS : ..................... ${host_os}
-])
+    Host CPU : ............................ ${host_cpu}
+    Host Vendor : ......................... ${host_vendor}
+    Host OS : ............................. ${host_os}
 
-AS_IF([test "x$ac_cv_c_compiler_gnu" = "xyes"], [
-		AS_ECHO(["  Tools :"])
-		AS_ECHO(["    Compiler is GCC : ............. ${ac_cv_c_compiler_gnu}"])
-		AS_ECHO(["    GCC major version : ........... ${GCC_MAJOR_VERSION}"])
-	])
+    CFLAGS : .............................. ${CFLAGS}
+    CPPFLAGS : ............................ ${CPPFLAGS}
+    LDFLAGS : ............................. ${LDFLAGS}
 
-AC_MSG_RESULT([
+  Tools :
+
+    C Compiler Vendor is : ................ ${ax_cv_c_compiler_vendor} (${ax_cv_c_compiler_version})
+
   Extra tools required for testing and examples :
 
-    Have FFTW : ................... ${ac_cv_fftw3}])
+    Have FFTW : ........................... ${ac_cv_fftw3}
+    Have libsndfile : ..................... ${ac_cv_sndfile}
+    Have ALSA : ........................... ${enable_alsa}
 
-AC_MSG_RESULT([    Have libsndfile : ............. ${ac_cv_sndfile}])
-AC_MSG_RESULT([    Have ALSA : ................... ${enable_alsa}])
+  Installation directories :
 
-AC_MSG_RESULT([  Installation directories :
+    Library directory : ................... ${full_absolute_libdir}
+    Program directory : ................... ${full_absolute_bindir}
+    Pkgconfig directory : ................. ${full_absolute_pkgconfigdir}
+    HTML docs directory : ................. ${full_absolute_htmldir}
 
-    Library directory : ........... ${prefix}/lib
-    Program directory : ........... ${prefix}/bin
-    Pkgconfig directory : ......... ${prefix}/lib/pkgconfig
+Compiling some other packages against libsamplerate may require
+the addition of '$full_absolute_pkgconfigdir' to the
+PKG_CONFIG_PATH environment variable.
 ])
-
-AS_IF([test "x$prefix" != "x/usr"], [
-		AS_ECHO(["Compiling some other packages against ${PACKAGE} may require "])
-		AS_ECHO(["the addition of \"${prefix}/lib/pkgconfig\" to the "])
-		AS_ECHO(["PKG_CONFIG_PATH environment variable.\n"])
-	])
-
