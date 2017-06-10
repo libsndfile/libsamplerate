@@ -180,6 +180,8 @@ AS_IF([test "x$ac_cv_sndfile" = "x1"], [
 		HAVE_SNDFILE=0
 	])
 
+AM_CONDITIONAL([HAVE_LIBSNDFILE], [test "x$ac_cv_sndfile" = "xyes"])
+
 #====================================================================================
 # Check for ALSA.
 
