@@ -31,8 +31,8 @@ check-asm : check_asm.sh src_sinc.s src_linear.s src_zoh.s
 	@echo
 	@echo
 
-%.s : $(srcdir)/%.c
-	$(CC) -S $(CFLAGS) $(DEFAULT_INCLUDES) $(srcdir)/$+ -o $@
+.c.s:
+	$(CC) -S $(CFLAGS) $(CPPFLAGS) $(DEFAULT_INCLUDES) $< -o $@
 
 # Disable autoheader.
 AUTOHEADER=echo

@@ -18,7 +18,7 @@ TESTS = \
 	throughput_test
 
 SAMPLRATEDIR =../src
-INCLUDES = -I$(srcdir)/$(SAMPLRATEDIR)
+AM_CPPFLAGS = -I$(srcdir)/$(SAMPLRATEDIR)
 noinst_HEADERS = util.h
 
 #===============================================================================
