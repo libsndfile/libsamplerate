@@ -10,7 +10,7 @@
 
 #include "util.h"
 
-#if (HAVE_FFTW3 == 1)
+#if (HAVE_FFTW3)
 
 #include <stdio.h>
 #include <stdlib.h>
