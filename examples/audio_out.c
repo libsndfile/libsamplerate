@@ -15,7 +15,7 @@
 
 #include "audio_out.h"
 
-#if HAVE_ALSA_ASOUNDLIB_H
+#if HAVE_ALSA
 	#define ALSA_PCM_NEW_HW_PARAMS_API
 	#define ALSA_PCM_NEW_SW_PARAMS_API
 	#include <alsa/asoundlib.h>
@@ -39,7 +39,7 @@
 
 #if defined (__linux__)
 
-#if HAVE_ALSA_ASOUNDLIB_H
+#if HAVE_ALSA
 
 #define	ALSA_MAGIC		MAKE_MAGIC ('L', 'n', 'x', '-', 'A', 'L', 'S', 'A')
 
@@ -299,7 +299,7 @@ alsa_close (AUDIO_OUT *audio_out)
 	return ;
 } /* alsa_close */
 
-#endif /* HAVE_ALSA_ASOUNDLIB_H */
+#endif /* HAVE_ALSA */
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
@@ -968,7 +968,7 @@ AUDIO_OUT *
 audio_open (int channels, int samplerate)
 {
 #if defined (__linux__)
-	#if HAVE_ALSA_ASOUNDLIB_H
+	#if HAVE_ALSA
 		if (access ("/proc/asound/cards", R_OK) == 0)
 			return alsa_open (channels, samplerate) ;
 	#endif
@@ -1010,7 +1010,7 @@ audio_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_
 		} ;
 
 #if defined (__linux__)
-	#if HAVE_ALSA_ASOUNDLIB_H
+	#if HAVE_ALSA
 		if (audio_out->magic == ALSA_MAGIC)
 			alsa_play (callback, audio_out, callback_data) ;
 	#endif
@@ -1035,7 +1035,7 @@ void
 audio_close (AUDIO_OUT *audio_out)
 {
 #if defined (__linux__)
-	#if HAVE_ALSA_ASOUNDLIB_H
+	#if HAVE_ALSA
 		if (audio_out->magic == ALSA_MAGIC)
 			alsa_close (audio_out) ;
 	#endif
