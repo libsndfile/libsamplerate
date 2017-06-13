@@ -43,10 +43,10 @@
 /* Target processor clips on positive float to int conversion. */
 #define CPU_CLIPS_POSITIVE 0
 
-/* Target processor is big endian. */
+/* Host processor is big endian. */
 #define CPU_IS_BIG_ENDIAN 0
 
-/* Target processor is little endian. */
+/* Host processor is little endian. */
 #define CPU_IS_LITTLE_ENDIAN 1
 
 /* Set to 1 to enable debugging. */
