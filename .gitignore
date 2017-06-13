@@ -47,8 +47,9 @@ src/Version_script
 src/config.h
 src/config.h.in
 stamp-h1
+.dirstamp
 tests/*_test
 tests/benchmark
 tests/src-evaluate
-tests/*.log
-tests/*.trs
+*.log
+*.trs

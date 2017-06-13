@@ -2,20 +2,138 @@
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 
-SUBDIRS = src doc examples tests
-DIST_SUBDIRS = Win32 $(SUBDIRS)
+AM_CPPFLAGS = -I$(top_srcdir)/src $(OS_SPECIFIC_INCLUDES)
 
-EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat
+EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat Win32
  
 pkgconfig_DATA = samplerate.pc
 
-m4datadir = $(datadir)/aclocal
-
 # Some people prefer "make test" to "make check".
-
 test:
-	make check
+	$(MAKE) check
 
-check-asm :
-	(cd src && make check-asm)
+########
+# src/ #
+########
 
+lib_LTLIBRARIES = src/libsamplerate.la
+include_HEADERS = src/samplerate.h
+
+EXTRA_DIST += src/config.h.in src/Version_script.in src/check_asm.sh
+CLEANFILES = src/src_sinc.s
+
+# MinGW requires -no-undefined if a DLL is to be built.
+src_libsamplerate_la_LDFLAGS = -no-undefined -version-info $(SHARED_VERSION_INFO) $(SHLIB_VERSION_ARG)
+src_libsamplerate_la_SOURCES = src/samplerate.c src/src_sinc.c src/src_zoh.c src/src_linear.c \
+	src/common.h src/float_cast.h src/fastest_coeffs.h src/mid_qual_coeffs.h src/high_qual_coeffs.h
+
+#-------------------------------------------------------------------------------
+# An extra check for bad asm.
+
+check-asm: src/check_asm.sh src/src_sinc.s src/src_linear.s src/src_zoh.s
+	@echo
+	@echo
+	$(top_srcdir)/src/check_asm.sh src/src_sinc.s
+	$(top_srcdir)/src/check_asm.sh src/src_linear.s
+	$(top_srcdir)/src/check_asm.sh src/src_zoh.s
+	@echo
+	@echo
+
+.c.s:
+	$(CC) -S $(CFLAGS) $(CPPFLAGS) $(DEFAULT_INCLUDES) $< -o $@
+
+# Disable autoheader.
+AUTOHEADER=echo
+
+########
+# doc/ #
+########
+
+dist_html_DATA = doc/SRC.png doc/SRC.css doc/index.html doc/license.html doc/history.html \
+	doc/download.html doc/lists.html doc/quality.html doc/win32.html doc/faq.html doc/api.html \
+	doc/api_simple.html doc/api_callback.html doc/api_full.html doc/api_misc.html
+
+#############
+# examples/ #
+#############
+
+check_PROGRAMS = examples/varispeed-play examples/timewarp-file
+
+examples_varispeed_play_SOURCES = examples/varispeed-play.c examples/audio_out.c examples/audio_out.h
+examples_varispeed_play_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
+examples_varispeed_play_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS) $(OS_SPECIFIC_LINKS)
+
+examples_timewarp_file_SOURCES = examples/timewarp-file.c
+examples_timewarp_file_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
+examples_timewarp_file_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS)
+
+if HAVE_LIBSNDFILE
+bin_PROGRAMS = examples/sndfile-resample
+examples_sndfile_resample_SOURCES = examples/sndfile-resample.c
+examples_sndfile_resample_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
+examples_sndfile_resample_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS)
+endif
+
+##########
+# tests/ #
+##########
+
+check_PROGRAMS += tests/misc_test tests/termination_test tests/simple_test tests/callback_test \
+	tests/reset_test tests/multi_channel_test tests/snr_bw_test tests/float_short_test \
+	tests/varispeed_test tests/callback_hang_test tests/src-evaluate tests/throughput_test \
+	tests/multichan_throughput_test tests/downsample_test
+TESTS = tests/misc_test tests/termination_test tests/callback_hang_test tests/downsample_test \
+	tests/simple_test tests/callback_test tests/reset_test tests/multi_channel_test \
+	tests/varispeed_test tests/float_short_test tests/snr_bw_test tests/throughput_test
+
+#===============================================================================
+
+tests_misc_test_SOURCES = tests/misc_test.c tests/util.c tests/util.h
+tests_misc_test_LDADD = src/libsamplerate.la
+
+tests_termination_test_SOURCES = tests/termination_test.c tests/util.c tests/util.h
+tests_termination_test_LDADD = src/libsamplerate.la
+
+tests_callback_hang_test_SOURCES = tests/callback_hang_test.c tests/util.c tests/util.h
+tests_callback_hang_test_LDADD = src/libsamplerate.la
+
+tests_simple_test_SOURCES = tests/simple_test.c tests/util.c tests/util.h
+tests_simple_test_LDADD = src/libsamplerate.la
+
+tests_reset_test_SOURCES = tests/reset_test.c tests/util.c tests/util.h
+tests_reset_test_LDADD = src/libsamplerate.la
+
+tests_multi_channel_test_SOURCES = tests/multi_channel_test.c tests/util.c tests/calc_snr.c
+tests_multi_channel_test_CFLAGS = $(FFTW3_CFLAGS)
+tests_multi_channel_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
+
+tests_snr_bw_test_SOURCES = tests/snr_bw_test.c tests/calc_snr.c tests/util.c tests/util.h
+tests_snr_bw_test_CFLAGS = $(FFTW3_CFLAGS)
+tests_snr_bw_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
+
+tests_callback_test_SOURCES = tests/callback_test.c tests/util.c tests/util.h
+tests_callback_test_LDADD = src/libsamplerate.la
+
+tests_float_short_test_SOURCES = tests/float_short_test.c tests/util.c tests/util.h
+tests_float_short_test_LDADD = src/libsamplerate.la
+
+tests_downsample_test_SOURCES = tests/downsample_test.c tests/util.c tests/util.h
+tests_downsample_test_LDADD = src/libsamplerate.la
+
+tests_varispeed_test_SOURCES = tests/varispeed_test.c tests/util.c tests/util.h tests/calc_snr.c
+tests_varispeed_test_CFLAGS = $(FFTW3_CFLAGS)
+tests_varispeed_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
+
+# This program is for evaluating other sample rate converters.
+
+tests_throughput_test_SOURCES = tests/throughput_test.c tests/util.c tests/calc_snr.c
+tests_throughput_test_CFLAGS = $(FFTW3_CFLAGS)
+tests_throughput_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
+
+tests_multichan_throughput_test_SOURCES = tests/multichan_throughput_test.c tests/util.c tests/calc_snr.c
+tests_multichan_throughput_test_CFLAGS = $(FFTW3_CFLAGS)
+tests_multichan_throughput_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
+
+tests_src_evaluate_SOURCES = tests/src-evaluate.c tests/calc_snr.c tests/util.c
+tests_src_evaluate_CFLAGS = $(SNDFILE_CFLAGS) $(FFTW3_CFLAGS)
+tests_src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
