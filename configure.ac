@@ -18,17 +18,17 @@ AS_IF([test "x${CFLAGS+set}" = "xset" || test "x${CPPFLAGS+set}" = "xset" || tes
 	])
 AC_MSG_RESULT([${enable_flags_setting}])
 
-# Put config stuff in Cfg.
-AC_CONFIG_AUX_DIR(Cfg)
+dnl Put config stuff in 'build-aux'.
+AC_CONFIG_AUX_DIR([build-aux])
 
 AC_CONFIG_SRCDIR([src/samplerate.c])
 AC_CANONICAL_TARGET([])
 
-AC_CONFIG_MACRO_DIR([M4])
+AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([src/config.h])
 
-AM_INIT_AUTOMAKE([foreign dist-bzip2 no-dist-gzip subdir-objects])
-m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+AM_INIT_AUTOMAKE([1.14 foreign dist-bzip2 no-dist-gzip subdir-objects])
+AM_SILENT_RULES([yes])
 
 AC_LANG([C])
 AC_PROG_CC

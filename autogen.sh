@@ -4,8 +4,6 @@
 
 package="libsamplerate"
 
-ACLOCAL_FLAGS="-I M4"
-
 olddir=`pwd`
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
