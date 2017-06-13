@@ -251,7 +251,7 @@ AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
 				temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall//"`
 				CFLAGS=$temp_CFLAGS],
 			[linux*|kfreebsd*-gnu*|gnu*], [
-				SHLIB_VERSION_ARG="-Wl,--version-script=Version_script"
+				SHLIB_VERSION_ARG="-Wl,--version-script=\$(top_builddir)/src/Version_script"
 			])
 	])
 
