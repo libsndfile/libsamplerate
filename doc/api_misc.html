@@ -147,7 +147,8 @@ This struct is defined as:
 </P>
 <PRE>
       typedef struct
-      {   float  *data_in, *data_out ;
+      {   const float  *data_in;
+          float *data_out ;
 
           long   input_frames, output_frames ;
           long   input_frames_used, output_frames_gen ;
