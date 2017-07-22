@@ -105,7 +105,8 @@ The first parameter to <B>src_simple</B> is a pointer to an <B>SRC_DATA</B> stru
 </P>
 <PRE>
       typedef struct
-      {   float  *data_in, *data_out ;
+      {   const float  *data_in;
+	  float *data_out ;
 
           long   input_frames, output_frames ;
           long   input_frames_used, output_frames_gen ;
