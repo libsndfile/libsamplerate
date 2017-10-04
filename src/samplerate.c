@@ -71,7 +71,14 @@ src_clone(SRC_STATE* orig, int *error)
 	SRC_PRIVATE *origPriv = (SRC_PRIVATE*)orig;
 	memcpy(psrc, origPriv, sizeof(SRC_PRIVATE));
 
-	origPriv->copy(origPriv, psrc);
+	int copyError;
+	if ((copyError = origPriv->copy(origPriv, psrc)) != SRC_ERR_NO_ERROR)
+	{
+		if (error)
+			*error = copyError;
+		free(psrc);
+		psrc = NULL;
+	}
 
 	return (SRC_STATE*)psrc ;
 }
