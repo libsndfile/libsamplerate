@@ -66,6 +66,7 @@ static int sinc_mono_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;
 static int prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len) WARN_UNUSED ;
 
 static void sinc_reset (SRC_PRIVATE *psrc) ;
+static int sinc_copy (SRC_PRIVATE *from, SRC_PRIVATE *to) ;
 
 static inline increment_t
 double_to_fp (double x)
@@ -181,6 +182,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 		psrc->vari_process = sinc_multichan_vari_process ;
 		} ;
 	psrc->reset = sinc_reset ;
+	psrc->copy = sinc_copy ;
 
 	switch (src_enum)
 	{	case SRC_SINC_FASTEST :
@@ -252,6 +254,25 @@ sinc_reset (SRC_PRIVATE *psrc)
 	/* Set this for a sanity check */
 	memset (filter->buffer + filter->b_len, 0xAA, filter->channels * sizeof (filter->buffer [0])) ;
 } /* sinc_reset */
+
+static int
+sinc_copy (SRC_PRIVATE *from, SRC_PRIVATE *to)
+{
+	if (from->private_data == NULL)
+		return SRC_ERR_NO_PRIVATE ;
+
+	SINC_FILTER *to_filter = NULL ;
+	SINC_FILTER* from_filter = (SINC_FILTER*) from->private_data ;
+	size_t private_length = sizeof (SINC_FILTER) + sizeof (from_filter->buffer [0]) * (from_filter->b_len + from_filter->channels) ;
+
+	if ((to_filter = calloc (1, private_length)) == NULL)
+		return SRC_ERR_MALLOC_FAILED ;
+
+	memcpy (to_filter, from_filter, private_length) ;
+	to->private_data = to_filter ;
+
+	return SRC_ERR_NO_ERROR ;
+} /* sinc_copy */
 
 /*========================================================================================
 **	Beware all ye who dare pass this point. There be dragons here.
