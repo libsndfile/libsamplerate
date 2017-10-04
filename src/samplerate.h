@@ -55,6 +55,12 @@ typedef long (*src_callback_t) (void *cb_data, float **data) ;
 SRC_STATE* src_new (int converter_type, int channels, int *error) ;
 
 /*
+** Clone a handle : return an anonymous pointer to a new converter
+** containing the same internal state as orig. Error returned in *error.
+*/
+SRC_STATE* src_clone(SRC_STATE* orig, int *error) ;
+
+/*
 **	Initilisation for callback based API : return an anonymous pointer to the
 **	internal state of the converter. Choose a converter from the enums below.
 **	The cb_data pointer can point to any data or be set to NULL. Whatever the

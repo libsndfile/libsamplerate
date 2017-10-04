@@ -54,6 +54,29 @@ src_new (int converter_type, int channels, int *error)
 } /* src_new */
 
 SRC_STATE*
+src_clone(SRC_STATE* orig, int *error)
+{
+	SRC_PRIVATE	*psrc;
+
+	if (error)
+		*error = SRC_ERR_NO_ERROR;
+
+	if ((psrc = calloc(1, sizeof(*psrc))) == NULL)
+	{
+		if (error)
+			*error = SRC_ERR_MALLOC_FAILED;
+		return NULL;
+	};
+
+	SRC_PRIVATE *origPriv = (SRC_PRIVATE*)orig;
+	memcpy(psrc, origPriv, sizeof(SRC_PRIVATE));
+
+	origPriv->copy(origPriv, psrc);
+
+	return (SRC_STATE*)psrc ;
+}
+
+SRC_STATE*
 src_callback_new (src_callback_t func, int converter_type, int channels, int *error, void* cb_data)
 {	SRC_STATE	*src_state ;
 
