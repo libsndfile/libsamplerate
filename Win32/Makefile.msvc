@@ -51,6 +51,7 @@ TEST_PROGS= \
     ".\tests\termination_test.exe" \
     ".\tests\simple_test.exe" \
     ".\tests\reset_test.exe" \
+    ".\tests\clone_test.exe" \
     ".\tests\multi_channel_test.exe" \
     ".\tests\snr_bw_test.exe" \
 	".\tests\throughput_test.exe"
@@ -60,6 +61,7 @@ CHECK: $(TEST_PROGS)
      ".\tests\termination_test.exe"
      ".\tests\simple_test.exe"
      ".\tests\reset_test.exe"
+     ".\tests\clone_test.exe"
      ".\tests\multi_channel_test.exe"
      ".\tests\snr_bw_test.exe"
 	 ".\tests\throughput_test.exe"
@@ -116,6 +118,10 @@ CHECK: $(TEST_PROGS)
 ".\tests\reset_test.exe" : ".\tests\reset_test.c" ".\tests\util.obj"
     $(CPP) $(CFLAGS) /Fo".\tests\reset_test.obj" /c ".\tests\reset_test.c"
     $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\reset_test.exe" ".\tests\reset_test.obj" ".\tests\util.obj" libsamplerate-0.lib
+
+".\tests\clone_test.exe" : ".\tests\clone_test.c" ".\tests\util.obj"
+    $(CPP) $(CFLAGS) /Fo".\tests\clone_test.obj" /c ".\tests\clone_test.c"
+    $(LINK32) $(PROG_LINK_FLAGS) /out:".\tests\clone_test.exe" ".\tests\clone_test.obj" ".\tests\util.obj" libsamplerate-0.lib
 
 ".\tests\multi_channel_test.exe" : ".\tests\multi_channel_test.c" ".\tests\util.obj" ".\tests\calc_snr.obj"
     $(CPP) $(CFLAGS) /Fo".\tests\multi_channel_test.obj" /c ".\tests\multi_channel_test.c"

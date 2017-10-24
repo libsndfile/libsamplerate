@@ -37,3 +37,9 @@
 		src_float_to_int_array ;
 		src_get_channels ;
 } @PACKAGE@.so.0.0;
+
+@PACKAGE@.so.0.2
+{
+	global:
+		src_clone ;
+} @PACKAGE@.so.0.1;
