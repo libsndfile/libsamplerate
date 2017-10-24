@@ -106,6 +106,7 @@ TEST_PROGS = \
      tests/simple_test.exe \
 	 tests/callback_test.exe \
      tests/reset_test.exe \
+     tests/clone_test.exe \
      tests/multi_channel_test.exe \
 	 tests/float_short_test.exe \
      tests/snr_bw_test.exe
@@ -117,6 +118,7 @@ check : $(TEST_PROGS)
 	tests/simple_test.exe
 	tests/callback_test.exe
 	tests/reset_test.exe
+	tests/clone_test.exe
 	tests/multi_channel_test.exe
 	tests/float_short_test.exe
 	tests/snr_bw_test.exe
@@ -140,6 +142,9 @@ tests/callback_test.exe : tests/callback_test.c tests/util.c libsamplerate.lib
 	$(CC) $(CFLAGS) $+ -o $@
 
 tests/reset_test.exe : tests/reset_test.c tests/util.c libsamplerate.lib
+	$(CC) $(CFLAGS) $+ -o $@
+
+tests/clone_test.exe : tests/clone_test.c tests/util.c libsamplerate.lib
 	$(CC) $(CFLAGS) $+ -o $@
 
 tests/float_short_test.exe : tests/float_short_test.c tests/util.c libsamplerate.lib

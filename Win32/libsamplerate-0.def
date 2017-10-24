@@ -11,6 +11,7 @@ src_get_version			@12
 src_process				@20
 src_reset				@21
 src_set_ratio			@22
+src_clone				@23
 
 src_error				@30
 src_strerror			@31

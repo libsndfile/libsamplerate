@@ -164,6 +164,24 @@ This should be called whenever a sample rate converter is to be used on two
 separate, unrelated pieces of audio.
 </P>
 
+<A NAME="Clone"></A>
+<H3><BR>Clone</H3>
+<PRE>
+      SRC_STATE* src_clone (SRC_STATE *state, int *error) ;
+</PRE>
+<P>
+The <B>src_clone</B> function creates a copy of the internal state of the sample
+rate converter object. The output of the next call to <B>src_process</B> will be
+identical for both the original and cloned state (given the same <B>SRC_DATA</B>
+input). This could be used to later resume sample rate conversion at a specific
+location in a stream with the same state, which may be useful in real-time
+applications.
+</P>
+<P>
+If an error occurs the function returns a NULL pointer and fills in the
+error value pointed to by the <B>error</B> pointer supplied by the caller.
+</P>
+
 <A NAME="SetRatio"></A>
 <H3><BR>Set Ratio</H3>
 <PRE>
