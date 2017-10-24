@@ -81,10 +81,12 @@ endif
 check_PROGRAMS += tests/misc_test tests/termination_test tests/simple_test tests/callback_test \
 	tests/reset_test tests/multi_channel_test tests/snr_bw_test tests/float_short_test \
 	tests/varispeed_test tests/callback_hang_test tests/src-evaluate tests/throughput_test \
-	tests/multichan_throughput_test tests/downsample_test
+	tests/multichan_throughput_test tests/downsample_test tests/clone_test
 TESTS = tests/misc_test tests/termination_test tests/callback_hang_test tests/downsample_test \
-	tests/simple_test tests/callback_test tests/reset_test tests/multi_channel_test \
-	tests/varispeed_test tests/float_short_test tests/snr_bw_test tests/throughput_test
+	tests/simple_test tests/callback_test tests/reset_test tests/clone_test \
+	tests/multi_channel_test tests/varispeed_test tests/float_short_test tests/snr_bw_test \
+	tests/throughput_test
+
 
 #===============================================================================
 
@@ -123,6 +125,9 @@ tests_downsample_test_LDADD = src/libsamplerate.la
 tests_varispeed_test_SOURCES = tests/varispeed_test.c tests/util.c tests/util.h tests/calc_snr.c
 tests_varispeed_test_CFLAGS = $(FFTW3_CFLAGS)
 tests_varispeed_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
+
+tests_clone_test_SOURCES = tests/clone_test.c tests/util.c tests/util.h
+tests_clone_test_LDADD = src/libsamplerate.la
 
 # This program is for evaluating other sample rate converters.
 
