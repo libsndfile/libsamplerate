@@ -66,18 +66,23 @@ main (void)
 static void
 simple_test (int converter)
 {
-	int ilen = 199030, olen = 1000, error ;
+	int error ;
+#define ilen 199030
+#define olen 1000
 
 	{
 		float in [ilen] ;
 		float out [olen] ;
-		double ratio = (1.0 * olen) / ilen ;
-		SRC_DATA src_data =
-		{	in, out,
-			ilen, olen,
-			0, 0, 0,
-			ratio
-		} ;
+		SRC_DATA src_data;
+
+		src_data.data_in = in ;
+		src_data.data_out = out ;
+		src_data.input_frames = ilen ;
+		src_data.output_frames = olen ;
+		src_data.input_frames_used = 0;
+		src_data.output_frames_gen = 0;
+		src_data.end_of_input = 0;
+		src_data.src_ratio = (1.0 * olen) / ilen ;
 
 		error = src_simple (&src_data, converter, 1) ;
 		if (error)
@@ -85,6 +90,9 @@ simple_test (int converter)
 			exit (1) ;
 			} ;
 	} ;
+
+#undef ilen
+#undef olen
 
     return ;
 } /* simple_test */

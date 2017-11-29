@@ -98,10 +98,12 @@ linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (priv->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
 			src_ratio = psrc->last_ratio + priv->out_gen * (data->src_ratio - psrc->last_ratio) / priv->out_count ;
 
-		if (SRC_DEBUG && priv->in_used < priv->channels && input_index < 1.0)
+#if SRC_DEBUG
+		if (priv->in_used < priv->channels && input_index < 1.0)
 		{	printf ("Whoops!!!!   in_used : %ld     channels : %d     input_index : %f\n", priv->in_used, priv->channels, input_index) ;
 			exit (1) ;
 			} ;
+#endif
 
 		for (ch = 0 ; ch < priv->channels ; ch++)
 		{	data->data_out [priv->out_gen] = (float) (data->data_in [priv->in_used - priv->channels + ch] + input_index *
@@ -212,12 +214,16 @@ linear_reset (SRC_PRIVATE *psrc)
 static int
 linear_copy (SRC_PRIVATE *from, SRC_PRIVATE *to)
 {
+	LINEAR_DATA *to_priv ;
+	LINEAR_DATA* from_priv ;
+	size_t private_size ;
+
 	if (from->private_data == NULL)
 		return SRC_ERR_NO_PRIVATE ;
 
-	LINEAR_DATA *to_priv = NULL ;
-	LINEAR_DATA* from_priv = (LINEAR_DATA*) from->private_data ;
-	size_t private_size = sizeof (*to_priv) + from_priv->channels * sizeof (float) ;
+	to_priv = NULL ;
+	from_priv = (LINEAR_DATA*) from->private_data ;
+	private_size = sizeof (*to_priv) + from_priv->channels * sizeof (float) ;
 
 	if ((to_priv = calloc (1, private_size)) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;

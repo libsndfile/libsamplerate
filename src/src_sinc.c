@@ -258,12 +258,16 @@ sinc_reset (SRC_PRIVATE *psrc)
 static int
 sinc_copy (SRC_PRIVATE *from, SRC_PRIVATE *to)
 {
+	SINC_FILTER *to_filter ;
+	SINC_FILTER* from_filter ;
+	size_t private_length ;
+
 	if (from->private_data == NULL)
 		return SRC_ERR_NO_PRIVATE ;
 
-	SINC_FILTER *to_filter = NULL ;
-	SINC_FILTER* from_filter = (SINC_FILTER*) from->private_data ;
-	size_t private_length = sizeof (SINC_FILTER) + sizeof (from_filter->buffer [0]) * (from_filter->b_len + from_filter->channels) ;
+	to_filter = NULL ;
+	from_filter = (SINC_FILTER*) from->private_data ;
+	private_length = sizeof (SINC_FILTER) + sizeof (from_filter->buffer [0]) * (from_filter->b_len + from_filter->channels) ;
 
 	if ((to_filter = calloc (1, private_length)) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
