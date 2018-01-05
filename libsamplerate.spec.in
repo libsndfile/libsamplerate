@@ -9,7 +9,7 @@ Name: %{name}
 Version: %{version}
 Release: %{release}
 Prefix: %{prefix}
-Copyright: LGPL
+Copyright: BSD
 Group: Libraries/Sound
 Source: http://www.mega-nerd.com/SRC/libsamplerate-%{version}.tar.gz
 URL: http://www.mega-nerd.com/SRC/
