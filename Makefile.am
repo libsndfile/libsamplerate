@@ -5,7 +5,7 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 AM_CPPFLAGS = -I$(top_srcdir)/src $(OS_SPECIFIC_INCLUDES)
 
 EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat Win32
- 
+
 pkgconfig_DATA = samplerate.pc
 
 # Some people prefer "make test" to "make check".
@@ -57,7 +57,7 @@ dist_html_DATA = doc/SRC.png doc/SRC.css doc/index.html doc/license.html doc/his
 # examples/ #
 #############
 
-check_PROGRAMS = examples/varispeed-play examples/timewarp-file
+noinst_PROGRAMS = examples/varispeed-play examples/timewarp-file
 
 examples_varispeed_play_SOURCES = examples/varispeed-play.c examples/audio_out.c examples/audio_out.h
 examples_varispeed_play_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
@@ -78,15 +78,29 @@ endif
 # tests/ #
 ##########
 
-check_PROGRAMS += tests/misc_test tests/termination_test tests/simple_test tests/callback_test \
+check_PROGRAMS = tests/misc_test tests/termination_test tests/simple_test tests/callback_test \
 	tests/reset_test tests/multi_channel_test tests/snr_bw_test tests/float_short_test \
 	tests/varispeed_test tests/callback_hang_test tests/src-evaluate tests/throughput_test \
 	tests/multichan_throughput_test tests/downsample_test tests/clone_test
-TESTS = tests/misc_test tests/termination_test tests/callback_hang_test tests/downsample_test \
-	tests/simple_test tests/callback_test tests/reset_test tests/clone_test \
-	tests/multi_channel_test tests/varispeed_test tests/float_short_test tests/snr_bw_test \
-	tests/throughput_test
 
+check: $(check_PROGRAMS)
+	date
+	uname -a
+	tests/misc_test
+	tests/termination_test
+	tests/callback_hang_test
+	tests/downsample_test
+	tests/simple_test
+	tests/callback_test
+	tests/reset_test
+	tests/multi_channel_test
+	tests/varispeed_test
+	tests/float_short_test
+	tests/snr_bw_test
+	tests/throughput_test
+	@echo "-----------------------------------------------------------------"
+	@echo "  ${PACKAGE}-${VERSION} passed all tests."
+	@echo "-----------------------------------------------------------------"
 
 #===============================================================================
 
