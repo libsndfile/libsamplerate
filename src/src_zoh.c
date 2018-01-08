@@ -203,12 +203,16 @@ zoh_reset (SRC_PRIVATE *psrc)
 static int
 zoh_copy (SRC_PRIVATE *from, SRC_PRIVATE *to)
 {
+	ZOH_DATA *to_priv ;
+	ZOH_DATA* from_priv ;
+	size_t private_size ;
+
 	if (from->private_data == NULL)
 		return SRC_ERR_NO_PRIVATE ;
 
-	ZOH_DATA *to_priv = NULL ;
-	ZOH_DATA* from_priv = (ZOH_DATA*) from->private_data ;
-	size_t private_size = sizeof (*to_priv) + from_priv->channels * sizeof (float) ;
+	to_priv = NULL ;
+	from_priv = (ZOH_DATA*) from->private_data ;
+	private_size = sizeof (*to_priv) + from_priv->channels * sizeof (float) ;
 
 	if ((to_priv = calloc (1, private_size)) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
