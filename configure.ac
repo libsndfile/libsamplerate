@@ -204,7 +204,7 @@ dnl ============================================================================
 dnl  Check for libfftw3 which is required for the test and example programs.
 
 AS_IF([test "x$enable_fftw" != "xno"], [
-		PKG_CHECK_MODULES([FFTW3], [fftw3 >= 0.15.0], [
+		PKG_CHECK_MODULES([FFTW3], [fftw3 >= 3.0.0], [
 				AC_DEFINE([HAVE_FFTW3], [1], [Set to 1 if you have fftw3])
 				enable_fftw="yes"
 			], [
