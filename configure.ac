@@ -76,7 +76,7 @@ dnl      to 0.
 CLEAN_VERSION=`echo $PACKAGE_VERSION | $SED "s/p.*//"`
 VERSION_MINOR=`echo $CLEAN_VERSION | $SED "s/.*\.//"`
 
-SHARED_VERSION_INFO="1:$VERSION_MINOR:0"
+SHARED_VERSION_INFO="1:$VERSION_MINOR:1"
 
 dnl ====================================================================================
 
