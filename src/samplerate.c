@@ -141,7 +141,7 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 		return SRC_ERR_BAD_DATA ;
 
 	/* And that data_in and data_out are valid. */
-	if (data->data_in == NULL || data->data_out == NULL)
+	if ((data->data_in == NULL && data->input_frames > 0) || data->data_out == NULL)
 		return SRC_ERR_BAD_DATA_PTR ;
 
 	/* Check src_ratio is in range. */
