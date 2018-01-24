@@ -6,10 +6,13 @@
 ** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
 */
 
+#include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 
 #include <samplerate.h>
+
+#include "util.h"
 
 #define	BUFFER_LEN		(1<<15)
 

@@ -176,12 +176,10 @@ get_cpu_name (void)
 	search = "hw.model" ;
 	is_pipe = 1 ;
 #else
-	file = NULL ;
+	return name;
 #endif
 
-	if (file == NULL)
-		return name ;
-
+#if defined (__linux__) || defined (__APPLE__) || defined (__FreeBSD__)
 	if (search == NULL)
 	{	printf ("Error : search is NULL in function %s.\n", __func__) ;
 		return name ;
@@ -216,5 +214,6 @@ get_cpu_name (void)
 		fclose (file) ;
 
 	return name ;
+#endif
 } /* get_cpu_name */
 
