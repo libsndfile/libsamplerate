@@ -9,7 +9,15 @@ before_install:
   - sudo apt-get update
   - sudo apt-get install -y autoconf automake-1.15 pkg-config m4 libsndfile-dev libfftw3-dev libasound2-dev
 
+env:
+  - AUTOGEN=true CMAKE_SHARED=OFF
+  - AUTOGEN=false CMAKE_SHARED=ON
+
 script:
-  - ./autogen.sh
-  - ./configure
-  - make distcheck
+  - if $AUTOGEN; then ./autogen.sh && ./configure && make distcheck; fi
+  - mkdir build
+  - cd build
+  - cmake -DBUILD_SHARED_LIBS=$CMAKE_SHARED ..
+  - cat config.h
+  - make
+  - make test

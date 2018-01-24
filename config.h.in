@@ -1,0 +1,64 @@
+/*
+** Copyright (c) 2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+** All rights reserved.
+**
+** This code is released under 2-clause BSD license. Please see the
+** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
+*/
+
+/* Name of package */
+#define PACKAGE "${PROJECT_NAME}"
+
+/* Version number of package */
+#define VERSION "${PROJECT_VERSION}"
+
+/* Target processor clips on negative float to int conversion. */
+#cmakedefine01 CPU_CLIPS_NEGATIVE
+
+/* Target processor clips on positive float to int conversion. */
+#cmakedefine01 CPU_CLIPS_POSITIVE
+
+/* Target processor is big endian. */
+#cmakedefine01 CPU_IS_BIG_ENDIAN
+
+/* Target processor is little endian. */
+#cmakedefine01 CPU_IS_LITTLE_ENDIAN
+
+/* Define to 1 if you have the `alarm' function. */
+#cmakedefine01 HAVE_ALARM
+
+/* Define to 1 if you have the <alsa/asoundlib.h> header file. */
+#cmakedefine01 HAVE_ALSA
+
+/* Set to 1 if you have libfftw3. */
+#cmakedefine01 HAVE_FFTW3
+
+/* Define if you have C99's lrint function. */
+#cmakedefine01 HAVE_LRINT
+
+/* Define if you have C99's lrintf function. */
+#cmakedefine01 HAVE_LRINTF
+
+/* Define if you have signal SIGALRM. */
+#cmakedefine01 HAVE_SIGALRM
+
+/* Define to 1 if you have the `signal' function. */
+#cmakedefine01 HAVE_SIGNAL
+
+/* Set to 1 if you have libsndfile. */
+#cmakedefine01 HAVE_SNDFILE
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#cmakedefine01 HAVE_STDINT_H
+
+/* Define to 1 if you have the <sys/times.h> header file. */
+#cmakedefine01 HAVE_SYS_TIMES_H
+
+/* Set to 1 if compiling for Win32 */
+#cmakedefine01 OS_IS_WIN32
+
+/* The size of `int', as computed by sizeof. */
+#define SIZEOF_INT ${SIZEOF_INT}
+
+/* The size of `long', as computed by sizeof. */
+#define SIZEOF_LONG ${SIZEOF_LONG}

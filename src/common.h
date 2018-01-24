@@ -48,7 +48,6 @@ typedef	long	int32_t ;
 #	define WARN_UNUSED
 #endif
 
-
 #include "samplerate.h"
 
 enum

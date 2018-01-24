@@ -66,7 +66,10 @@ main (void)
 static void
 simple_test (int converter)
 {
-	int ilen = 199030, olen = 1000, error ;
+	// MSVC doesn't support variable-length arrays
+	#define ilen 199030
+	#define olen 1000
+	int error ;
 
 	{
 		float in [ilen] ;

@@ -1,4 +1,4 @@
-*.cm*
+# *.cm* # This line is broken it matches all files.
 *.dat
 *.gz
 *.la
@@ -29,6 +29,7 @@ autom4te.cache
 libsamplerate-*.tar.bz2
 compile
 config.*
+!/config.h.in
 configure
 depcomp
 doc/ChangeLog
@@ -53,3 +54,4 @@ tests/benchmark
 tests/src-evaluate
 *.log
 *.trs
+build/
