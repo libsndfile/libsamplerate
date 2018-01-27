@@ -67,13 +67,6 @@ examples_timewarp_file_SOURCES = examples/timewarp-file.c
 examples_timewarp_file_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
 examples_timewarp_file_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS)
 
-if HAVE_LIBSNDFILE
-bin_PROGRAMS = examples/sndfile-resample
-examples_sndfile_resample_SOURCES = examples/sndfile-resample.c
-examples_sndfile_resample_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
-examples_sndfile_resample_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS)
-endif
-
 ##########
 # tests/ #
 ##########
