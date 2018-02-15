@@ -1,7 +1,7 @@
 This is libsamplerate, 0.1.9
 
 libsamplerate (also known as Secret Rabbit Code) is a library for
-perfroming sample rate conversion of audio data.
+performing sample rate conversion of audio data.
 
 The src/ directory contains the source code for library itself.
 
