@@ -104,7 +104,6 @@ foreach(testSrc ${TEST_SRCS})
 endforeach(testSrc)
 
 set(EXAMPLE_SRCS
-	${PROJECT_SOURCE_DIR}/examples/sndfile-resample.c
 	${PROJECT_SOURCE_DIR}/examples/timewarp-file.c
 	${PROJECT_SOURCE_DIR}/examples/varispeed-play.c)
 
