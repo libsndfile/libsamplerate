@@ -14,7 +14,7 @@ env:
   - AUTOGEN=false CMAKE_SHARED=ON
 
 script:
-  - if $AUTOGEN; then ./autogen.sh && ./configure && make distcheck; fi
+  - if $AUTOGEN; then ./autogen.sh && ./configure --enable-sndfile --enable-alsa && make distcheck; fi
   - mkdir build
   - cd build
   - cmake -DBUILD_SHARED_LIBS=$CMAKE_SHARED ..
