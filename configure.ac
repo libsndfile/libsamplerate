@@ -199,6 +199,7 @@ AS_IF([test "x$enable_alsa" != "xno"], [
 					])
 			])
 	])
+AM_CONDITIONAL([HAVE_LIBALSA], [test "x$enable_alsa" = "xyes"])
 
 dnl ====================================================================================
 dnl  Check for libfftw3 which is required for the test and example programs.

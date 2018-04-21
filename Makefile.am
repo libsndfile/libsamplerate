@@ -57,6 +57,8 @@ dist_html_DATA = doc/SRC.png doc/SRC.css doc/index.html doc/license.html doc/his
 # examples/ #
 #############
 
+if HAVE_LIBSNDFILE
+if HAVE_LIBALSA
 noinst_PROGRAMS = examples/varispeed-play examples/timewarp-file
 
 examples_varispeed_play_SOURCES = examples/varispeed-play.c examples/audio_out.c examples/audio_out.h
@@ -66,6 +68,8 @@ examples_varispeed_play_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS
 examples_timewarp_file_SOURCES = examples/timewarp-file.c
 examples_timewarp_file_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
 examples_timewarp_file_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS)
+endif
+endif
 
 ##########
 # tests/ #
@@ -146,6 +150,10 @@ tests_multichan_throughput_test_SOURCES = tests/multichan_throughput_test.c test
 tests_multichan_throughput_test_CFLAGS = $(FFTW3_CFLAGS)
 tests_multichan_throughput_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
 
+if HAVE_LIBSNDFILE
+check_PROGRAMS += tests/src-evaluate
+
 tests_src_evaluate_SOURCES = tests/src-evaluate.c tests/calc_snr.c tests/util.c
 tests_src_evaluate_CFLAGS = $(SNDFILE_CFLAGS) $(FFTW3_CFLAGS)
 tests_src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
+endif
