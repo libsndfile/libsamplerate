@@ -17,6 +17,8 @@ typedef	int		int32_t ;
 typedef	long	int32_t ;
 #endif
 
+#include <math.h>
+
 #define	SRC_MAX_RATIO			256
 #define	SRC_MAX_RATIO_STR		"256"
 
