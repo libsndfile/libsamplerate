@@ -90,6 +90,8 @@ check: $(check_PROGRAMS)
 	tests/simple_test
 	tests/callback_test
 	tests/reset_test
+	tests/clone_test
+	tests/nullptr_test
 	tests/multi_channel_test
 	tests/varispeed_test
 	tests/float_short_test
@@ -140,8 +142,8 @@ tests_varispeed_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
 tests_clone_test_SOURCES = tests/clone_test.c tests/util.c tests/util.h
 tests_clone_test_LDADD = src/libsamplerate.la
 
-tests_nullptr_test_SOURCES = testes/nullptr_test.c tests/util.c tests/util.h
-tests_nullptr_test_LDADD = src/libsamplerate/la
+tests_nullptr_test_SOURCES = tests/nullptr_test.c tests/util.c tests/util.h
+tests_nullptr_test_LDADD = src/libsamplerate.la
 
 # This program is for evaluating other sample rate converters.
 

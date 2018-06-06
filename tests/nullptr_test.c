@@ -25,9 +25,9 @@ nullptr_test (int converter)
 	SRC_STATE* src_state ;
 	SRC_DATA src_data, src_data2 ;
 
-	int error, frame, ch, index ;
+	int error ;
 
-	printf ("        nullptr_test     (%-28s) ....... ", src_get_name (converter)) ;
+	printf ("        nullptr_test        (%-28s) ....... ", src_get_name (converter)) ;
 	fflush (stdout) ;
 
 	memset (input, 0, sizeof (input)) ;
@@ -86,12 +86,18 @@ nullptr_test (int converter)
 	src_state = src_delete (src_state) ;
 
 	puts ("ok") ;
-} /* clone_test */
+} /* nullptr_test */
 
 int
 main (void)
 {
+	puts("");
+
 	nullptr_test (SRC_ZERO_ORDER_HOLD) ;
+	nullptr_test (SRC_LINEAR) ;
+	nullptr_test (SRC_SINC_FASTEST) ;
+
+	puts("");
 
 	return 0 ;
 } /* main */
