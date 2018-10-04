@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.1)
 project(libsamplerate VERSION 0.1.9 LANGUAGES C)
 
+set(LIBSAMPLERATE_STANDALONE OFF)
+if (${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR})
+	set(LIBSAMPLERATE_STANDALONE ON)
+endif()
+option(LIBSAMPLERATE_TESTS ${LIBSSAMPLERATE_STANDALONE} "Enable to generate test targets and install directives")
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
 
 include(TestBigEndian)
@@ -84,7 +90,9 @@ endif()
 
 target_include_directories(samplerate PUBLIC
 	${PROJECT_SOURCE_DIR}/src
-	${CMAKE_CURRENT_BINARY_DIR})
+    ${CMAKE_CURRENT_BINARY_DIR})
+    
+if(LIBSAMPLERATE_TESTS)
 
 enable_testing()
 
@@ -141,3 +149,5 @@ install(TARGETS samplerate DESTINATION lib)
 install(FILES src/samplerate.h DESTINATION include)
 install(DIRECTORY doc/ DESTINATION share/doc/libsamplerate)
 install(FILES ${CMAKE_BINARY_DIR}/samplerate.pc DESTINATION lib/pkgconfig)
+
+endif()
