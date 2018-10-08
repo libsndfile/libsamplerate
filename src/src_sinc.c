@@ -1122,7 +1122,7 @@ sinc_multichan_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		if (filter->out_count > 0 && fabs (psrc->last_ratio - data->src_ratio) > 1e-10)
 			src_ratio = psrc->last_ratio + filter->out_gen * (data->src_ratio - psrc->last_ratio) / filter->out_count ;
 
-		float_increment = filter->index_inc * (src_ratio < 1.0 ? src_ratio : 1.0) ;
+		float_increment = filter->index_inc * (src_ratio < 1.0 && src_ratio > 0.0 ? src_ratio : 1.0) ;
 		increment = double_to_fp (float_increment) ;
 
 		start_filter_index = double_to_fp (input_index * float_increment) ;
@@ -1131,7 +1131,7 @@ sinc_multichan_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		filter->out_gen += psrc->channels ;
 
 		/* Figure out the next index. */
-		input_index += 1.0 / src_ratio ;
+		input_index += (src_ratio == 0.0) ? 0.0 : (1.0 / src_ratio) ;
 		rem = fmod_one (input_index) ;
 
 		filter->b_current = (filter->b_current + filter->channels * lrint (input_index - rem)) % filter->b_len ;
