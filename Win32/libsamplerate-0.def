@@ -27,3 +27,5 @@ src_short_to_float_array	@70
 src_float_to_short_array	@71
 src_int_to_float_array		@80
 src_float_to_int_array		@81
+
+src_get_channels		@90
