@@ -236,7 +236,9 @@ get_version_string (const RESAMPLE_PROG *prog)
 		cptr ++ ;
 
 	if (cptr != version_string)
-		strncpy (version_string, cptr, sizeof (version_string)) ;
+	{	strncpy (version_string, cptr, sizeof (version_string) - 1) ;
+		version_string [sizeof (version_string) - 1] = 0 ;
+		} ;
 
 	return ;
 } /* get_version_string */
