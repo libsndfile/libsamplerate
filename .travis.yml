@@ -1,7 +1,7 @@
 language: c
 
 sudo: required
-dist: trusty
+dist: xenial
 
 before_install:
   - sudo add-apt-repository ppa:ondrej/autotools -y # automake 1.15
