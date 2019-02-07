@@ -427,7 +427,6 @@ opensoundsys_close (AUDIO_OUT *audio_out)
 
 #if (defined (__MACH__) && defined (__APPLE__)) /* MacOSX */
 
-#include <Carbon.h>
 #include <CoreAudio/AudioHardware.h>
 
 #define	MACOSX_MAGIC	MAKE_MAGIC ('M', 'a', 'c', ' ', 'O', 'S', ' ', 'X')
@@ -447,6 +446,9 @@ typedef struct
 	get_audio_callback_t	callback ;
 
 	void 	*callback_data ;
+
+	AudioDeviceIOProcID ioprocid;
+
 } MACOSX_AUDIO_OUT ;
 
 static AUDIO_OUT *macosx_open (int channels, int samplerate) ;
@@ -463,7 +465,8 @@ static AUDIO_OUT *
 macosx_open (int channels, int samplerate)
 {	MACOSX_AUDIO_OUT *macosx_out ;
 	OSStatus	err ;
-	size_t 		count ;
+	UInt32 		count ;
+	AudioObjectPropertyAddress  propertyAddress ;
 
 	if ((macosx_out = calloc (1, sizeof (MACOSX_AUDIO_OUT))) == NULL)
 	{	perror ("macosx_open : malloc ") ;
@@ -477,38 +480,45 @@ macosx_open (int channels, int samplerate)
 	macosx_out->device = kAudioDeviceUnknown ;
 
 	/*  get the default output device for the HAL */
+	propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
+	propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
+	propertyAddress.mElement = kAudioObjectPropertyElementMaster;
+
 	count = sizeof (AudioDeviceID) ;
-	if ((err = AudioHardwareGetProperty (kAudioHardwarePropertyDefaultOutputDevice,
-				&count, (void *) &(macosx_out->device))) != noErr)
-	{	printf ("AudioHardwareGetProperty failed.\n") ;
+	if ((err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL,
+			&count,  &(macosx_out->device))) != noErr)
+	{	printf ("AudioObjectGetPropertyData (kAudioHardwarePropertyDefaultOutputDevice) failed.\n") ;
 		free (macosx_out) ;
 		return NULL ;
 		} ;
 
 	/*  get the buffersize that the default device uses for IO */
 	count = sizeof (UInt32) ;
-	if ((err = AudioDeviceGetProperty (macosx_out->device, 0, false, kAudioDevicePropertyBufferSize,
+	propertyAddress.mSelector = kAudioDevicePropertyBufferSize ;
+	if ((err = AudioObjectGetPropertyData (macosx_out->device, &propertyAddress, 0, NULL,
 				&count, &(macosx_out->buffer_size))) != noErr)
-	{	printf ("AudioDeviceGetProperty (AudioDeviceGetProperty) failed.\n") ;
+	{	printf ("AudioObjectGetPropertyData (kAudioDevicePropertyBufferSize) (AudioDeviceGetProperty) failed.\n") ;
 		free (macosx_out) ;
 		return NULL ;
 		} ;
 
 	/*  get a description of the data format used by the default device */
 	count = sizeof (AudioStreamBasicDescription) ;
-	if ((err = AudioDeviceGetProperty (macosx_out->device, 0, false, kAudioDevicePropertyStreamFormat,
+	propertyAddress.mSelector = kAudioDevicePropertyStreamFormat ;
+	if ((err = AudioObjectGetPropertyData (macosx_out->device, &propertyAddress, 0, NULL,
 				&count, &(macosx_out->format))) != noErr)
-	{	printf ("AudioDeviceGetProperty (kAudioDevicePropertyStreamFormat) failed.\n") ;
+	{	printf ("AudioObjectGetPropertyData (kAudioDevicePropertyStreamFormat) failed.\n") ;
 		free (macosx_out) ;
 		return NULL ;
 		} ;
 
 	macosx_out->format.mSampleRate = samplerate ;
 	macosx_out->format.mChannelsPerFrame = channels ;
-
-	if ((err = AudioDeviceSetProperty (macosx_out->device, NULL, 0, false, kAudioDevicePropertyStreamFormat,
-				sizeof (AudioStreamBasicDescription), &(macosx_out->format))) != noErr)
-	{	printf ("AudioDeviceSetProperty (kAudioDevicePropertyStreamFormat) failed.\n") ;
+	propertyAddress.mSelector = kAudioDevicePropertyStreamFormat ;
+	count = sizeof (AudioStreamBasicDescription) ;
+	if ((err = AudioObjectGetPropertyData (macosx_out->device, &propertyAddress, 0, NULL,
+				&count, &(macosx_out->format))) != noErr)
+	{	printf ("AudioObjectGetPropertyData (kAudioDevicePropertyStreamFormat) failed.\n") ;
 		free (macosx_out) ;
 		return NULL ;
 		} ;
@@ -522,8 +532,8 @@ macosx_open (int channels, int samplerate)
 	macosx_out->done_playing = 0 ;
 
 	/* Fire off the device. */
-	if ((err = AudioDeviceAddIOProc (macosx_out->device, macosx_audio_out_callback,
-			(void *) macosx_out)) != noErr)
+	if ((err = AudioDeviceCreateIOProcID (macosx_out->device, macosx_audio_out_callback,
+			(void *) macosx_out, &macosx_out->ioprocid)) != noErr)
 	{	printf ("AudioDeviceAddIOProc failed.\n") ;
 		free (macosx_out) ;
 		return NULL ;
@@ -582,7 +592,8 @@ macosx_close (AUDIO_OUT *audio_out)
 		return ;
 		} ;
 
-	err = AudioDeviceRemoveIOProc (macosx_out->device, macosx_audio_out_callback) ;
+	err = AudioDeviceDestroyIOProcID(macosx_out->device,
+									 macosx_out->ioprocid);
 	if (err != noErr)
 	{	printf ("AudioDeviceRemoveIOProc failed.\n") ;
 		return ;
