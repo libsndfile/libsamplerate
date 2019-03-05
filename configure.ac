@@ -238,7 +238,7 @@ AS_IF([test "x$enable_werror" = "xyes"], [
 		AX_APPEND_COMPILE_FLAGS([-Werror], [CFLAGS])
 	])
 
-AX_APPEND_COMPILE_FLAGS([-W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith], [CFLAGS])
+AX_APPEND_COMPILE_FLAGS([-W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith -Wshorten-64-to-32], [CFLAGS])
 
 dnl ====================================================================================
 dnl  GCC stuff.
