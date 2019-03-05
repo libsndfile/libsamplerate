@@ -70,7 +70,7 @@ static int sinc_copy (SRC_PRIVATE *from, SRC_PRIVATE *to) ;
 
 static inline increment_t
 double_to_fp (double x)
-{	return (lrint ((x) * FP_ONE)) ;
+{	return (increment_t) (lrint ((x) * FP_ONE)) ;
 } /* double_to_fp */
 
 static inline increment_t
@@ -212,7 +212,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	** a better way. Need to look at prepare_data () at the same time.
 	*/
 
-	temp_filter.b_len = lrint (2.5 * temp_filter.coeff_half_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO) ;
+	temp_filter.b_len = (int) lrint (2.5 * temp_filter.coeff_half_len / (temp_filter.index_inc * 1.0) * SRC_MAX_RATIO) ;
 	temp_filter.b_len = MAX (temp_filter.b_len, 4096) ;
 	temp_filter.b_len *= temp_filter.channels ;
 
@@ -361,7 +361,7 @@ sinc_mono_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		count /= MIN (psrc->last_ratio, data->src_ratio) ;
 
 	/* Maximum coefficientson either side of center point. */
-	half_filter_chan_len = filter->channels * (lrint (count) + 1) ;
+	half_filter_chan_len = filter->channels * (int) (lrint (count) + 1) ;
 
 	input_index = psrc->last_position ;
 
@@ -509,7 +509,7 @@ sinc_stereo_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		count /= MIN (psrc->last_ratio, data->src_ratio) ;
 
 	/* Maximum coefficientson either side of center point. */
-	half_filter_chan_len = filter->channels * (lrint (count) + 1) ;
+	half_filter_chan_len = filter->channels * (int) (lrint (count) + 1) ;
 
 	input_index = psrc->last_position ;
 
@@ -662,7 +662,7 @@ sinc_quad_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		count /= MIN (psrc->last_ratio, data->src_ratio) ;
 
 	/* Maximum coefficientson either side of center point. */
-	half_filter_chan_len = filter->channels * (lrint (count) + 1) ;
+	half_filter_chan_len = filter->channels * (int) (lrint (count) + 1) ;
 
 	input_index = psrc->last_position ;
 
@@ -821,7 +821,7 @@ sinc_hex_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		count /= MIN (psrc->last_ratio, data->src_ratio) ;
 
 	/* Maximum coefficientson either side of center point. */
-	half_filter_chan_len = filter->channels * (lrint (count) + 1) ;
+	half_filter_chan_len = filter->channels * (int) (lrint (count) + 1) ;
 
 	input_index = psrc->last_position ;
 
@@ -1088,7 +1088,7 @@ sinc_multichan_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 		count /= MIN (psrc->last_ratio, data->src_ratio) ;
 
 	/* Maximum coefficientson either side of center point. */
-	half_filter_chan_len = filter->channels * (lrint (count) + 1) ;
+	half_filter_chan_len = filter->channels * (int) (lrint (count) + 1) ;
 
 	input_index = psrc->last_position ;
 
@@ -1184,7 +1184,7 @@ prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len)
 		len = MAX (filter->b_len - filter->b_current - half_filter_chan_len, 0) ;
 		} ;
 
-	len = MIN (filter->in_count - filter->in_used, len) ;
+	len = MIN ((int) (filter->in_count - filter->in_used), len) ;
 	len -= (len % filter->channels) ;
 
 	if (len < 0 || filter->b_end + len > filter->b_len)

@@ -543,7 +543,7 @@ src_float_to_int_array (const float *in, int *out, int len)
 			continue ;
 			} ;
 
-		out [len] = lrint (scaled_value) ;
+		out [len] = (int) lrint (scaled_value) ;
 		} ;
 
 } /* src_float_to_int_array */
