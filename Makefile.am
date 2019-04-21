@@ -4,7 +4,9 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 
 AM_CPPFLAGS = -I$(top_srcdir)/src $(OS_SPECIFIC_INCLUDES)
 
-EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat Win32
+EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat Win32 \
+    Octave/generate_filter.m Octave/make_filter.m Octave/measure_filter.m \
+    Octave/Readme.md
 
 pkgconfig_DATA = samplerate.pc
 
