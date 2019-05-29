@@ -26,7 +26,7 @@ matrix:
 build_script:
   - ps: |
       $env:Path = "C:\msys64\mingw64\bin;C:\msys64\usr\bin;" + $env:Path
-      bash -lc "pacman -S --needed --noconfirm mingw-w64-x86_64-fftw mingw-w64-x86_64-libsndfile"
+      bash -lc "pacman -S --needed --noconfirm mingw-w64-x86_64-fftw"
       mkdir build
       cd build
       if ($env:artifact -eq 'OFF')

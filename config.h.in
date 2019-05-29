@@ -27,9 +27,6 @@
 /* Define to 1 if you have the `alarm' function. */
 #cmakedefine01 HAVE_ALARM
 
-/* Define to 1 if you have the <alsa/asoundlib.h> header file. */
-#cmakedefine01 HAVE_ALSA
-
 /* Set to 1 if you have libfftw3. */
 #cmakedefine01 HAVE_FFTW3
 
@@ -44,9 +41,6 @@
 
 /* Define to 1 if you have the `signal' function. */
 #cmakedefine01 HAVE_SIGNAL
-
-/* Set to 1 if you have libsndfile. */
-#cmakedefine01 HAVE_SNDFILE
 
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine01 HAVE_STDINT_H

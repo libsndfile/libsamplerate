@@ -55,31 +55,13 @@ dist_html_DATA = doc/SRC.png doc/SRC.css doc/index.html doc/license.html doc/his
 	doc/download.html doc/lists.html doc/quality.html doc/win32.html doc/faq.html doc/api.html \
 	doc/api_simple.html doc/api_callback.html doc/api_full.html doc/api_misc.html
 
-#############
-# examples/ #
-#############
-
-if HAVE_LIBSNDFILE
-if HAVE_LIBALSA
-noinst_PROGRAMS = examples/varispeed-play examples/timewarp-file
-
-examples_varispeed_play_SOURCES = examples/varispeed-play.c examples/audio_out.c examples/audio_out.h
-examples_varispeed_play_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
-examples_varispeed_play_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS) $(OS_SPECIFIC_LINKS)
-
-examples_timewarp_file_SOURCES = examples/timewarp-file.c
-examples_timewarp_file_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
-examples_timewarp_file_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS)
-endif
-endif
-
 ##########
 # tests/ #
 ##########
 
 check_PROGRAMS = tests/misc_test tests/termination_test tests/simple_test tests/callback_test \
 	tests/reset_test tests/multi_channel_test tests/snr_bw_test tests/float_short_test \
-	tests/varispeed_test tests/callback_hang_test tests/src-evaluate tests/throughput_test \
+	tests/varispeed_test tests/callback_hang_test tests/throughput_test \
 	tests/multichan_throughput_test tests/downsample_test tests/clone_test tests/nullptr_test
 
 check: $(check_PROGRAMS)
@@ -156,11 +138,3 @@ tests_throughput_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
 tests_multichan_throughput_test_SOURCES = tests/multichan_throughput_test.c tests/util.c tests/calc_snr.c
 tests_multichan_throughput_test_CFLAGS = $(FFTW3_CFLAGS)
 tests_multichan_throughput_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
-
-if HAVE_LIBSNDFILE
-check_PROGRAMS += tests/src-evaluate
-
-tests_src_evaluate_SOURCES = tests/src-evaluate.c tests/calc_snr.c tests/util.c
-tests_src_evaluate_CFLAGS = $(SNDFILE_CFLAGS) $(FFTW3_CFLAGS)
-tests_src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
-endif

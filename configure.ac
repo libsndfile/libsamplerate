@@ -104,12 +104,6 @@ AC_ARG_ENABLE([werror],
 AC_ARG_ENABLE([cpu-clip],
 	[AS_HELP_STRING([--disable-cpu-clip], [disable tricky cpu specific clipper])])
 
-AC_ARG_ENABLE([sndfile],
-	[AS_HELP_STRING([--disable-sndfile], [disable support for sndfile (default=autodetect)])], [], [enable_sndfile=auto])
-
-AC_ARG_ENABLE([alsa],
-	[AS_HELP_STRING([--disable-alsa], [disable ALSA support in the varispeed-play example program (default=autodetect)])], [], [enable_alsa=auto])
-
 AC_ARG_ENABLE([fftw],
 	[AS_HELP_STRING([--disable-fftw], [disable usage of FFTW (default=autodetect)])], [], [enable_fftw=auto])
 
@@ -164,45 +158,7 @@ AC_DEFINE_UNQUOTED([CPU_CLIPS_POSITIVE], [${ac_cv_c_clip_positive}], [Host proce
 AC_DEFINE_UNQUOTED([CPU_CLIPS_NEGATIVE], [${ac_cv_c_clip_negative}], [Host processor clips on negative float to int conversion.])
 
 dnl ====================================================================================
-dnl  Check for libsndfile which is required for the test and example programs.
-
-AS_IF([test "x$enable_sndfile" != "xno"], [
-		PKG_CHECK_MODULES([SNDFILE], [sndfile >= 1.0.6], [
-				AC_DEFINE([HAVE_SNDFILE], [1], [Set to 1 if you have libsndfile])
-				enable_sndfile="yes"
-			], [
-				AS_IF([test "x$enable_sndfile" = "xyes"], [
-						dnl explicitly passed --enable-sndfile, hence error out loud and clearly
-						AC_MSG_ERROR([You explicitly requested libsndfile support, but libsndfile could not be found!])
-					], [
-						dnl did not explicitly pass --enable-sndfile, relying on default automagic on
-						enable_sndfile="no (auto)"
-					])
-			])
-	])
-AM_CONDITIONAL([HAVE_LIBSNDFILE], [test "x$enable_sndfile" = "xyes"])
-
-dnl ====================================================================================
-dnl  Check for ALSA.
-
-AS_IF([test "x$enable_alsa" != "xno"], [
-		PKG_CHECK_MODULES([ALSA], [alsa], [
-				AC_DEFINE([HAVE_ALSA], [1], [Set to 1 if you have alsa])
-				enable_alsa="yes"
-			], [
-				AS_IF([test "x$enable_alsa" = "xyes"], [
-						dnl explicitly passed --enable-alsa, hence error out loud and clearly
-						AC_MSG_ERROR([You explicitly requested alsa support, but alsa could not be found!])
-					], [
-						dnl did not explicitly pass --enable-alsa, relying on default automagic on
-						enable_alsa="no (auto)"
-					])
-			])
-	])
-AM_CONDITIONAL([HAVE_LIBALSA], [test "x$enable_alsa" = "xyes"])
-
-dnl ====================================================================================
-dnl  Check for libfftw3 which is required for the test and example programs.
+dnl  Check for libfftw3 which is required for the tests
 
 AS_IF([test "x$enable_fftw" != "xno"], [
 		PKG_CHECK_MODULES([FFTW3], [fftw3 >= 3.0.0], [
@@ -263,9 +219,6 @@ OS_SPECIFIC_INCLUDES=""
 os_is_win32=0
 
 AS_CASE([${host_os}],
-	[darwin* | rhapsody*], [
-		OS_SPECIFIC_INCLUDES="-fpascal-strings -I/Developer/Headers/FlatCarbon"
-		OS_SPECIFIC_LINKS="-framework CoreAudio"],
 	[mingw32*], [
 		OS_SPECIFIC_LINKS="-lwinmm"
 		os_is_win32=1],
@@ -318,10 +271,8 @@ AC_MSG_RESULT([
 
     C Compiler Vendor is : ................ ${ax_cv_c_compiler_vendor} (${ax_cv_c_compiler_version})
 
-  Extra tools required for testing and examples :
+  Extra tools required for testing:
 
-    Have libsndfile : ..................... ${enable_sndfile}
-    Have ALSA : ........................... ${enable_alsa}
     Have FFTW : ........................... ${enable_fftw}
 
   Installation directories :

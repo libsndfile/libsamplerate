@@ -63,13 +63,6 @@ For Win32 there is a Microsoft Visual C++ compatible makefile in the <B>Win32\</
 directory and a MSDOS batch file in the top level directory of the distribution. 
 </P>
 <P>
-To build the examples programs you will need to download the precompiled
-win32 or win64
-	<A HREF="http://www.mega-nerd.com/libsndfile/#Download">libsndfile</A>
-binary and install them.
-
-</P>
-<P>
 Making the libsamplerate DLL on Win32 involves the following:
 </P>
 <OL>
@@ -83,12 +76,6 @@ Making the libsamplerate DLL on Win32 involves the following:
 		    path to point to the location of MSVC++ on your machine. This allows the
 			makefile to inform the compiler of the location of the standard header
 			files.
-    <LI> Copy <B>libsndfile-1.dll</B>, <B>libsndfile-1.lib</B> and
-			<B>libsndfile-1.def</B> from the directory libsndfile was installed in
-			to the the directory containing libsamplerate.
-    <LI> Copy the header file <B>include/sndfile.h</B> from where libsndfile was
-			installed to the <B>Win32</B> directory under the libsamplerate
-			directory.
 	<LI> Open a Command Shell and cd into the libsamplerate-0.X.Y directory.
 	<LI> Make sure that the program <B>nmake</B> (which is part of the MSCV++ 
 			package) is in a directory which is part of your <B>PATH</B> variable.
@@ -104,7 +91,7 @@ Making the libsamplerate DLL on Win32 involves the following:
 			which will compile a set of test programs and run them. 
 			If any of the programs fail the error message will be help in debugging 
 			the problem.
-			(Note that some of the tests require libsndfile or libfftw/librfftw and
+			(Note that some of the tests require libfftw/librfftw and
 			are not able to run on Win32).
 </OL>
 <P>

@@ -7,9 +7,6 @@ The src/ directory contains the source code for library itself.
 
 The doc/ directory contains the libsamplerate documentation.
 
-The examples/ directory contains examples of how to write code using
-libsamplerate.
-
 The tests/ directory contains programs which link against
 libsamplerate and test its functionality.
 

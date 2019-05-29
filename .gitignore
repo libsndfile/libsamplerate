@@ -34,9 +34,6 @@ configure
 depcomp
 doc/ChangeLog
 doc/NEWS
-examples/sndfile-resample
-examples/timewarp-file
-examples/varispeed-play
 install-sh
 libsamplerate.spec
 libtool
@@ -51,7 +48,6 @@ stamp-h1
 .dirstamp
 tests/*_test
 tests/benchmark
-tests/src-evaluate
 *.log
 *.trs
 build/

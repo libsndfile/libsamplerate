@@ -55,18 +55,6 @@ check_type_size(long SIZEOF_LONG)
 # This will set CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE
 clip_mode()
 
-find_package(ALSA)
-set(HAVE_ALSA ${ALSA_FOUND})
-if(ALSA_FOUND)
-  include_directories("${ALSA_INCLUDE_DIR}")
-endif()
-
-find_package(Sndfile)
-set(HAVE_SNDFILE ${SNDFILE_FOUND})
-if(SNDFILE_FOUND)
-  include_directories("${SNDFILE_INCLUDE_DIR}")
-endif()
-
 find_package(FFTW)
 set(HAVE_FFTW3 ${FFTW_FOUND})
 if(FFTW_FOUND)
@@ -108,29 +96,6 @@ foreach(testSrc ${TEST_SRCS})
 	add_test(NAME ${testName} COMMAND ${testName})
 endforeach(testSrc)
 
-set(EXAMPLE_SRCS
-	${PROJECT_SOURCE_DIR}/examples/timewarp-file.c
-	${PROJECT_SOURCE_DIR}/examples/varispeed-play.c)
-
-foreach(exampleSrc ${EXAMPLE_SRCS})
-	get_filename_component(exampleName ${exampleSrc} NAME_WE)
-	add_executable(${exampleName}
-		${exampleSrc}
-		${PROJECT_SOURCE_DIR}/examples/audio_out.c)
-	target_link_libraries(${exampleName} PUBLIC samplerate ${CMAKE_REQUIRED_LIBRARIES})
-	if(ALSA_FOUND)
-		target_link_libraries(${exampleName} PUBLIC ${ALSA_LIBRARY})
-	endif()
-	if(SNDFILE_FOUND)
-		target_link_libraries(${exampleName} PUBLIC ${SNDFILE_LIBRARY})
-	endif()
-	if(WIN32)
-		target_link_libraries(${exampleName} PUBLIC winmm)
-	endif()
-	if (APPLE)
-		target_link_libraries (${exampleName} PUBLIC  "-framework CoreAudio")
-	endif()
-endforeach(exampleSrc)
 endif() 
 
 if(LIBSAMPLERATE_INSTALL)
