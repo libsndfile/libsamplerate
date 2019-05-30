@@ -7,12 +7,11 @@ see http://www.mega-nerd.com/SRC/win32.html).
 
 Preliminaries
 -------------
-1) Included with libsamplerate is a command line program named
-   sndfile-resample which uses libnsdile:
+1) Included with libsamplerate are example programs which use libnsdile:
 
         http://www.mega-nerd.com/libsndfile/
 
-   for file I/O. If you want to use sndfile-resample you need to
+   for file I/O. If you want to build them you need to
    ensure that libsndfile is correctly installed first. If it is, the
    command "pkg-config --cflags --libs sndfile" should print out
    something like this:
@@ -29,9 +28,6 @@ Preliminaries
    you will need to set PKG_CONFIG_PATH using:
 
        export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig
-
-   Pkg-config should now work. If it doesn't you need to fix it if you
-   want to use sndfile-resample.
 
 2) The included tests suite for libsamplerate needs libfftw3 which is
    available here:
@@ -108,10 +104,4 @@ Building and verifying libsamplerate is a four or five step process.
    (also as the root user):
 
         ldconfig -v
-
-As a final test, you can run
-
-        sndfile-resample
-
-to make sure everything is installed correctly.
 
