@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.1)
-project(libsamplerate VERSION 0.1.9 LANGUAGES C)
+project(libsamplerate VERSION 0.1.10 LANGUAGES C)
 
 option(LIBSAMPLERATE_TESTS "Enable to generate test targets" ON)
 option(LIBSAMPLERATE_INSTALL "Enable to add install directives" ON)
