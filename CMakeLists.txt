@@ -20,6 +20,7 @@ include(CheckSymbolExists)
 include(CheckTypeSize)
 include(CMakePushCheckState)
 include(ClipMode)
+add_definitions(-DHAVE_CONFIG_H)
 
 set(SAMPLERATE_SRC
 	${PROJECT_SOURCE_DIR}/src/samplerate.c

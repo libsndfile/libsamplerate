@@ -6,7 +6,7 @@
 ** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
 */
 
-#include "config.h"
+#include "src_config.h"
 
 #define	ABS(a)			(((a) < 0) ? - (a) : (a))
 #define MIN(a,b)		(((a) < (b)) ? (a) : (b))
