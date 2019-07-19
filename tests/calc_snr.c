@@ -6,7 +6,7 @@
 ** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
 */
 
-#include "config.h"
+#include "src_config.h"
 
 #include "util.h"
 

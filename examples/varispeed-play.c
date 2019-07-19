@@ -11,7 +11,7 @@
 #include <unistd.h>
 #include <string.h>
 
-#include "config.h"
+#include "src_config.h"
 
 #include <float_cast.h>
 

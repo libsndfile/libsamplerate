@@ -11,7 +11,7 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <config.h>
+#include "src_config.h"
 
 #include "audio_out.h"
 
