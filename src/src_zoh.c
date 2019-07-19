@@ -162,7 +162,7 @@ zoh_set_converter (SRC_PRIVATE *psrc, int src_enum)
 		} ;
 
 	if (psrc->private_data == NULL)
-	{	priv = calloc (1, sizeof (*priv) + psrc->channels * sizeof (float)) ;
+	{	priv = ZERO_ALLOC (ZOH_DATA, sizeof (*priv) + psrc->channels * sizeof (float)) ;
 		psrc->private_data = priv ;
 		} ;
 
@@ -210,7 +210,7 @@ zoh_copy (SRC_PRIVATE *from, SRC_PRIVATE *to)
 	ZOH_DATA* from_priv = (ZOH_DATA*) from->private_data ;
 	size_t private_size = sizeof (*to_priv) + from_priv->channels * sizeof (float) ;
 
-	if ((to_priv = calloc (1, private_size)) == NULL)
+	if ((to_priv = ZERO_ALLOC (ZOH_DATA, private_size)) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 
 	memcpy (to_priv, from_priv, private_size) ;

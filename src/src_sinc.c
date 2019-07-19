@@ -216,7 +216,7 @@ sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 	temp_filter.b_len = MAX (temp_filter.b_len, 4096) ;
 	temp_filter.b_len *= temp_filter.channels ;
 
-	if ((filter = calloc (1, sizeof (SINC_FILTER) + sizeof (filter->buffer [0]) * (temp_filter.b_len + temp_filter.channels))) == NULL)
+	if ((filter = ZERO_ALLOC (SINC_FILTER, sizeof (SINC_FILTER) + sizeof (filter->buffer [0]) * (temp_filter.b_len + temp_filter.channels))) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 
 	*filter = temp_filter ;
@@ -265,7 +265,7 @@ sinc_copy (SRC_PRIVATE *from, SRC_PRIVATE *to)
 	SINC_FILTER* from_filter = (SINC_FILTER*) from->private_data ;
 	size_t private_length = sizeof (SINC_FILTER) + sizeof (from_filter->buffer [0]) * (from_filter->b_len + from_filter->channels) ;
 
-	if ((to_filter = calloc (1, private_length)) == NULL)
+	if ((to_filter = ZERO_ALLOC (SINC_FILTER, private_length)) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 
 	memcpy (to_filter, from_filter, private_length) ;
