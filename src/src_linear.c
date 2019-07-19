@@ -171,7 +171,7 @@ linear_set_converter (SRC_PRIVATE *psrc, int src_enum)
 		} ;
 
 	if (psrc->private_data == NULL)
-	{	priv = calloc (1, sizeof (*priv) + psrc->channels * sizeof (float)) ;
+	{	priv = ZERO_ALLOC (LINEAR_DATA, sizeof (*priv) + psrc->channels * sizeof (float)) ;
 		psrc->private_data = priv ;
 		} ;
 
@@ -219,7 +219,7 @@ linear_copy (SRC_PRIVATE *from, SRC_PRIVATE *to)
 	LINEAR_DATA* from_priv = (LINEAR_DATA*) from->private_data ;
 	size_t private_size = sizeof (*to_priv) + from_priv->channels * sizeof (float) ;
 
-	if ((to_priv = calloc (1, private_size)) == NULL)
+	if ((to_priv = ZERO_ALLOC (LINEAR_DATA, private_size)) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 
 	memcpy (to_priv, from_priv, private_size) ;
