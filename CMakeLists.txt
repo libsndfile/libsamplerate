@@ -1,10 +1,17 @@
 cmake_minimum_required(VERSION 3.1)
 project(libsamplerate VERSION 0.1.9 LANGUAGES C)
 
-option(LIBSAMPLERATE_TESTS "Enable to generate test targets" ON)
-option(LIBSAMPLERATE_INSTALL "Enable to add install directives" ON)
+if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
+    set(LIBSAMPLERATE_IS_ROOT_PROJECT ON)
+else()
+    set(LIBSAMPLERATE_IS_ROOT_PROJECT OFF)
+endif()
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${PROJECT_SOURCE_DIR}/cmake)
+option(LIBSAMPLERATE_TESTS "Enable to generate test targets" ${LIBSAMPLERATE_IS_ROOT_PROJECT})
+option(LIBSAMPLERATE_EXAMPLES "Enable to generate examples" ${LIBSAMPLERATE_IS_ROOT_PROJECT})
+option(LIBSAMPLERATE_INSTALL "Enable to add install directives" ${LIBSAMPLERATE_IS_ROOT_PROJECT})
+
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 include(TestBigEndian)
 include(CheckFunctionExists)
@@ -104,7 +111,7 @@ endif()
     
 if(LIBSAMPLERATE_TESTS)
 
-enable_testing()
+    enable_testing()
 
 file(GLOB TEST_SRCS ${PROJECT_SOURCE_DIR}/tests/*_test.c)
 
@@ -117,10 +124,12 @@ foreach(testSrc ${TEST_SRCS})
 	target_link_libraries(${testName} PUBLIC samplerate)
 	if(FFTW_FOUND)
 		target_link_libraries(${testName} PUBLIC ${FFTW_LIBRARY})
-	endif()
+endif() 
 	add_test(NAME ${testName} COMMAND ${testName})
 endforeach(testSrc)
+endif()
 
+if(LIBSAMPLERATE_EXAMPLES)
 set(EXAMPLE_SRCS
 	${PROJECT_SOURCE_DIR}/examples/timewarp-file.c
 	${PROJECT_SOURCE_DIR}/examples/varispeed-play.c)
@@ -147,19 +156,19 @@ endforeach(exampleSrc)
 endif() 
 
 if(LIBSAMPLERATE_INSTALL)
-set(prefix ${CMAKE_INSTALL_PREFIX})
-set(exec_prefix "\${prefix}")
-set(includedir "\${prefix}/include")
-set(libdir "\${exec_prefix}/lib")
-set(VERSION "${PROJECT_VERSION}")
-if(NEED_MATH)
-	set(LIBS "-lm")
-endif()
-configure_file(samplerate.pc.in samplerate.pc @ONLY)
+    set(prefix ${CMAKE_INSTALL_PREFIX})
+    set(exec_prefix "\${prefix}")
+    set(includedir "\${prefix}/include")
+    set(libdir "\${exec_prefix}/lib")
+    set(VERSION "${PROJECT_VERSION}")
+    if(NEED_MATH)
+        set(LIBS "-lm")
+    endif()
+    configure_file(samplerate.pc.in samplerate.pc @ONLY)
 
-install(TARGETS samplerate DESTINATION lib)
-install(FILES src/samplerate.h DESTINATION include)
-install(DIRECTORY doc/ DESTINATION share/doc/libsamplerate)
-install(FILES ${CMAKE_BINARY_DIR}/samplerate.pc DESTINATION lib/pkgconfig)
+    install(TARGETS samplerate DESTINATION lib)
+    install(FILES src/samplerate.h DESTINATION include)
+    install(DIRECTORY doc/ DESTINATION share/doc/libsamplerate)
+    install(FILES ${CMAKE_BINARY_DIR}/samplerate.pc DESTINATION lib/pkgconfig)
 
 endif()
