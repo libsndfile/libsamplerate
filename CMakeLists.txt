@@ -73,21 +73,12 @@ check_symbol_exists(SIGALRM signal.h HAVE_SIGALRM)
 
 find_package(ALSA)
 set(HAVE_ALSA ${ALSA_FOUND})
-if(ALSA_FOUND)
-  include_directories("${ALSA_INCLUDE_DIR}")
-endif()
 
 find_package(Sndfile)
 set(HAVE_SNDFILE ${SNDFILE_FOUND})
-if(SNDFILE_FOUND)
-  include_directories("${SNDFILE_INCLUDE_DIR}")
-endif()
 
 find_package(FFTW)
 set(HAVE_FFTW3 ${FFTW_FOUND})
-if(FFTW_FOUND)
-  include_directories("${FFTW_INCLUDE_DIR}")
-endif()
 
 configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
@@ -110,49 +101,12 @@ if(LIBSAMPLERATE_MATH_LIBRARY)
 endif()
     
 if(LIBSAMPLERATE_TESTS)
-
 	enable_testing()
-
-	file(GLOB TEST_SRCS ${PROJECT_SOURCE_DIR}/tests/*_test.c)
-
-	foreach(testSrc ${TEST_SRCS})
-		get_filename_component(testName ${testSrc} NAME_WE)
-		add_executable(${testName}
-			${testSrc}
-			${PROJECT_SOURCE_DIR}/tests/util.c
-			${PROJECT_SOURCE_DIR}/tests/calc_snr.c)
-	target_link_libraries(${testName} PUBLIC samplerate)
-		if(FFTW_FOUND)
-			target_link_libraries(${testName} PUBLIC ${FFTW_LIBRARY})
-		endif()
-		add_test(NAME ${testName} COMMAND ${testName})
-	endforeach(testSrc)
+	add_subdirectory(tests)
 endif()
 
 if(LIBSAMPLERATE_EXAMPLES)
-	set(EXAMPLE_SRCS
-		${PROJECT_SOURCE_DIR}/examples/timewarp-file.c
-		${PROJECT_SOURCE_DIR}/examples/varispeed-play.c)
-
-	foreach(exampleSrc ${EXAMPLE_SRCS})
-		get_filename_component(exampleName ${exampleSrc} NAME_WE)
-		add_executable(${exampleName}
-			${exampleSrc}
-			${PROJECT_SOURCE_DIR}/examples/audio_out.c)
-	target_link_libraries(${exampleName} PUBLIC samplerate)
-		if(ALSA_FOUND)
-			target_link_libraries(${exampleName} PUBLIC ${ALSA_LIBRARY})
-		endif()
-		if(SNDFILE_FOUND)
-			target_link_libraries(${exampleName} PUBLIC ${SNDFILE_LIBRARY})
-		endif()
-		if(WIN32)
-			target_link_libraries(${exampleName} PUBLIC winmm)
-		endif()
-		if (APPLE)
-			target_link_libraries (${exampleName} PUBLIC  "-framework CoreAudio")
-		endif()
-	endforeach(exampleSrc)
+	add_subdirectory(examples)
 endif() 
 
 if(LIBSAMPLERATE_INSTALL)
