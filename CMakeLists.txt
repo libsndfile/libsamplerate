@@ -11,6 +11,7 @@ include(CheckFunctionExists)
 include(CheckIncludeFiles)
 include(CheckSymbolExists)
 include(CheckTypeSize)
+include(CMakePushCheckState)
 include(ClipMode)
 
 set(SAMPLERATE_SRC
@@ -34,14 +35,25 @@ else()
 	set(CPU_IS_LITTLE_ENDIAN 1)
 endif()
 
-check_function_exists(pow RESULT)
-if(NOT RESULT)
-  list(APPEND CMAKE_REQUIRED_LIBRARIES m)
-  set(NEED_MATH)
+cmake_push_check_state(RESET)
+
+check_symbol_exists(pow math.h RESULT)
+if(RESULT)
+    set(NEED_MATH OFF)
+else()
+    set(NEED_MATH ON)
+    list(APPEND CMAKE_REQUIRED_LIBRARIES m)
 endif()
+check_symbol_exists(lrint math.h HAVE_LRINT)
+check_symbol_exists(lrintf math.h HAVE_LRINTF)
+
+# This will set CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE
+# requires HAVE_LRINT being set
+clip_mode()
+
+cmake_pop_check_state()
+
 check_function_exists(alarm HAVE_ALARM)
-check_function_exists(lrint HAVE_LRINT)
-check_function_exists(lrintf HAVE_LRINTF)
 check_function_exists(signal HAVE_SIGNAL)
 
 check_include_files(stdint.h HAVE_STDINT)
@@ -51,9 +63,6 @@ check_symbol_exists(SIGALRM signal.h HAVE_SIGALRM)
 
 check_type_size(int SIZEOF_INT)
 check_type_size(long SIZEOF_LONG)
-
-# This will set CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE
-clip_mode()
 
 find_package(ALSA)
 set(HAVE_ALSA ${ALSA_FOUND})
@@ -88,6 +97,10 @@ endif()
 target_include_directories(samplerate PUBLIC
 	${PROJECT_SOURCE_DIR}/src
     ${CMAKE_CURRENT_BINARY_DIR})
+
+if(NEED_MATH)
+    target_link_libraries(samplerate PUBLIC m)
+endif()
     
 if(LIBSAMPLERATE_TESTS)
 
@@ -101,7 +114,7 @@ foreach(testSrc ${TEST_SRCS})
 		${testSrc}
 		${PROJECT_SOURCE_DIR}/tests/util.c
 		${PROJECT_SOURCE_DIR}/tests/calc_snr.c)
-	target_link_libraries(${testName} PUBLIC samplerate ${CMAKE_REQUIRED_LIBRARIES})
+	target_link_libraries(${testName} PUBLIC samplerate)
 	if(FFTW_FOUND)
 		target_link_libraries(${testName} PUBLIC ${FFTW_LIBRARY})
 	endif()
@@ -117,7 +130,7 @@ foreach(exampleSrc ${EXAMPLE_SRCS})
 	add_executable(${exampleName}
 		${exampleSrc}
 		${PROJECT_SOURCE_DIR}/examples/audio_out.c)
-	target_link_libraries(${exampleName} PUBLIC samplerate ${CMAKE_REQUIRED_LIBRARIES})
+	target_link_libraries(${exampleName} PUBLIC samplerate)
 	if(ALSA_FOUND)
 		target_link_libraries(${exampleName} PUBLIC ${ALSA_LIBRARY})
 	endif()
