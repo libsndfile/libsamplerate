@@ -2,14 +2,14 @@ cmake_minimum_required(VERSION 3.1)
 project(libsamplerate VERSION 0.1.9 LANGUAGES C)
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_CURRENT_SOURCE_DIR)
-    set(LIBSAMPLERATE_IS_ROOT_PROJECT ON)
+    set(IS_ROOT_PROJECT ON)
 else()
-    set(LIBSAMPLERATE_IS_ROOT_PROJECT OFF)
+    set(IS_ROOT_PROJECT OFF)
 endif()
 
-option(LIBSAMPLERATE_TESTS "Enable to generate test targets" ${LIBSAMPLERATE_IS_ROOT_PROJECT})
-option(LIBSAMPLERATE_EXAMPLES "Enable to generate examples" ${LIBSAMPLERATE_IS_ROOT_PROJECT})
-option(LIBSAMPLERATE_INSTALL "Enable to add install directives" ${LIBSAMPLERATE_IS_ROOT_PROJECT})
+option(LIBSAMPLERATE_TESTS "Enable to generate test targets" ${IS_ROOT_PROJECT})
+option(LIBSAMPLERATE_EXAMPLES "Enable to generate examples" ${IS_ROOT_PROJECT})
+option(LIBSAMPLERATE_INSTALL "Enable to add install directives" ${IS_ROOT_PROJECT})
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
