@@ -49,7 +49,7 @@ if(RESULT)
     set(NEED_MATH OFF)
 else()
     set(NEED_MATH ON)
-    list(APPEND CMAKE_REQUIRED_LIBRARIES m)
+  list(APPEND CMAKE_REQUIRED_LIBRARIES m)
 endif()
 check_symbol_exists(lrint math.h HAVE_LRINT)
 check_symbol_exists(lrintf math.h HAVE_LRINTF)
@@ -103,7 +103,7 @@ endif()
 
 target_include_directories(samplerate PUBLIC
 	${PROJECT_SOURCE_DIR}/src
-    ${CMAKE_CURRENT_BINARY_DIR})
+  ${CMAKE_CURRENT_BINARY_DIR})
 
 if(NEED_MATH)
     target_link_libraries(samplerate PUBLIC m)
@@ -111,64 +111,63 @@ endif()
     
 if(LIBSAMPLERATE_TESTS)
 
-    enable_testing()
+	enable_testing()
 
-file(GLOB TEST_SRCS ${PROJECT_SOURCE_DIR}/tests/*_test.c)
+	file(GLOB TEST_SRCS ${PROJECT_SOURCE_DIR}/tests/*_test.c)
 
-foreach(testSrc ${TEST_SRCS})
-	get_filename_component(testName ${testSrc} NAME_WE)
-	add_executable(${testName}
-		${testSrc}
-		${PROJECT_SOURCE_DIR}/tests/util.c
-		${PROJECT_SOURCE_DIR}/tests/calc_snr.c)
+	foreach(testSrc ${TEST_SRCS})
+		get_filename_component(testName ${testSrc} NAME_WE)
+		add_executable(${testName}
+			${testSrc}
+			${PROJECT_SOURCE_DIR}/tests/util.c
+			${PROJECT_SOURCE_DIR}/tests/calc_snr.c)
 	target_link_libraries(${testName} PUBLIC samplerate)
-	if(FFTW_FOUND)
-		target_link_libraries(${testName} PUBLIC ${FFTW_LIBRARY})
-endif() 
-	add_test(NAME ${testName} COMMAND ${testName})
-endforeach(testSrc)
+		if(FFTW_FOUND)
+			target_link_libraries(${testName} PUBLIC ${FFTW_LIBRARY})
+		endif()
+		add_test(NAME ${testName} COMMAND ${testName})
+	endforeach(testSrc)
 endif()
 
 if(LIBSAMPLERATE_EXAMPLES)
-set(EXAMPLE_SRCS
-	${PROJECT_SOURCE_DIR}/examples/timewarp-file.c
-	${PROJECT_SOURCE_DIR}/examples/varispeed-play.c)
+	set(EXAMPLE_SRCS
+		${PROJECT_SOURCE_DIR}/examples/timewarp-file.c
+		${PROJECT_SOURCE_DIR}/examples/varispeed-play.c)
 
-foreach(exampleSrc ${EXAMPLE_SRCS})
-	get_filename_component(exampleName ${exampleSrc} NAME_WE)
-	add_executable(${exampleName}
-		${exampleSrc}
-		${PROJECT_SOURCE_DIR}/examples/audio_out.c)
+	foreach(exampleSrc ${EXAMPLE_SRCS})
+		get_filename_component(exampleName ${exampleSrc} NAME_WE)
+		add_executable(${exampleName}
+			${exampleSrc}
+			${PROJECT_SOURCE_DIR}/examples/audio_out.c)
 	target_link_libraries(${exampleName} PUBLIC samplerate)
-	if(ALSA_FOUND)
-		target_link_libraries(${exampleName} PUBLIC ${ALSA_LIBRARY})
-	endif()
-	if(SNDFILE_FOUND)
-		target_link_libraries(${exampleName} PUBLIC ${SNDFILE_LIBRARY})
-	endif()
-	if(WIN32)
-		target_link_libraries(${exampleName} PUBLIC winmm)
-	endif()
-	if (APPLE)
-		target_link_libraries (${exampleName} PUBLIC  "-framework CoreAudio")
-	endif()
-endforeach(exampleSrc)
+		if(ALSA_FOUND)
+			target_link_libraries(${exampleName} PUBLIC ${ALSA_LIBRARY})
+		endif()
+		if(SNDFILE_FOUND)
+			target_link_libraries(${exampleName} PUBLIC ${SNDFILE_LIBRARY})
+		endif()
+		if(WIN32)
+			target_link_libraries(${exampleName} PUBLIC winmm)
+		endif()
+		if (APPLE)
+			target_link_libraries (${exampleName} PUBLIC  "-framework CoreAudio")
+		endif()
+	endforeach(exampleSrc)
 endif() 
 
 if(LIBSAMPLERATE_INSTALL)
-    set(prefix ${CMAKE_INSTALL_PREFIX})
-    set(exec_prefix "\${prefix}")
-    set(includedir "\${prefix}/include")
-    set(libdir "\${exec_prefix}/lib")
-    set(VERSION "${PROJECT_VERSION}")
-    if(NEED_MATH)
-        set(LIBS "-lm")
-    endif()
-    configure_file(samplerate.pc.in samplerate.pc @ONLY)
+	set(prefix ${CMAKE_INSTALL_PREFIX})
+	set(exec_prefix "\${prefix}")
+	set(includedir "\${prefix}/include")
+	set(libdir "\${exec_prefix}/lib")
+	set(VERSION "${PROJECT_VERSION}")
+	if(NEED_MATH)
+		set(LIBS "-lm")
+	endif()
+	configure_file(samplerate.pc.in samplerate.pc @ONLY)
 
-    install(TARGETS samplerate DESTINATION lib)
-    install(FILES src/samplerate.h DESTINATION include)
-    install(DIRECTORY doc/ DESTINATION share/doc/libsamplerate)
-    install(FILES ${CMAKE_BINARY_DIR}/samplerate.pc DESTINATION lib/pkgconfig)
-
+	install(TARGETS samplerate DESTINATION lib)
+	install(FILES src/samplerate.h DESTINATION include)
+	install(DIRECTORY doc/ DESTINATION share/doc/libsamplerate)
+	install(FILES ${CMAKE_BINARY_DIR}/samplerate.pc DESTINATION lib/pkgconfig)
 endif()
