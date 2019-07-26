@@ -157,10 +157,6 @@ tests_multichan_throughput_test_SOURCES = tests/multichan_throughput_test.c test
 tests_multichan_throughput_test_CFLAGS = $(FFTW3_CFLAGS)
 tests_multichan_throughput_test_LDADD = src/libsamplerate.la $(FFTW3_LIBS)
 
-if HAVE_LIBSNDFILE
-check_PROGRAMS += tests/src-evaluate
-
 tests_src_evaluate_SOURCES = tests/src-evaluate.c tests/calc_snr.c tests/util.c
 tests_src_evaluate_CFLAGS = $(SNDFILE_CFLAGS) $(FFTW3_CFLAGS)
 tests_src_evaluate_LDADD = $(SNDFILE_LIBS) $(FFTW3_LIBS)
-endif
