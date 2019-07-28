@@ -1,0 +1,26 @@
+/*
+** Copyright (c) 2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+** All rights reserved.
+**
+** This code is released under 2-clause BSD license. Please see the
+** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
+*/
+
+/* Set to 1 if you have libfftw3. */
+#cmakedefine01 HAVE_FFTW3
+
+/* Define if you have signal SIGALRM. */
+#cmakedefine01 HAVE_SIGALRM
+
+/* Define to 1 if you have the `signal' function. */
+#cmakedefine01 HAVE_SIGNAL
+
+/* Set to 1 if you have libsndfile. */
+#cmakedefine01 HAVE_SNDFILE
+
+/* Define to 1 if you have the <sys/times.h> header file. */
+#cmakedefine01 HAVE_SYS_TIMES_H
+
+/* Set to 1 if compiling for Win32 */
+#cmakedefine01 OS_IS_WIN32
+

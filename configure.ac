@@ -127,15 +127,12 @@ dnl  Determine endian-ness of host processor.
 AC_C_BIGENDIAN([
 		dnl big-endian
 		ac_cv_c_big_endian=1
-		ac_cv_c_little_endian=0
 	], [
 		dnl little-endian
 		ac_cv_c_big_endian=0
-		ac_cv_c_little_endian=1
 	])
 
 AC_DEFINE_UNQUOTED([CPU_IS_BIG_ENDIAN], [${ac_cv_c_big_endian}], [Host processor is big endian.])
-AC_DEFINE_UNQUOTED([CPU_IS_LITTLE_ENDIAN], [${ac_cv_c_little_endian}], [Host processor is little endian.])
 
 dnl ====================================================================================
 dnl  Check for functions.

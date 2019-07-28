@@ -2,7 +2,7 @@
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 
-AM_CPPFLAGS = -I$(top_srcdir)/src $(OS_SPECIFIC_INCLUDES)
+AM_CPPFLAGS = -I$(top_srcdir)/src -I$(top_srcdir)/include $(OS_SPECIFIC_INCLUDES)
 
 EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat Win32 \
     Octave/generate_filter.m Octave/make_filter.m Octave/measure_filter.m \
@@ -19,7 +19,7 @@ test:
 ########
 
 lib_LTLIBRARIES = src/libsamplerate.la
-include_HEADERS = src/samplerate.h
+include_HEADERS = include/samplerate.h
 
 EXTRA_DIST += src/config.h.in src/Version_script.in src/check_asm.sh
 CLEANFILES = src/src_sinc.s

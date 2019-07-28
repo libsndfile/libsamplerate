@@ -16,8 +16,6 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED TRUE)
 
-include(TestBigEndian)
-include(CheckFunctionExists)
 include(CheckIncludeFiles)
 include(CheckSymbolExists)
 include(ClipMode)
@@ -30,7 +28,6 @@ set(SAMPLERATE_SRC
 	${PROJECT_SOURCE_DIR}/src/src_zoh.c)
 
 if(WIN32)
-	set(OS_IS_WIN32 TRUE)
 	set(SAMPLERATE_SRC
 		${SAMPLERATE_SRC}
 		${PROJECT_SOURCE_DIR}/Win32/libsamplerate-0.def)
@@ -52,35 +49,12 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   endif()
 endif()
 
-test_big_endian(CPU_IS_BIG_ENDIAN)
-if(CPU_IS_BIG_ENDIAN)
-	set(CPU_IS_LITTLE_ENDIAN 0)
-else()
-	set(CPU_IS_LITTLE_ENDIAN 1)
-endif()
-
 find_library(LIBSAMPLERATE_MATH_LIBRARY m)
 
 # This will set CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE
 clip_mode()
 
-check_function_exists(alarm HAVE_ALARM)
-check_function_exists(signal HAVE_SIGNAL)
-
-check_include_files(sys/times.h HAVE_SYS_TIMES_H)
-
-check_symbol_exists(SIGALRM signal.h HAVE_SIGALRM)
-
-find_package(ALSA)
-set(HAVE_ALSA ${ALSA_FOUND})
-
-find_package(Sndfile)
-set(HAVE_SNDFILE ${SNDFILE_FOUND})
-
-find_package(FFTW)
-set(HAVE_FFTW3 ${FFTW_FOUND})
-
-configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
 add_library(samplerate ${SAMPLERATE_SRC})
 
@@ -92,9 +66,9 @@ if(BUILD_SHARED_LIBS AND WIN32)
 	endif()
 endif()
 
-target_include_directories(samplerate PUBLIC
-	${PROJECT_SOURCE_DIR}/src
-  ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(samplerate
+    PUBLIC include
+    PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
 if(LIBSAMPLERATE_MATH_LIBRARY)
     target_link_libraries(samplerate PUBLIC ${LIBSAMPLERATE_MATH_LIBRARY})

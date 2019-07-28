@@ -28,8 +28,7 @@ aclocal.m4
 autom4te.cache
 libsamplerate-*.tar.bz2
 compile
-config.*
-!/config.h.in
+config.h
 configure
 depcomp
 doc/ChangeLog
@@ -44,7 +43,6 @@ ltmain.sh
 missing
 samplerate.pc
 src/Version_script
-src/config.h
 src/config.h.in
 stamp-h1
 .dirstamp

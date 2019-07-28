@@ -1,0 +1,16 @@
+/*
+** Copyright (c) 2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+** All rights reserved.
+**
+** This code is released under 2-clause BSD license. Please see the
+** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
+*/
+
+/* Define to 1 if you have the <alsa/asoundlib.h> header file. */
+#cmakedefine01 HAVE_ALSA
+
+/* Set to 1 if you have libsndfile. */
+#cmakedefine01 HAVE_SNDFILE
+
+/* Target processor is big endian. */
+#cmakedefine01 CPU_IS_BIG_ENDIAN
