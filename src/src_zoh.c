@@ -29,7 +29,7 @@ typedef struct
 	int		reset ;
 	long	in_count, in_used ;
 	long	out_count, out_gen ;
-	float	last_value [1] ;
+	float	last_value [] ;
 } ZOH_DATA ;
 
 /*----------------------------------------------------------------------------------------
