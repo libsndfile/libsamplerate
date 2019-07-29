@@ -309,9 +309,9 @@ src_get_channels (SRC_STATE *state)
 	psrc = (SRC_PRIVATE*) state ;
 
 	if (psrc == NULL)
-		return SRC_ERR_BAD_STATE ;
+		return -SRC_ERR_BAD_STATE ;
 	if (psrc->vari_process == NULL || psrc->const_process == NULL)
-		return SRC_ERR_BAD_PROC_PTR ;
+		return -SRC_ERR_BAD_PROC_PTR ;
 
 	return psrc->channels ;
 } /* src_get_channels */
