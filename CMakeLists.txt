@@ -22,16 +22,16 @@ include(ClipMode)
 add_definitions(-DHAVE_CONFIG_H)
 
 set(SAMPLERATE_SRC
-	${PROJECT_SOURCE_DIR}/src/samplerate.c
-	${PROJECT_SOURCE_DIR}/src/src_linear.c
-	${PROJECT_SOURCE_DIR}/src/src_sinc.c
-	${PROJECT_SOURCE_DIR}/src/src_zoh.c)
+    ${PROJECT_SOURCE_DIR}/src/samplerate.c
+    ${PROJECT_SOURCE_DIR}/src/src_linear.c
+    ${PROJECT_SOURCE_DIR}/src/src_sinc.c
+    ${PROJECT_SOURCE_DIR}/src/src_zoh.c)
 
 if(WIN32)
-	set(SAMPLERATE_SRC
-		${SAMPLERATE_SRC}
-		${PROJECT_SOURCE_DIR}/Win32/libsamplerate-0.def)
-	include_directories(Win32)
+    set(SAMPLERATE_SRC
+        ${SAMPLERATE_SRC}
+        ${PROJECT_SOURCE_DIR}/Win32/libsamplerate-0.def)
+    include_directories(Win32)
 endif()
 
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
@@ -59,11 +59,11 @@ configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 add_library(samplerate ${SAMPLERATE_SRC})
 
 if(BUILD_SHARED_LIBS AND WIN32)
-	if (MSVC)
-		set_target_properties(samplerate PROPERTIES OUTPUT_NAME "libsamplerate-0")
-	else()
-		set_target_properties(samplerate PROPERTIES OUTPUT_NAME "samplerate-0")
-	endif()
+    if (MSVC)
+        set_target_properties(samplerate PROPERTIES OUTPUT_NAME "libsamplerate-0")
+    else()
+        set_target_properties(samplerate PROPERTIES OUTPUT_NAME "samplerate-0")
+    endif()
 endif()
 
 target_include_directories(samplerate
@@ -75,27 +75,27 @@ if(LIBSAMPLERATE_MATH_LIBRARY)
 endif()
     
 if(LIBSAMPLERATE_TESTS)
-	enable_testing()
-	add_subdirectory(tests)
+    enable_testing()
+    add_subdirectory(tests)
 endif()
 
 if(LIBSAMPLERATE_EXAMPLES)
-	add_subdirectory(examples)
+    add_subdirectory(examples)
 endif() 
 
 if(LIBSAMPLERATE_INSTALL)
-	set(prefix ${CMAKE_INSTALL_PREFIX})
-	set(exec_prefix "\${prefix}")
-	set(includedir "\${prefix}/include")
-	set(libdir "\${exec_prefix}/lib")
-	set(VERSION "${PROJECT_VERSION}")
-	if(LIBSAMPLERATE_MATH_LIBRARY)
-		set(LIBS "-lm")
-	endif()
-	configure_file(samplerate.pc.in samplerate.pc @ONLY)
+    set(prefix ${CMAKE_INSTALL_PREFIX})
+    set(exec_prefix "\${prefix}")
+    set(includedir "\${prefix}/include")
+    set(libdir "\${exec_prefix}/lib")
+    set(VERSION "${PROJECT_VERSION}")
+    if(LIBSAMPLERATE_MATH_LIBRARY)
+        set(LIBS "-lm")
+    endif()
+    configure_file(samplerate.pc.in samplerate.pc @ONLY)
 
-	install(TARGETS samplerate DESTINATION lib)
-	install(FILES src/samplerate.h DESTINATION include)
-	install(DIRECTORY doc/ DESTINATION share/doc/libsamplerate)
-	install(FILES ${CMAKE_BINARY_DIR}/samplerate.pc DESTINATION lib/pkgconfig)
+    install(TARGETS samplerate DESTINATION lib)
+    install(FILES src/samplerate.h DESTINATION include)
+    install(DIRECTORY doc/ DESTINATION share/doc/libsamplerate)
+    install(FILES ${CMAKE_BINARY_DIR}/samplerate.pc DESTINATION lib/pkgconfig)
 endif()
