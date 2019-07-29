@@ -1,6 +1,11 @@
 add_library(samplerate_example_audio_out STATIC audio_out.c)
 target_link_libraries(samplerate_example_audio_out PRIVATE samplerate)
 
+if(WIN32)
+    # unistd.h dummy
+    target_include_directories(samplerate_example_audio_out PUBLIC ${PROJECT_SOURCE_DIR}/Win32)
+endif()
+
 find_package(ALSA)
 set(HAVE_ALSA ${ALSA_FOUND})
 if(ALSA_FOUND)

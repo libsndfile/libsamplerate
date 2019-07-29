@@ -21,19 +21,6 @@ include(CheckSymbolExists)
 include(ClipMode)
 add_definitions(-DHAVE_CONFIG_H)
 
-set(SAMPLERATE_SRC
-    ${PROJECT_SOURCE_DIR}/src/samplerate.c
-    ${PROJECT_SOURCE_DIR}/src/src_linear.c
-    ${PROJECT_SOURCE_DIR}/src/src_sinc.c
-    ${PROJECT_SOURCE_DIR}/src/src_zoh.c)
-
-if(WIN32)
-    set(SAMPLERATE_SRC
-        ${SAMPLERATE_SRC}
-        ${PROJECT_SOURCE_DIR}/Win32/libsamplerate-0.def)
-    include_directories(Win32)
-endif()
-
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   option(LIBSAMPLERATE_ENABLE_SANITIZERS "Enable ASAN and UBSAN" OFF)
 
@@ -56,7 +43,11 @@ clip_mode()
 
 configure_file(config.h.in ${CMAKE_CURRENT_BINARY_DIR}/config.h)
 
-add_library(samplerate ${SAMPLERATE_SRC})
+add_library(samplerate
+    src/samplerate.c
+    src/src_linear.c
+    src/src_sinc.c
+    src/src_zoh.c)
 
 if(BUILD_SHARED_LIBS AND WIN32)
     if (MSVC)
@@ -64,6 +55,7 @@ if(BUILD_SHARED_LIBS AND WIN32)
     else()
         set_target_properties(samplerate PROPERTIES OUTPUT_NAME "samplerate-0")
     endif()
+    target_sources(samplerate PRIVATE Win32/libsamplerate-0.def)
 endif()
 
 target_include_directories(samplerate

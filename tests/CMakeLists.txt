@@ -26,6 +26,11 @@ add_library(samplerate_test_utils STATIC
 
 target_include_directories(samplerate_test_utils PUBLIC ${CMAKE_CURRENT_BINARY_DIR})
 
+if(WIN32)
+    # unistd.h dummy
+    target_include_directories(samplerate_test_utils PUBLIC ${PROJECT_SOURCE_DIR}/Win32)
+endif()
+
 if(FFTW_FOUND)
     target_link_libraries(samplerate_test_utils PUBLIC ${FFTW_LIBRARY})
     target_include_directories(samplerate_test_utils PUBLIC ${FFTW_INCLUDE_DIR})
