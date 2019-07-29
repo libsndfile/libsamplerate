@@ -24,7 +24,7 @@
 
 #if (HAVE_SNDFILE)
 
-#include <float_cast.h>
+#include <math.h>
 
 #include <sndfile.h>
 

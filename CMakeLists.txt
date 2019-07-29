@@ -13,12 +13,13 @@ option(LIBSAMPLERATE_INSTALL "Enable to add install directives" ${IS_ROOT_PROJEC
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_STANDARD_REQUIRED TRUE)
+
 include(TestBigEndian)
 include(CheckFunctionExists)
 include(CheckIncludeFiles)
 include(CheckSymbolExists)
-include(CheckTypeSize)
-include(CMakePushCheckState)
 include(ClipMode)
 add_definitions(-DHAVE_CONFIG_H)
 
@@ -43,34 +44,17 @@ else()
 	set(CPU_IS_LITTLE_ENDIAN 1)
 endif()
 
-cmake_push_check_state(RESET)
-
-check_symbol_exists(pow math.h RESULT)
-if(RESULT)
-    set(NEED_MATH OFF)
-else()
-    set(NEED_MATH ON)
-  list(APPEND CMAKE_REQUIRED_LIBRARIES m)
-endif()
-check_symbol_exists(lrint math.h HAVE_LRINT)
-check_symbol_exists(lrintf math.h HAVE_LRINTF)
+find_library(LIBSAMPLERATE_MATH_LIBRARY m)
 
 # This will set CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE
-# requires HAVE_LRINT being set
 clip_mode()
-
-cmake_pop_check_state()
 
 check_function_exists(alarm HAVE_ALARM)
 check_function_exists(signal HAVE_SIGNAL)
 
-check_include_files(stdint.h HAVE_STDINT)
 check_include_files(sys/times.h HAVE_SYS_TIMES_H)
 
 check_symbol_exists(SIGALRM signal.h HAVE_SIGALRM)
-
-check_type_size(int SIZEOF_INT)
-check_type_size(long SIZEOF_LONG)
 
 find_package(ALSA)
 set(HAVE_ALSA ${ALSA_FOUND})
@@ -106,8 +90,8 @@ target_include_directories(samplerate PUBLIC
 	${PROJECT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR})
 
-if(NEED_MATH)
-    target_link_libraries(samplerate PUBLIC m)
+if(LIBSAMPLERATE_MATH_LIBRARY)
+    target_link_libraries(samplerate PUBLIC ${LIBSAMPLERATE_MATH_LIBRARY})
 endif()
     
 if(LIBSAMPLERATE_TESTS)
@@ -162,7 +146,7 @@ if(LIBSAMPLERATE_INSTALL)
 	set(includedir "\${prefix}/include")
 	set(libdir "\${exec_prefix}/lib")
 	set(VERSION "${PROJECT_VERSION}")
-	if(NEED_MATH)
+	if(LIBSAMPLERATE_MATH_LIBRARY)
 		set(LIBS "-lm")
 	endif()
 	configure_file(samplerate.pc.in samplerate.pc @ONLY)

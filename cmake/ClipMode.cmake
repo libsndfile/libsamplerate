@@ -1,5 +1,3 @@
-include (CheckCSourceRuns)
-
 macro (CLIP_MODE)
 
     set (CLIP_MODE_POSITIVE_MESSAGE "Target processor clips on positive float to int conversion")
@@ -7,13 +5,20 @@ macro (CLIP_MODE)
 
     message (STATUS "Checking processor clipping capabilities...")
 
-    if (CMAKE_CROSSCOMPILING OR NOT HAVE_LRINT)
+    if (CMAKE_CROSSCOMPILING)
 
         set (CLIP_MSG "disabled")
         set (CPU_CLIPS_POSITIVE FALSE CACHE BOOL ${CLIP_MODE_POSITIVE_MESSAGE})
         set (CPU_CLIPS_NEGATIVE FALSE CACHE BOOL ${CLIP_MODE_NEGATIVE_MESSAGE})
 
     else ()
+        include(CheckCSourceRuns)
+        include(CMakePushCheckState)
+        cmake_push_check_state(RESET)
+
+        if(LIBSAMPLERATE_MATH_LIBRARY)
+            list(APPEND CMAKE_REQUIRED_LIBRARIES ${LIBSAMPLERATE_MATH_LIBRARY})
+        endif()
 
         check_c_source_runs (
         "
@@ -56,6 +61,8 @@ macro (CLIP_MODE)
             }
         "
         CPU_CLIPS_NEGATIVE)
+
+        cmake_pop_check_state()
 
         if (CPU_CLIPS_POSITIVE AND CPU_CLIPS_NEGATIVE)
             set (CLIP_MSG "both")

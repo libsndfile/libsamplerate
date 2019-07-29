@@ -9,9 +9,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "src_config.h"
-#include "float_cast.h"
 #include "common.h"
 
 static int linear_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data) ;

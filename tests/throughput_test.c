@@ -11,13 +11,13 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include <math.h>
 
 #include <samplerate.h>
 
 #include "src_config.h"
 
 #include "util.h"
-#include "float_cast.h"
 
 #define BUFFER_LEN	(1<<16)
 
