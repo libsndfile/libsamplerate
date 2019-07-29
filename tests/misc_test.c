@@ -18,6 +18,7 @@ static void name_test (void) ;
 static void error_test (void) ;
 static void src_ratio_test (void) ;
 static void zero_input_test (int converter) ;
+static void get_channels_test (int converter);
 
 int
 main (void)
@@ -36,6 +37,10 @@ main (void)
 	zero_input_test (SRC_ZERO_ORDER_HOLD) ;
 	zero_input_test (SRC_LINEAR) ;
 	zero_input_test (SRC_SINC_FASTEST) ;
+
+	get_channels_test (SRC_ZERO_ORDER_HOLD) ;
+	get_channels_test (SRC_LINEAR) ;
+	get_channels_test (SRC_SINC_FASTEST) ;
 
 	puts ("") ;
 	return 0 ;
@@ -163,3 +168,35 @@ zero_input_test (int converter)
 
 	puts ("ok") ;
 } /* zero_input_test */
+
+static void get_channels_test(int converter)
+{
+	SRC_STATE *state;
+	int channels_in, channels_out;
+	const char *errorstr;
+
+	state = NULL;
+	if ((channels_out = src_get_channels(state)) >= 0)
+	{
+		printf ("\n\nLine %d : Return value should be negative, was : %d.\n\n", __LINE__, channels_out) ;
+		exit (1) ;
+	}
+	errorstr = src_strerror(-channels_out);
+	if (!strstr(errorstr, "NULL"))
+	{
+		printf ("\n\nLine %d : Inverted output should be valid error code mentioning a NULL pointer, was : %s.\n\n", __LINE__, errorstr) ;
+		exit (1) ;
+	}
+
+	for (channels_in = 1; channels_in <= 8; channels_in++)
+	{
+		int error;
+		state = src_new(converter, channels_in, &error);
+		if ((channels_out = src_get_channels(state)) != channels_in)
+		{
+			printf ("\n\nLine %d : Return value should be %d, was : %d.\n\n", __LINE__, channels_in, channels_out) ;
+			exit (1) ;
+		}
+		state = src_delete(state);
+	}
+}
