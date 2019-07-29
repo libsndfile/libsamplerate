@@ -26,6 +26,6 @@ env:
 script:
   - mkdir build
   - cd build
-  - cmake -DBUILD_SHARED_LIBS=$CMAKE_SHARED -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DCMAKE_C_FLAGS="-Wall -Wextra -Werror" ..
+  - cmake -DBUILD_SHARED_LIBS=$CMAKE_SHARED -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DLIBSAMPLERATE_ENABLE_WERROR=ON ..
   - cat config.h
   - cmake --build . --config $BUILD_TYPE && ctest --output-on-failure -C $BUILD_TYPE

@@ -10,6 +10,7 @@ endif()
 option(LIBSAMPLERATE_TESTS "Enable to generate test targets" ${IS_ROOT_PROJECT})
 option(LIBSAMPLERATE_EXAMPLES "Enable to generate examples" ${IS_ROOT_PROJECT})
 option(LIBSAMPLERATE_INSTALL "Enable to add install directives" ${IS_ROOT_PROJECT})
+option(LIBSAMPLERATE_ENABLE_WERROR "Fail compile if any warning is triggered" OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -105,10 +106,35 @@ target_include_directories(samplerate PUBLIC
 	${PROJECT_SOURCE_DIR}/src
   ${CMAKE_CURRENT_BINARY_DIR})
 
+if(MSVC)
+	set(LIBSAMPLERATE_WARNINGS /W3)
+	if(LIBSAMPLERATE_ENABLE_WERROR)
+		list(APPEND LIBSAMPLERATE_WARNINGS /WX)
+	endif()
+else()
+	include(CheckCCompilerFlag)
+	set(LIBSAMPLERATE_WARNINGS "")
+	foreach(flag -Wall -Wextra -pedantic)
+		string(REGEX REPLACE "[^a-zA-Z0-9]" "_" resultVar "SRC_${flag}_SUPPORTED")
+		check_c_compiler_flag(${flag} ${resultVar})
+		if(${resultVar})
+			list(APPEND LIBSAMPLERATE_WARNINGS ${flag})
+		endif()
+	endforeach()
+	if(LIBSAMPLERATE_ENABLE_WERROR)
+		check_c_compiler_flag(-Werror SRC_Werror_SUPPORTED)
+		if(SRC_Werror_SUPPORTED)
+			list(APPEND LIBSAMPLERATE_WARNINGS -Werror)
+		endif()
+	endif()
+endif()
+
+target_compile_options(samplerate PRIVATE ${LIBSAMPLERATE_WARNINGS})
+
 if(LIBSAMPLERATE_MATH_LIBRARY)
     target_link_libraries(samplerate PUBLIC ${LIBSAMPLERATE_MATH_LIBRARY})
 endif()
-    
+
 if(LIBSAMPLERATE_TESTS)
 
 	enable_testing()
@@ -121,10 +147,14 @@ if(LIBSAMPLERATE_TESTS)
 			${testSrc}
 			${PROJECT_SOURCE_DIR}/tests/util.c
 			${PROJECT_SOURCE_DIR}/tests/calc_snr.c)
-	target_link_libraries(${testName} PUBLIC samplerate)
+		target_link_libraries(${testName} PUBLIC samplerate)
 		if(FFTW_FOUND)
 			target_link_libraries(${testName} PUBLIC ${FFTW_LIBRARY})
 		endif()
+		if(MSVC)
+			target_compile_definitions(${testName} PUBLIC _CRT_SECURE_NO_WARNINGS _CRT_OBSOLETE_NO_WARNINGS)
+		endif()
+		target_compile_options(${testName} PRIVATE ${LIBSAMPLERATE_WARNINGS})
 		add_test(NAME ${testName} COMMAND ${testName})
 	endforeach(testSrc)
 endif()
@@ -139,7 +169,7 @@ if(LIBSAMPLERATE_EXAMPLES)
 		add_executable(${exampleName}
 			${exampleSrc}
 			${PROJECT_SOURCE_DIR}/examples/audio_out.c)
-	target_link_libraries(${exampleName} PUBLIC samplerate)
+		target_link_libraries(${exampleName} PUBLIC samplerate)
 		if(ALSA_FOUND)
 			target_link_libraries(${exampleName} PUBLIC ${ALSA_LIBRARY})
 		endif()
@@ -152,6 +182,7 @@ if(LIBSAMPLERATE_EXAMPLES)
 		if (APPLE)
 			target_link_libraries (${exampleName} PUBLIC  "-framework CoreAudio")
 		endif()
+    target_compile_options(${exampleName} PRIVATE ${LIBSAMPLERATE_WARNINGS})
 	endforeach(exampleSrc)
 endif() 
 
