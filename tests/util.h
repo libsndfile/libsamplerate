@@ -20,6 +20,15 @@
 
 #define	ARRAY_LEN(x)	((int) (sizeof (x) / sizeof ((x) [0])))
 
+#ifdef _MSC_VER
+#define MSVC_DISABLE_WARNING(n) __pragma(warning(push)) \
+                                __pragma(warning(disable:n))
+#define MSVC_POP_WARNING() __pragma(warning(pop))
+#else
+#define MSVC_DISABLE_WARNING(n)
+#define MSVC_POP_WARNING()
+#endif
+
 void gen_windowed_sines (int freq_count, const double *freqs, double max, float *output, int output_len) ;
 
 void save_oct_float (char *filename, float *input, int in_len, float *output, int out_len) ;

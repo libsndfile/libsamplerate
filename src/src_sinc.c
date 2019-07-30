@@ -31,9 +31,20 @@
 typedef int32_t increment_t ;
 typedef float	coeff_t ;
 
+#ifdef _MSC_VER
+#define MSVC_DISABLE_WARNING(n) __pragma(warning(push)) \
+								__pragma(warning(disable:n))
+#define MSVC_POP_WARNING() __pragma(warning(pop))
+#else
+#define MSVC_DISABLE_WARNING(n)
+#define MSVC_POP_WARNING()
+#endif
+
+MSVC_DISABLE_WARNING(4305)
 #include "fastest_coeffs.h"
 #include "mid_qual_coeffs.h"
 #include "high_qual_coeffs.h"
+MSVC_POP_WARNING()
 
 typedef struct
 {	int		sinc_magic_marker ;
@@ -479,8 +490,10 @@ calc_output_stereo (SINC_FILTER *filter, increment_t increment, increment_t star
 		}
 	while (filter_index > MAKE_INCREMENT_T (0)) ;
 
+	MSVC_DISABLE_WARNING(4244)
 	output [0] = scale * (left [0] + right [0]) ;
 	output [1] = scale * (left [1] + right [1]) ;
+	MSVC_POP_WARNING()
 } /* calc_output_stereo */
 
 static int
@@ -632,10 +645,12 @@ calc_output_quad (SINC_FILTER *filter, increment_t increment, increment_t start_
 		}
 	while (filter_index > MAKE_INCREMENT_T (0)) ;
 
+	MSVC_DISABLE_WARNING(4244)
 	output [0] = scale * (left [0] + right [0]) ;
 	output [1] = scale * (left [1] + right [1]) ;
 	output [2] = scale * (left [2] + right [2]) ;
 	output [3] = scale * (left [3] + right [3]) ;
+	MSVC_POP_WARNING()
 } /* calc_output_quad */
 
 static int
@@ -791,12 +806,14 @@ calc_output_hex (SINC_FILTER *filter, increment_t increment, increment_t start_f
 		}
 	while (filter_index > MAKE_INCREMENT_T (0)) ;
 
+	MSVC_DISABLE_WARNING(4244)
 	output [0] = scale * (left [0] + right [0]) ;
 	output [1] = scale * (left [1] + right [1]) ;
 	output [2] = scale * (left [2] + right [2]) ;
 	output [3] = scale * (left [3] + right [3]) ;
 	output [4] = scale * (left [4] + right [4]) ;
 	output [5] = scale * (left [5] + right [5]) ;
+	MSVC_POP_WARNING()
 } /* calc_output_hex */
 
 static int
@@ -1028,6 +1045,7 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 	ch = channels ;
 	do
 	{
+		MSVC_DISABLE_WARNING(4244)
 		switch (ch % 8)
 		{	default :
 				ch -- ;
@@ -1062,6 +1080,7 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 				output [ch] = scale * (left [ch] + right [ch]) ;
 			} ;
 		}
+		MSVC_POP_WARNING()
 	while (ch > 0) ;
 
 	return ;

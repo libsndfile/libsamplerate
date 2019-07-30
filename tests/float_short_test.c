@@ -44,6 +44,7 @@ main (void)
 static void
 float_to_short_test (void)
 {
+	MSVC_DISABLE_WARNING(4305)
 	static float fpos [] =
 	{	0.95, 0.99, 1.0, 1.01, 1.1, 2.0, 11.1, 111.1, 2222.2, 33333.3,
 		// Some "almost 1" as corner cases
@@ -56,6 +57,7 @@ float_to_short_test (void)
 		-32767.0 / 32768.0, -(32767.0 + 0.4) / 32768.0, -(32767.0 + 0.5) / 32768.0,
 		-(32767.0 + 0.6) / 32768.0, -(32767.0 + 0.9) / 32768.0,
 		} ;
+	MSVC_POP_WARNING()
 
 	static short out [MAX (ARRAY_LEN (fpos), ARRAY_LEN (fneg))] ;
 
@@ -121,12 +123,14 @@ short_to_float_test (void)
 static void
 float_to_int_test (void)
 {
+	MSVC_DISABLE_WARNING(4305)
 	static float fpos [] =
 	{	0.95, 0.99, 1.0, 1.01, 1.1, 2.0, 11.1, 111.1, 2222.2, 33333.3
 		} ;
 	static float fneg [] =
 	{	-0.95, -0.99, -1.0, -1.01, -1.1, -2.0, -11.1, -111.1, -2222.2, -33333.3
 		} ;
+	MSVC_POP_WARNING()
 
 	static int out [MAX (ARRAY_LEN (fpos), ARRAY_LEN (fneg))] ;
 
