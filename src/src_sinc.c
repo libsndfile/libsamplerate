@@ -140,7 +140,7 @@ int
 sinc_set_converter (SRC_PRIVATE *psrc, int src_enum)
 {	SINC_FILTER *filter, temp_filter ;
 	increment_t count ;
-	int bits ;
+	uint32_t bits ;
 
 	/* Quick sanity check. */
 	if (SHIFT_BITS >= sizeof (increment_t) * 8 - 1)
@@ -1158,6 +1158,9 @@ prepare_data (SINC_FILTER *filter, SRC_DATA *data, int half_filter_chan_len)
 
 	if (filter->b_real_end >= 0)
 		return 0 ;	/* Should be terminating. Just return. */
+
+	if (data->data_in == NULL)
+		return 0 ;
 
 	if (filter->b_current == 0)
 	{	/* Initial state. Set up zeros at the start of the buffer and
