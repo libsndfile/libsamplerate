@@ -510,7 +510,7 @@ src_float_to_short_array (const float *in, short *out, int len)
 			continue ;
 			} ;
 
-		out [len] = (short) (lrint (scaled_value) >> 16) ;
+		out [len] = (short) (lrint (scaled_value) / 0x10000) ;
 		} ;
 
 } /* src_float_to_short_array */
