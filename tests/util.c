@@ -36,17 +36,13 @@ gen_windowed_sines (int freq_count, const double *freqs, double max, float *outp
 			exit (1) ;
 			} ;
 
-		MSVC_DISABLE_WARNING(4244)
 		for (k = 0 ; k < output_len ; k++)
-			output [k] += amplitude * sin (freqs [freq] * (2 * k) * M_PI + phase) ;
-		MSVC_POP_WARNING()
+			output [k] = (float) (output [k] + amplitude * sin (freqs [freq] * (2 * k) * M_PI + phase)) ;
 		} ;
 
 	/* Apply Hanning Window. */
-	MSVC_DISABLE_WARNING(4244)
 	for (k = 0 ; k < output_len ; k++)
-		output [k] *= 0.5 - 0.5 * cos ((2 * k) * M_PI / (output_len - 1)) ;
-	MSVC_POP_WARNING()
+		output [k] = (float) (output [k] * (0.5 - 0.5 * cos ((2 * k) * M_PI / (output_len - 1)))) ;
 
 	/*	data [k] *= 0.3635819 - 0.4891775 * cos ((2 * k) * M_PI / (output_len - 1))
 					+ 0.1365995 * cos ((4 * k) * M_PI / (output_len - 1))
