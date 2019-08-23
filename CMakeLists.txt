@@ -37,6 +37,21 @@ if(WIN32)
 	include_directories(Win32)
 endif()
 
+if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
+  option(LIBSAMPLERATE_ENABLE_SANITIZERS "Enable ASAN and UBSAN" OFF)
+
+  if(LIBSAMPLERATE_ENABLE_SANITIZERS)
+    # Use ASAN and UBSAN, make it fail on any error, improve stack traces
+    set(sanitizer_flags -fsanitize=address,undefined -fno-sanitize-recover=all -fno-omit-frame-pointer)
+
+    add_compile_options(${sanitizer_flags})
+    string(REPLACE ";" " " sanitizer_flags "${sanitizer_flags}")
+    string(APPEND CMAKE_EXE_LINKER_FLAGS " ${sanitizer_flags}")
+    string(APPEND CMAKE_MODULE_LINKER_FLAGS " ${sanitizer_flags}")
+    string(APPEND CMAKE_SHARED_LINKER_FLAGS " ${sanitizer_flags}")
+  endif()
+endif()
+
 test_big_endian(CPU_IS_BIG_ENDIAN)
 if(CPU_IS_BIG_ENDIAN)
 	set(CPU_IS_LITTLE_ENDIAN 0)
