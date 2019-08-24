@@ -23,7 +23,7 @@
 #define fftw_cleanup()
 #endif
 
-#define	BUFFER_LEN		(1 << 15)
+#define	BUFFER_LEN		(1 << 14)
 
 static void varispeed_test (int converter, double target_snr) ;
 static void varispeed_bounds_test (int converter) ;
@@ -221,22 +221,20 @@ set_ratio_test (int converter, int channels, double initial_ratio, double second
 	src_data.input_frames = chunk_size ;
 	src_data.output_frames = total_output_frames ;
 
-	/* Process one chunk at initial_ratio. */
-	if ((error = src_process (src_state, &src_data)))
-	{	printf ("\n\nLine %d : %s : %s\n\n", __LINE__, details, src_strerror (error)) ;
-		exit (1) ;
-		} ;
-
-	/* Now hard switch to second_ratio ... */
-	src_data.src_ratio = second_ratio ;
-	if ((error = src_process (src_state, &src_data)))
-	{	printf ("\n\nLine %d : %s : %s\n\n", __LINE__, details, src_strerror (error)) ;
-		exit (1) ;
-		} ;
-
-	/* ... and process the remaining. */
+	/* Use a max_loop_count here to enable the detection of infinite loops
+	** (due to end of input not being detected.
+	*/
 	for (k = 0 ; k < max_loop_count ; k ++)
-	{	if ((error = src_process (src_state, &src_data)) != 0)
+	{	if (k == 1)
+		{	/* Hard switch to second_ratio after processing one chunk. */
+			src_data.src_ratio = second_ratio ;
+			if ((error = src_set_ratio (src_state, second_ratio)))
+			{	printf ("\n\nLine %d : %s : %s\n\n", __LINE__, details, src_strerror (error)) ;
+				exit (1) ;
+				} ;
+			} ;
+
+		if ((error = src_process (src_state, &src_data)) != 0)
 		{	printf ("\n\nLine %d : %s : %s\n\n", __LINE__, details, src_strerror (error)) ;
 			exit (1) ;
 			} ;
