@@ -29,6 +29,12 @@ double calculate_snr (float *data, int len, int expected_peaks) ;
 
 const char * get_cpu_name (void) ;
 
+#define ASSERT(condition) \
+	if (!(condition)) \
+	{	printf ("Condition failed on Line %d : %s\n\n", __LINE__, #condition) ; \
+		exit (1) ; \
+	    } ;
+
 #if OS_IS_WIN32
 /*
 **	Extra Win32 hacks.
