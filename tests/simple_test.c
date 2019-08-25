@@ -18,11 +18,13 @@
 #define	BUFFER_LEN		2048
 
 static void simple_test (int converter, double ratio) ;
+static void src_simple_produces_output (int converter, int channels, double src_ratio) ;
+static void src_simple_produces_output_test (int converter, double src_ratio) ;
 
 int
 main (void)
 {	static double src_ratios [] =
-	{	1.0001, 0.099, 0.1, 0.33333333, 0.789, 1.9, 3.1, 9.9
+	{	1.0001, 0.099, 0.1, 0.33333333, 0.789, 1.9, 3.1, 9.9, 256.0, 1.0 / 256.0
 	} ;
 
 	int k ;
@@ -31,20 +33,73 @@ main (void)
 
 	puts ("    Zero Order Hold interpolator :") ;
 	for (k = 0 ; k < ARRAY_LEN (src_ratios) ; k++)
-		simple_test (SRC_ZERO_ORDER_HOLD, src_ratios [k]) ;
+	{	simple_test (SRC_ZERO_ORDER_HOLD, src_ratios [k]) ;
+		src_simple_produces_output_test (SRC_ZERO_ORDER_HOLD, src_ratios [k]) ;
+		}
 
 	puts ("    Linear interpolator :") ;
 	for (k = 0 ; k < ARRAY_LEN (src_ratios) ; k++)
-		simple_test (SRC_LINEAR, src_ratios [k]) ;
+	{	simple_test (SRC_LINEAR, src_ratios [k]) ;
+		src_simple_produces_output_test (SRC_LINEAR, src_ratios [k]) ;
+		}
 
 	puts ("    Sinc interpolator :") ;
 	for (k = 0 ; k < ARRAY_LEN (src_ratios) ; k++)
-		simple_test (SRC_SINC_FASTEST, src_ratios [k]) ;
+	{	simple_test (SRC_SINC_FASTEST, src_ratios [k]) ;
+		src_simple_produces_output_test (SRC_SINC_FASTEST, src_ratios [k]) ;
+		}
 
 	puts ("") ;
 
 	return 0 ;
 } /* main */
+
+static void
+src_simple_produces_output_test (int converter, double src_ratio)
+{
+	for (int channels = 1; channels <= 9; channels++)
+		src_simple_produces_output(converter, channels, src_ratio);
+}
+
+static void
+src_simple_produces_output (int converter, int channels, double src_ratio)
+{
+	// Choose a suitable number of frames.
+	// At least 256 so a conversion ratio of 1/256 can produce any output
+	const long NUM_FRAMES = 1000;
+	int error;
+
+	printf ("\tproduces_output\t(SRC ratio = %6.4f, channels = %d) ... ", src_ratio, channels) ;
+	fflush (stdout) ;
+
+	float *input = calloc (NUM_FRAMES * channels, sizeof (float));
+	float *output = calloc (NUM_FRAMES * channels, sizeof (float));
+
+	SRC_DATA src_data;
+	memset (&src_data, 0, sizeof (src_data)) ;
+	src_data.data_in = input;
+	src_data.data_out = output;
+	src_data.input_frames = NUM_FRAMES;
+	src_data.output_frames = NUM_FRAMES;
+	src_data.src_ratio = src_ratio;
+
+	if ((error = src_simple (&src_data, converter, channels)))
+	{	printf ("\n\nLine %d : %s\n\n", __LINE__, src_strerror (error)) ;
+		exit (1) ;
+		} ;
+	if (src_data.input_frames_used == 0)
+	{	printf ("\n\nLine %d : No input frames used.\n\n", __LINE__) ;
+		exit (1) ;
+		} ;
+	if (src_data.output_frames_gen == 0)
+	{	printf ("\n\nLine %d : No output frames generated.\n\n", __LINE__) ;
+		exit (1) ;
+		} ;
+	free(input);
+	free(output);
+	puts ("ok") ;
+}
+
 
 static void
 simple_test (int converter, double src_ratio)
@@ -54,7 +109,7 @@ simple_test (int converter, double src_ratio)
 
 	int input_len, output_len, error, terminate ;
 
-	printf ("\tsimple_test      (SRC ratio = %6.4f) ........... ", src_ratio) ;
+	printf ("\tsimple_test\t(SRC ratio = %6.4f) ................. ", src_ratio) ;
 	fflush (stdout) ;
 
 	/* Calculate maximun input and output lengths. */
