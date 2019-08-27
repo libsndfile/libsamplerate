@@ -24,8 +24,8 @@
 static float input [BUFFER_LEN] ;
 static float output [BUFFER_LEN] ;
 
-static long
-throughput_test (int converter, int channels, long best_throughput)
+static void
+throughput_test (int converter, int channels, long *best_throughput)
 {	SRC_DATA src_data ;
 	clock_t start_time, clock_time ;
 	double duration ;
@@ -76,16 +76,14 @@ throughput_test (int converter, int channels, long best_throughput)
 
 	throughput = lrint (floor (total_frames / duration)) ;
 
-	if (best_throughput == 0)
-	{	best_throughput = MAX (throughput, best_throughput) ;
-		printf ("%5.2f      %10ld\n", duration, throughput) ;
+	if (!best_throughput)
+	{	printf ("%5.2f      %10ld\n", duration, throughput) ;
 		}
 	else
-	{	best_throughput = MAX (throughput, best_throughput) ;
-		printf ("%5.2f      %10ld       %10ld\n", duration, throughput, best_throughput) ;
+	{	*best_throughput = MAX (throughput, *best_throughput) ;
+		printf ("%5.2f      %10ld       %10ld\n", duration, throughput, *best_throughput) ;
 		}
 
-	return best_throughput ;
 } /* throughput_test */
 
 static void
@@ -118,7 +116,7 @@ single_run (void)
 
 static void
 multi_run (int run_count)
-{	int k, ch ;
+{	int channels[] = {1, 2, 3, 4, 5, 6, 8, 10, 12, 14, 16, 18};
 
 	printf ("\n    CPU name : %s\n", get_cpu_name ()) ;
 
@@ -128,13 +126,14 @@ multi_run (int run_count)
 		"    ----------------------------------------------------------------------------------------"
 		) ;
 
-	for (ch = 1 ; ch <= 5 ; ch++)
+	for (int i = 0 ; i < ARRAY_LEN(channels) ; i++)
 	{	long sinc_fastest = 0, sinc_medium = 0, sinc_best = 0 ;
+		int ch = channels[i];
 
-		for (k = 0 ; k < run_count ; k++)
-		{	sinc_fastest =		throughput_test (SRC_SINC_FASTEST, ch, sinc_fastest) ;
-			sinc_medium =		throughput_test (SRC_SINC_MEDIUM_QUALITY, ch, sinc_medium) ;
-			sinc_best =			throughput_test (SRC_SINC_BEST_QUALITY, ch, sinc_best) ;
+		for (int k = 0 ; k < run_count ; k++)
+		{	throughput_test (SRC_SINC_FASTEST, ch, &sinc_fastest) ;
+			throughput_test (SRC_SINC_MEDIUM_QUALITY, ch, &sinc_medium) ;
+			throughput_test (SRC_SINC_BEST_QUALITY, ch, &sinc_best) ;
 
 			puts ("") ;
 
@@ -142,10 +141,11 @@ multi_run (int run_count)
 			sleep (10) ;
 			} ;
 
-		puts (
+		printf (
 			"\n"
-			"    Converter                        Best Throughput\n"
-			"    ------------------------------------------------"
+			"    Converter (channels: %d)         Best Throughput\n"
+			"    ------------------------------------------------\n",
+			ch
 			) ;
 
 		printf ("    %-30s    %10ld\n", src_get_name (SRC_SINC_FASTEST), sinc_fastest) ;
