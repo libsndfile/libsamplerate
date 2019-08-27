@@ -903,10 +903,9 @@ sinc_hex_vari_process (SRC_PRIVATE *psrc, SRC_DATA *data)
 static inline void
 calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index, int channels, double scale, float * output)
 {	double		fraction, icoeff ;
-	/* The following line is 1999 ISO Standard C. If your compiler complains, get a better compiler. */
 	double		*left, *right ;
 	increment_t	filter_index, max_filter_index ;
-	int			data_index, coeff_count, indx, ch ;
+	int			data_index, coeff_count, indx ;
 
 	left = filter->left_calc ;
 	right = filter->right_calc ;
@@ -929,49 +928,10 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
 
 		if (data_index >= 0) /* Avoid underflow access to filter->buffer. */
-		{	/*
-			**	Duff's Device.
-			**	See : http://en.wikipedia.org/wiki/Duff's_device
-			*/
-			assert (data_index >= 0 && data_index + channels - 1 < filter->b_len) ;
+		{	assert (data_index >= 0 && data_index + channels - 1 < filter->b_len) ;
 			assert (data_index + channels - 1 < filter->b_end) ;
-			ch = channels ;
-			do
-			{	switch (ch % 8)
-				{	default :
-						ch -- ;
-						left [ch] += icoeff * filter->buffer [data_index + ch] ;
-						/* Falls through. */
-					case 7 :
-						ch -- ;
-						left [ch] += icoeff * filter->buffer [data_index + ch] ;
-						/* Falls through. */
-					case 6 :
-						ch -- ;
-						left [ch] += icoeff * filter->buffer [data_index + ch] ;
-						/* Falls through. */
-					case 5 :
-						ch -- ;
-						left [ch] += icoeff * filter->buffer [data_index + ch] ;
-						/* Falls through. */
-					case 4 :
-						ch -- ;
-						left [ch] += icoeff * filter->buffer [data_index + ch] ;
-						/* Falls through. */
-					case 3 :
-						ch -- ;
-						left [ch] += icoeff * filter->buffer [data_index + ch] ;
-						/* Falls through. */
-					case 2 :
-						ch -- ;
-						left [ch] += icoeff * filter->buffer [data_index + ch] ;
-						/* Falls through. */
-					case 1 :
-						ch -- ;
-						left [ch] += icoeff * filter->buffer [data_index + ch] ;
-					} ;
-				}
-			while (ch > 0) ;
+			for (int ch = 0; ch < channels; ch++)
+				left [ch] += icoeff * filter->buffer [data_index + ch] ;
 			} ;
 
 		filter_index -= increment ;
@@ -993,88 +953,16 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 		icoeff = filter->coeffs [indx] + fraction * (filter->coeffs [indx + 1] - filter->coeffs [indx]) ;
 		assert (data_index >= 0 && data_index + channels - 1 < filter->b_len) ;
 		assert (data_index + channels - 1 < filter->b_end) ;
-		ch = channels ;
-		do
-		{
-			switch (ch % 8)
-			{	default :
-					ch -- ;
-					right [ch] += icoeff * filter->buffer [data_index + ch] ;
-					/* Falls through. */
-				case 7 :
-					ch -- ;
-					right [ch] += icoeff * filter->buffer [data_index + ch] ;
-					/* Falls through. */
-				case 6 :
-					ch -- ;
-					right [ch] += icoeff * filter->buffer [data_index + ch] ;
-					/* Falls through. */
-				case 5 :
-					ch -- ;
-					right [ch] += icoeff * filter->buffer [data_index + ch] ;
-					/* Falls through. */
-				case 4 :
-					ch -- ;
-					right [ch] += icoeff * filter->buffer [data_index + ch] ;
-					/* Falls through. */
-				case 3 :
-					ch -- ;
-					right [ch] += icoeff * filter->buffer [data_index + ch] ;
-					/* Falls through. */
-				case 2 :
-					ch -- ;
-					right [ch] += icoeff * filter->buffer [data_index + ch] ;
-					/* Falls through. */
-				case 1 :
-					ch -- ;
-					right [ch] += icoeff * filter->buffer [data_index + ch] ;
-				} ;
-			}
-		while (ch > 0) ;
+		for (int ch = 0; ch < channels; ch++)
+			right [ch] += icoeff * filter->buffer [data_index + ch] ;
 
 		filter_index -= increment ;
 		data_index = data_index - channels ;
 		}
 	while (filter_index > MAKE_INCREMENT_T (0)) ;
 
-	ch = channels ;
-	do
-	{
-		switch (ch % 8)
-		{	default :
-				ch -- ;
-				output [ch] = scale * (left [ch] + right [ch]) ;
-				/* Falls through. */
-			case 7 :
-				ch -- ;
-				output [ch] = scale * (left [ch] + right [ch]) ;
-				/* Falls through. */
-			case 6 :
-				ch -- ;
-				output [ch] = scale * (left [ch] + right [ch]) ;
-				/* Falls through. */
-			case 5 :
-				ch -- ;
-				output [ch] = scale * (left [ch] + right [ch]) ;
-				/* Falls through. */
-			case 4 :
-				ch -- ;
-				output [ch] = scale * (left [ch] + right [ch]) ;
-				/* Falls through. */
-			case 3 :
-				ch -- ;
-				output [ch] = scale * (left [ch] + right [ch]) ;
-				/* Falls through. */
-			case 2 :
-				ch -- ;
-				output [ch] = scale * (left [ch] + right [ch]) ;
-				/* Falls through. */
-			case 1 :
-				ch -- ;
-				output [ch] = scale * (left [ch] + right [ch]) ;
-			} ;
-		}
-	while (ch > 0) ;
+	for(int ch = 0; ch < channels; ch++)
+		output [ch] = scale * (left [ch] + right [ch]) ;
 
 	return ;
 } /* calc_output_multi */
