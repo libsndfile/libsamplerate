@@ -223,7 +223,7 @@ dnl ============================================================================
 dnl  Compiler stuff.
 
 AS_IF([test "x$enable_flags_setting" = "xyes"], [
-		AX_APPEND_COMPILE_FLAGS([-DHAVE_CONFIG_H -O2 -pipe], [CFLAGS])
+		AX_APPEND_COMPILE_FLAGS([-DHAVE_CONFIG_H -O2 -pipe -DNDEBUG], [CFLAGS])
 
 		AS_CASE([${host_os}],
 			[darwin*], [
