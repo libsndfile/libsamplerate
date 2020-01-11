@@ -250,7 +250,7 @@ snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose)
 	if (verbose != 0)
 		printf ("\tOutput Len  :   %ld\n", src_data.output_frames_gen) ;
 
-	if (abs (src_data.output_frames_gen - output_len) > 4)
+	if (abs ((int) (src_data.output_frames_gen - output_len)) > 4)
 	{	printf ("\n\nLine %d : output data length should be %d.\n\n", __LINE__, output_len) ;
 		exit (1) ;
 		} ;
