@@ -5,13 +5,10 @@ dist: xenial
 jobs:
   fast_finish: true
   include:
-    - sudo: required
-      env: USING_AUTOTOOLS=yes
-      before_install:
-        - sudo add-apt-repository ppa:ondrej/autotools -y # automake 1.15
-        - sudo add-apt-repository ppa:cz.nic-labs/knot-dns -y # pkg-config 0.29.2
-        - sudo apt-get update
-        - sudo apt-get install -y autoconf automake-1.15 pkg-config m4
+    - env: USING_AUTOTOOLS=yes
+      addons:
+        apt:
+          packages: [libsndfile-dev, libfftw3-dev, libasound2-dev,  autoconf, automake-1.15, pkg-config, m4]
       script:
         - ./autogen.sh && ./configure --enable-sndfile --enable-alsa && make distcheck
         - cat src/config.h
