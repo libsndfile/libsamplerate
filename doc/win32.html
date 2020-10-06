@@ -57,74 +57,17 @@ Author :<BR>Erik de Castro Lopo
 <TD VALIGN="top">
 <DIV CLASS="block">
 
-<H1><B>Compiling on Win32.</B></H1>
+<H1>Compiling on Win32</H1>
 <P>
-For Win32 there is a Microsoft Visual C++ compatible makefile in the <B>Win32\</B>
-directory and a MSDOS batch file in the top level directory of the distribution. 
+	You can use <A HREF="https://cmake.org/">CMake</A> to generate Visual Studio project.
+	The configuration process is described <A HREF="https://cmake.org/runningcmake/">here</A>.
 </P>
 <P>
-To build the examples programs you will need to download the precompiled
-win32 or win64
-	<A HREF="https://github.com/libsndfile/libsndfile/releases">libsndfile</A>
-binary and install them.
-
-</P>
-<P>
-Making the libsamplerate DLL on Win32 involves the following:
-</P>
-<OL>
-	<LI> Using WinZip in the GUI, open the libsamplerate-0.X.Y.tar.gz file and 
-			extract the files into a directory. The following example assumes 
-		<B>C:\</B>.
-	<LI> In the directory containing the extracted files, find the file 
-	    	<B>Win32\Makefile.msvc</B> and open it in a text editor (ie Notepad or 
-			similar). 
-	<LI> Find the line which starts with <B>MSVCDir</B> and modify the directory
-		    path to point to the location of MSVC++ on your machine. This allows the
-			makefile to inform the compiler of the location of the standard header
-			files.
-    <LI> Copy <B>libsndfile-1.dll</B>, <B>libsndfile-1.lib</B> and
-			<B>libsndfile-1.def</B> from the directory libsndfile was installed in
-			to the the directory containing libsamplerate.
-    <LI> Copy the header file <B>include/sndfile.h</B> from where libsndfile was
-			installed to the <B>Win32</B> directory under the libsamplerate
-			directory.
-	<LI> Open a Command Shell and cd into the libsamplerate-0.X.Y directory.
-	<LI> Make sure that the program <B>nmake</B> (which is part of the MSCV++ 
-			package) is in a directory which is part of your <B>PATH</B> variable.
-	<LI> Type in the command 
-		<PRE>    C:\libsamplerate-0.X.Y> make
-		</PRE>
-			and press &lt;return&gt;. You should now see a a large number of compile
-			commands as libsamplerate.dll is built. 
-	<LI> To check that the built DLL has been compiled correctly type in and run the
-			command
-		<PRE>    C:\libsamplerate-0.X.Y> make check
-		</PRE>
-			which will compile a set of test programs and run them. 
-			If any of the programs fail the error message will be help in debugging 
-			the problem.
-			(Note that some of the tests require libsndfile or libfftw/librfftw and
-			are not able to run on Win32).
-</OL>
-<P>
-At the end of the above procedure, you will find the DLL, <B>libsamplerate.dll</B>, a
-LIB file <B>libsamplerate.lib</B> in the current directory. These two files, along
-with the header file <B>samplerate.h</B> (in the <B>src\</B> directory) are all that 
-you need to copy to your project in order to use libsamplerate.
-</P>
-
-<H2><BR>Compile Problems</H2>
-<P>
-If you run into compile problems using the above procedure, you should 
-	<A HREF="lists.html"> join the main mailing list </A>
-and post your problem and/or questions there. 
-Please include any error messages generated during step 6 above.
-</P>
-
-<P>
-If you are using some other method to compile the libsamplerate DLL you are 
-probably on your own.
+	The libsamplerate library itself does not require any dependencies, but if you want to build
+	examples and tests, you will need the <A HREF="https://github.com/libsndfile/libsndfile">libsndfile</A>
+	and <A HREF="http://www.fftw.org/">FFTW</A> libraries. The easiest way to install them is to use a package
+	manager, such as <A HREF="">Vcpkg</A>. Their README.md contains detailed installation instructions for
+	supported platforms. Libsamplerate requires the <CODE>libsndfile</CODE> and <CODE>fftw3</CODE> packages.
 </P>
 <BR>
 

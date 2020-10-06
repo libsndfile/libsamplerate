@@ -24,25 +24,65 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# - Find FFTW
-# Find the native FFTW includes and library
+# - Find FFTW3
+# Find the native FFTW3 includes and library
 #
-#  FFTW_INCLUDE_DIR   - where to find fftw3.h
-#  FFTW_LIBRARY       - List of libraries when using FFTW.
-#  FFTW_FOUND         - True if FFTW found.
+#  Cache variables:
+#
+#  FFTW3_INCLUDE_DIR  - where to find fftw3.h
+#  FFTW3_LIBRARY      - Path to FFTW3 libray.
+#  FFTW3_ROOT         - Root of FFTW3 installation.
+#
+#  User variables:
+#
+#  FFTW3_INCLUDE_DIRS - where to find fftw3.h
+#  FFTW3_LIBRARIES    - List of libraries when using FFTW3.
+#  FFTW3_FOUND        - True if FFTW3 found.
 
-if (FFTW_INCLUDE_DIR)
+
+if(FFTW3_INCLUDE_DIR)
   # Already in cache, be silent
-  set (FFTW_FIND_QUIETLY TRUE)
-endif (FFTW_INCLUDE_DIR)
+  set(FFTW3_FIND_QUIETLY TRUE)
+endif(FFTW3_INCLUDE_DIR)
 
-find_path (FFTW_INCLUDE_DIR fftw3.h)
+find_package(PkgConfig QUIET)
+pkg_check_modules(PC_FFTW3 QUIET fftw)
 
-find_library (FFTW_LIBRARY NAMES fftw3)
+set(FFTW3_VERSION ${PC_FFTW3_VERSION})
 
-# handle the QUIETLY and REQUIRED arguments and set FFTW_FOUND to TRUE if
+find_path(FFTW3_INCLUDE_DIR fftw3.h
+  HINTS
+    ${PC_FFTW3_INCLUDEDIR}
+    ${PC_FFTW3_INCLUDE_DIRS}
+    ${FFTW3_ROOT})
+
+find_library(FFTW3_LIBRARY NAMES fftw3
+  HINTS
+    ${PC_FFTW3_LIBDIR}
+    ${PC_FFTW3_LIBRARY_DIRS}
+    ${FFTW3_ROOT})
+
+# handle the QUIETLY and REQUIRED arguments and set FFTW3_FOUND to TRUE if
 # all listed variables are TRUE
-include (FindPackageHandleStandardArgs)
-find_package_handle_standard_args (FFTW DEFAULT_MSG FFTW_LIBRARY FFTW_INCLUDE_DIR)
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(FFTW3
+  REQUIRED_VARS
+    FFTW3_LIBRARY
+    FFTW3_INCLUDE_DIR
+  VERSION_VAR
+    FFTW3_VERSION)
 
-mark_as_advanced (FFTW_LIBRARY FFTW_INCLUDE_DIR)
+if(FFTW3_FOUND)
+	set(FFTW3_LIBRARIES ${FFTW3_LIBRARY})
+	set(FFTW3_INCLUDE_DIRS ${FFTW3_INCLUDE_DIR})
+	
+	if(NOT TARGET FFTW3::fftw3)
+	  add_library(FFTW3::fftw3 UNKNOWN IMPORTED)
+		set_target_properties(FFTW3::fftw3 PROPERTIES
+			INTERFACE_INCLUDE_DIRECTORIES "${FFTW3_INCLUDE_DIR}"
+			IMPORTED_LOCATION "${FFTW3_LIBRARY}"
+		)
+  endif()
+endif()
+
+mark_as_advanced(FFTW3_LIBRARY FFTW3_INCLUDE_DIR)
