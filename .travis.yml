@@ -15,7 +15,7 @@ jobs:
 
 addons:
   apt:
-    packages: [libsndfile-dev, libfftw3-dev, libasound2-dev]
+    packages: [libsndfile-dev, libopus-dev, libfftw3-dev, libasound2-dev]
 
 env:
   - CMAKE_SHARED=OFF BUILD_TYPE=Debug
