@@ -1,4 +1,4 @@
-<img src="https://github.com/libsndfile/libsamplerate/doc/SRC.png" width="350"></img>
+<img src="https://github.com/libsndfile/libsamplerate/blob/master/doc/SRC.png" width="350"></img>
 
 This is libsamplerate, `0.1.9`.
 
