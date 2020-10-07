@@ -3,7 +3,7 @@
 ** All rights reserved.
 **
 ** This code is released under 2-clause BSD license. Please see the
-** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
+** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
 #include <stdio.h>
@@ -175,7 +175,7 @@ usage_exit (const char *progname, const RESAMPLE_PROG *prog, int count)
 
 	puts ("\n"
 		" Obviously to test a given program you have to have it available on\n"
-		" your system. See http://www.mega-nerd.com/SRC/quality.html for\n"
+		" your system. See http://libsndfile.github.io/libsamplerate/quality.html for\n"
 		" the download location of these programs.\n") ;
 
 	exit (1) ;

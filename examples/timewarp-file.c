@@ -3,7 +3,7 @@
 ** All rights reserved.
 **
 ** This code is released under 2-clause BSD license. Please see the
-** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
+** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
 #include "src_config.h"
@@ -217,7 +217,7 @@ main (void)
 		"\n"
 		"****************************************************************\n"
 		"  This example program was compiled without libsndfile \n"
-		"  (http://www.mega-nerd.com/libsndfile/).\n"
+		"  (https://github.com/libsndfile/libsndfile/).\n"
 		"  It is therefore completely broken and non-functional.\n"
 		"****************************************************************\n"
 		"\n"

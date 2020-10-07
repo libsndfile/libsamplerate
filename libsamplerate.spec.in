@@ -12,7 +12,7 @@ Prefix: %{prefix}
 Copyright: BSD
 Group: Libraries/Sound
 Source: http://www.mega-nerd.com/SRC/libsamplerate-%{version}.tar.gz
-URL: http://www.mega-nerd.com/SRC/
+URL: https://github.com/libsndfile/libsamplerate/
 BuildRoot: /var/tmp/%{name}-%{version}
 
 %description
