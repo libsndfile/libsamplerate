@@ -141,7 +141,7 @@ CHECK: $(TEST_PROGS)
 sndfile.h libsndfile-1.dll libsndfile-1.def :
 	-@echo *---------------------------------------------------------------
 	-@echo * You need to get the pre-built Win32 binaries for libsndfile
-	-@echo * from : http://www.mega-nerd.com/libsndfile
+	-@echo * from : http://libsndfile.github.io/libsndfile/
 	-@echo * The prebuilt binaries will be in a ZIP file which contains
 	-@echo * the files :
 	-@echo * sndfile.h libsndfile-1.dll libsndfile-1.def

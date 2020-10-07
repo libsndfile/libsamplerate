@@ -4,7 +4,7 @@ dnl Require autoconf version >= 2.69)
 AC_PREREQ([2.69])
 
 AC_INIT([libsamplerate],[0.1.9],[erikd@mega-nerd.com],
-		[libsamplerate],[http://www.mega-nerd.com/libsamplerate/])
+		[libsamplerate],[https://github.com/libsndfile/libsamplerate/])
 
 dnl Check whether we want to set defaults for CFLAGS, CPPFLAGS and LDFLAGS
 AC_MSG_CHECKING([whether configure should try to set CFLAGS/CPPFLAGS/LDFLAGS])

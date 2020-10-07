@@ -3,12 +3,12 @@
 ** All rights reserved.
 **
 ** This code is released under 2-clause BSD license. Please see the
-** file at : https://github.com/erikd/libsamplerate/blob/master/COPYING
+** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
 /*
 ** API documentation is available here:
-**     http://www.mega-nerd.com/SRC/api.html
+**     http://libsndfile.github.io/libsamplerate/api.html
 */
 
 #ifndef SAMPLERATE_H
