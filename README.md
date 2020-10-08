@@ -21,9 +21,9 @@ Additional references:
 
 | Branch         | Status                                                                                                            |
 |----------------|-------------------------------------------------------------------------------------------------------------------|
-| `master`       | [![Build Status](https://travis-ci.org/erikd/libsamplerate.svg?branch=master)](https://travis-ci.org/erikd/libsamplerate)       |
+| `master`       | [![Build Status](https://travis-ci.org/libsndfile/libsamplerate.svg?branch=master)](https://travis-ci.org/libsndfile/libsamplerate)       |
 
-Branches [actively built](https://travis-ci.org/erikd/libsamplerate/branches) by TravisCI.
+Branches [actively built](https://travis-ci.org/libsndfile/libsamplerate/branches) by TravisCI.
 
 ---
 
