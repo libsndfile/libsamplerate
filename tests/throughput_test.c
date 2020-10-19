@@ -13,6 +13,11 @@
 #include <unistd.h>
 #include <math.h>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#endif
+
 #include <samplerate.h>
 
 #include "src_config.h"
@@ -43,7 +48,11 @@ throughput_test (int converter, long best_throughput)
 
 	src_data.src_ratio = 0.99 ;
 
+#ifndef _WIN32
 	sleep (2) ;
+#else
+	Sleep (2000) ;
+#endif
 
 	start_time = clock () ;
 
@@ -133,7 +142,11 @@ multi_run (int run_count)
 		puts ("") ;
 
 		/* Let the CPU cool down. We might be running on a laptop. */
+#ifndef _WIN32
 		sleep (10) ;
+#else
+		Sleep (10000) ;
+#endif
 		} ;
 
 	printf ("\n    CPU name : %s\n", get_cpu_name ()) ;

@@ -15,6 +15,11 @@
 **  increment        : 128
 */
 
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable: 4305)
+#endif
+
 static const struct fastest_coeffs_s
 {	int increment ;
 	coeff_t coeffs [2464] ;
@@ -2487,3 +2492,7 @@ static const struct fastest_coeffs_s
  0.0	/* Need a final zero coefficient */
 }
 } ; /* fastest_coeffs */
+
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif
