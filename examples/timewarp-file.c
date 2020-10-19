@@ -139,7 +139,7 @@ timewarp_convert (SNDFILE *infile, SNDFILE *outfile, int converter, int channels
 
 		/* If the input buffer is empty, refill it. */
 		if (src_data.input_frames == 0)
-		{	src_data.input_frames = sf_readf_float (infile, input, INPUT_STEP_SIZE) ;
+		{	src_data.input_frames = (long) sf_readf_float (infile, input, INPUT_STEP_SIZE) ;
 			input_count += src_data.input_frames ;
 			src_data.data_in = input ;
 

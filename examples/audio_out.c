@@ -11,6 +11,12 @@
 #include <string.h>
 #include <unistd.h>
 
+#ifdef _WIN32
+#define WIN32_LEAN_AN_MEAN
+#include <windows.h>
+#include <mmsystem.h>
+#endif
+
 #include "src_config.h"
 
 #include "audio_out.h"
@@ -647,9 +653,6 @@ macosx_audio_out_callback (AudioDeviceID device, const AudioTimeStamp* current_t
 
 #if (defined (_WIN32) || defined (WIN32))
 
-#include <windows.h>
-#include <mmsystem.h>
-
 #define	WIN32_BUFFER_LEN	(1<<15)
 #define	WIN32_MAGIC			MAKE_MAGIC ('W', 'i', 'n', '3', '2', 's', 'u', 'x')
 
@@ -678,7 +681,7 @@ static void win32_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, voi
 static void win32_close (AUDIO_OUT *audio_out) ;
 
 static DWORD CALLBACK
-	win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD data, DWORD param1, DWORD param2) ;
+	win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD_PTR data, DWORD_PTR param1, DWORD_PTR param2) ;
 
 static AUDIO_OUT*
 win32_open (int channels, int samplerate)
@@ -701,15 +704,15 @@ win32_open (int channels, int samplerate)
 
 	wf.nChannels = channels ;
 	wf.nSamplesPerSec = samplerate ;
-	wf.nBlockAlign = channels * sizeof (short) ;
+	wf.nBlockAlign = (WORD) (channels * sizeof (short)) ;
 
 	wf.wFormatTag = WAVE_FORMAT_PCM ;
 	wf.cbSize = 0 ;
 	wf.wBitsPerSample = 16 ;
 	wf.nAvgBytesPerSec = wf.nBlockAlign * wf.nSamplesPerSec ;
 
-	error = waveOutOpen (&(win32_out->hwave), WAVE_MAPPER, &wf, (DWORD) win32_audio_out_callback,
-							(DWORD) win32_out, CALLBACK_FUNCTION) ;
+	error = waveOutOpen (&(win32_out->hwave), WAVE_MAPPER, &wf, (DWORD_PTR) win32_audio_out_callback,
+							(DWORD_PTR) win32_out, CALLBACK_FUNCTION) ;
 	if (error)
 	{	puts ("waveOutOpen failed.") ;
 		free (win32_out) ;
@@ -718,7 +721,7 @@ win32_open (int channels, int samplerate)
 
 	waveOutPause (win32_out->hwave) ;
 
-	return (WIN32_AUDIO_OUT *) win32_out ;
+	return (AUDIO_OUT *) win32_out ;
 } /* win32_open */
 
 static void
@@ -765,8 +768,8 @@ win32_play (get_audio_callback_t callback, AUDIO_OUT *audio_out, void *callback_
 	waveOutRestart (win32_out->hwave) ;
 
 	/* Fake 2 calls to the callback function to queue up enough audio. */
-	win32_audio_out_callback (0, MM_WOM_DONE, (DWORD) win32_out, 0, 0) ;
-	win32_audio_out_callback (0, MM_WOM_DONE, (DWORD) win32_out, 0, 0) ;
+	win32_audio_out_callback (0, MM_WOM_DONE, (DWORD_PTR) win32_out, 0, 0) ;
+	win32_audio_out_callback (0, MM_WOM_DONE, (DWORD_PTR) win32_out, 0, 0) ;
 
 	/* Wait for playback to finish. The callback notifies us when all
 	** wave data has been played.
@@ -805,7 +808,7 @@ win32_close (AUDIO_OUT *audio_out)
 } /* win32_close */
 
 static DWORD CALLBACK
-win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD data, DWORD param1, DWORD param2)
+win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD_PTR data, DWORD_PTR param1, DWORD_PTR param2)
 {	WIN32_AUDIO_OUT	*win32_out ;
 	int		read_count, frame_count, k ;
 	short	*sptr ;
@@ -836,7 +839,7 @@ win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD data, DWORD param1, DW
 	sptr = (short*) win32_out->whdr [win32_out->current].lpData ;
 
 	for (k = 0 ; k < read_count ; k++)
-		sptr [k] = lrint (32767.0 * win32_out->float_buffer [k]) ;
+		sptr [k] = (short) lrint (32767.0 * win32_out->float_buffer [k]) ;
 
 	if (read_count > 0)
 	{	/* Fix buffer length is only a partial block. */

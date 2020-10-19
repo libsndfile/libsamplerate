@@ -174,7 +174,7 @@ src_input_callback (void *cb_data, float **audio)
 	for (read_frames = 0 ; read_frames < input_frames ; )
 	{	sf_count_t position ;
 
-		read_frames += sf_readf_float (data->sndfile, data->buffer + read_frames * data->sfinfo.channels, input_frames - read_frames) ;
+		read_frames += (int) sf_readf_float (data->sndfile, data->buffer + read_frames * data->sfinfo.channels, input_frames - read_frames) ;
 
 		position = sf_seek (data->sndfile, 0, SEEK_CUR) ;
 

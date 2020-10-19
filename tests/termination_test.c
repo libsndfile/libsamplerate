@@ -182,7 +182,7 @@ stream_test (int converter, double src_ratio)
 	fflush (stdout) ;
 
 /* Erik */
-for (k = 0 ; k < LONG_BUFFER_LEN ; k++) input [k] = k * 1.0 ;
+for (k = 0 ; k < LONG_BUFFER_LEN ; k++) input [k] = k * 1.0f ;
 
 	/* Calculate maximun input and output lengths. */
 	if (src_ratio >= 1.0)

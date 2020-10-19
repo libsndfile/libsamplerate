@@ -15,6 +15,11 @@
 **   increment        : 491
 */
 
+#ifdef _MSC_VER
+#pragma warning (push)
+#pragma warning (disable: 4305)
+#endif
+
 static const struct slow_mid_qual_coeffs_s
 {	int increment ;
 	coeff_t coeffs [22438] ;
@@ -22462,3 +22467,6 @@ static const struct slow_mid_qual_coeffs_s
 }
 } ; /* mid_qual_coeffs */
 
+#ifdef _MSC_VER
+#pragma warning (pop)
+#endif

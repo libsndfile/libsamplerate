@@ -152,7 +152,7 @@ zero_input_test (int converter)
 		exit (1) ;
 		} ;
 
-	data.data_in = (float *) 0xdeadbeef ;
+	data.data_in = (float *) (size_t) 0xdeadbeef ;
 	data.input_frames = 0 ;
 	data.data_out = out ;
 	data.output_frames = ARRAY_LEN (out) ;
