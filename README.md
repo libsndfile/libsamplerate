@@ -29,7 +29,7 @@ Branches [actively built](https://travis-ci.org/libsndfile/libsamplerate/branche
 
 ## Win32
 
-There are detailed instructions for building libsamplerate on Win32 in the file [`doc/win32.html`](https://github.com/libsndfile/libsamplerate/blob/master/doc/win32.html).
+There are detailed instructions for building libsamplerate on Win32 in the file [`doc/win32.html`](http://libsndfile.github.io/libsamplerate/win32.html).
 
 ## macOS
 
