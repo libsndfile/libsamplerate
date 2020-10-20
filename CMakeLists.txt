@@ -165,11 +165,36 @@ endif()
 # Set public header
 set_property(TARGET samplerate PROPERTY PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/src/samplerate.h)
 
-# Set ABI version. This is critical for Unix-like OSes
 if(BUILD_SHARED_LIBS)
+  # Set ABI version. This is critical for Unix-like OSes
   set_target_properties(samplerate PROPERTIES
     VERSION ${libsamplerate_VERSION}
     SOVERSION ${libsamplerate_VERSION_MAJOR})
+
+    # Use Version_script to export ABI set
+    if(UNIX AND (NOT APPLE))
+      if((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR
+         (CMAKE_C_COMPILER_ID STREQUAL "Clang") OR
+         (CMAKE_C_COMPILER_ID STREQUAL "Intel"))
+
+        set(PACKAGE ${PROJECT_NAME})
+        configure_file(src/Version_script.in src/Version_script)
+        unset(PACKAGE)
+
+        if(CMAKE_VERSION VERSION_LESS 3.13)
+          # This works 
+          set_property(TARGET samplerate APPEND_STRING PROPERTY
+            LINK_FLAGS "-Wl,--version-script,${PROJECT_BINARY_DIR}/src/Version_script")
+        else()
+          # This works even better, e.g. for Clang it uses `-Xlinker` option,
+          # but requires CMake >= 3.13.
+          target_link_options(samplerate
+            PRIVATE
+              "LINKER:--version-script,${PROJECT_BINARY_DIR}/src/Version_script")
+        endif()
+
+      endif()
+    endif()
 endif()
 
 # Tests
