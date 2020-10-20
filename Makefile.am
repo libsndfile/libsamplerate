@@ -49,12 +49,12 @@ check-asm: src/check_asm.sh src/src_sinc.s src/src_linear.s src/src_zoh.s
 AUTOHEADER=echo
 
 ########
-# doc/ #
+# docs/ #
 ########
 
-dist_html_DATA = doc/SRC.png doc/SRC.css doc/index.html doc/license.html doc/history.html \
-	doc/download.html doc/lists.html doc/quality.html doc/win32.html doc/faq.html doc/api.html \
-	doc/api_simple.html doc/api_callback.html doc/api_full.html doc/api_misc.html
+dist_doc_DATA = docs/SRC.png docs/SRC.css docs/index.md docs/license.md docs/history.md \
+	docs/download.md docs/lists.md docs/quality.md docs/win32.md docs/faq.md docs/api.md \
+	docs/api_simple.md docs/api_callback.md docs/api_full.md docs/api_misc.md
 
 #############
 # examples/ #

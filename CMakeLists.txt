@@ -373,7 +373,7 @@ if(LIBSAMPLERATE_INSTALL)
 
   # Documentation
 
-  install(DIRECTORY doc/ DESTINATION ${CMAKE_INSTALL_DOCDIR})
+  install(DIRECTORY docs/ DESTINATION ${CMAKE_INSTALL_DOCDIR})
 endif()
 
 # Packaging support
