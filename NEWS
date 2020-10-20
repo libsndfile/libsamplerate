@@ -1,5 +1,7 @@
 Unreleased
 
+  * CMake:
+    * Fix CMake generated shared library ABI compliance with Autotools build 
   * Documentation:
     * Move site to new URL: http://libsndfile.github.io/libsamplerate/
     * Convert documentation pages from HTML to Markdown
