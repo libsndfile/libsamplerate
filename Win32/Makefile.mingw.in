@@ -78,7 +78,7 @@ LINK_OBJS = \
 	src/src_zoh.o \
 	src/samplerate.o
 
-libsamplerate.dll libsamplerate.lib : $(LINK_OBJS)
+libsamplerate.dll libsamplerate.dll.a : $(LINK_OBJS)
 	$(DLLWRAP) --def Win32/libsamplerate.def $(LINK_OBJS) --output-lib libsamplerate.dll.a -o libsamplerate.dll
 	$(STRIP) libsamplerate.dll
 
