@@ -50,7 +50,7 @@ prefix = @prefix@
 all : $(TARGETS)
 
 clean :
-	rm -f  $(TARGETS) *.del *.lib src/*.o tests/*.o tests/*.exe
+	rm -f  $(TARGETS) *.del *.dll.a src/*.o tests/*.o tests/*.exe
 
 install : $(TARGETS)
 	$(install_sh) -c libsamplerate.dll $(libdir)
@@ -79,10 +79,10 @@ LINK_OBJS = \
 	src/samplerate.o
 
 libsamplerate.dll libsamplerate.lib : $(LINK_OBJS)
-	$(DLLWRAP) --def Win32/libsamplerate.def $(LINK_OBJS) --output-lib libsamplerate.lib -o libsamplerate.dll
+	$(DLLWRAP) --def Win32/libsamplerate.def $(LINK_OBJS) --output-lib libsamplerate.dll.a -o libsamplerate.dll
 	$(STRIP) libsamplerate.dll
 
-varispeed-play.exe : examples/varispeed-play.c examples/audio_out.o libsamplerate.lib
+varispeed-play.exe : examples/varispeed-play.c examples/audio_out.o libsamplerate.dll.a
 	$(CC) $(CFLAGS) $(SNDFILE_CFLAGS) $+ $(SNDFILE_LIBS) -lwinmm -o $@
 
 examples/audio_out.o : examples/audio_out.c
@@ -106,8 +106,14 @@ TEST_PROGS = \
      tests/clone_test.exe \
      tests/multi_channel_test.exe \
 	 tests/float_short_test.exe \
+     tests/varispeed_test.exe \
+     tests/callback_hang_test.exe \
+     tests/src-evaluate.exe \
+     tests/throughput_test.exe \
+     tests/multichan_throughput_test.exe \
+     tests/downsample_test.exe \
+     tests/nullptr_test.exe \
      tests/snr_bw_test.exe
-
 
 check : $(TEST_PROGS)
 	tests/misc_test.exe
@@ -119,6 +125,13 @@ check : $(TEST_PROGS)
 	tests/multi_channel_test.exe
 	tests/float_short_test.exe
 	tests/snr_bw_test.exe
+	tests/varispeed_test.exe
+	tests/callback_hang_test.exe
+	tests/src-evaluate.exe
+	tests/throughput_test.exe
+	tests/multichan_throughput_test.exe
+	tests/downsample_test.exe
+	tests/nullptr_test.exe
 	@echo ----------------------------------------------------------------------
 	@echo libsamplerate passed all tests
 	@echo ----------------------------------------------------------------------
@@ -126,32 +139,53 @@ check : $(TEST_PROGS)
 #====================================================================
 # Test programs.
 
-tests/misc_test.exe : tests/misc_test.c tests/util.c libsamplerate.lib
+tests/misc_test.exe : tests/misc_test.c tests/util.c libsamplerate.dll.a
 	$(CC) $(CFLAGS) $+ -o $@
 
-tests/termination_test.exe : tests/termination_test.c tests/util.c libsamplerate.lib
+tests/termination_test.exe : tests/termination_test.c tests/util.c libsamplerate.dll.a
 	$(CC) $(CFLAGS) $+ -o $@
 
-tests/simple_test.exe : tests/simple_test.c tests/util.c libsamplerate.lib
+tests/simple_test.exe : tests/simple_test.c tests/util.c libsamplerate.dll.a
 	$(CC) $(CFLAGS) $+ -o $@
 
-tests/callback_test.exe : tests/callback_test.c tests/util.c libsamplerate.lib
+tests/callback_test.exe : tests/callback_test.c tests/util.c libsamplerate.dll.a
 	$(CC) $(CFLAGS) $+ -o $@
 
-tests/reset_test.exe : tests/reset_test.c tests/util.c libsamplerate.lib
+tests/reset_test.exe : tests/reset_test.c tests/util.c libsamplerate.dll.a
 	$(CC) $(CFLAGS) $+ -o $@
 
-tests/clone_test.exe : tests/clone_test.c tests/util.c libsamplerate.lib
+tests/clone_test.exe : tests/clone_test.c tests/util.c libsamplerate.dll.a
 	$(CC) $(CFLAGS) $+ -o $@
 
-tests/float_short_test.exe : tests/float_short_test.c tests/util.c libsamplerate.lib
+tests/float_short_test.exe : tests/float_short_test.c tests/util.c libsamplerate.dll.a
 	$(CC) $(CFLAGS) $+ -o $@
 
-tests/multi_channel_test.exe : tests/multi_channel_test.c tests/util.c tests/calc_snr.c libsamplerate.lib
+tests/multi_channel_test.exe : tests/multi_channel_test.c tests/util.c tests/calc_snr.c libsamplerate.dll.a
 	$(CC) $(CFLAGS) $(FFTW3_CFLAGS) $+ $(FFTW3_LIBS) -o $@
 
-tests/snr_bw_test.exe : tests/snr_bw_test.c tests/util.c tests/calc_snr.c libsamplerate.lib
+tests/snr_bw_test.exe : tests/snr_bw_test.c tests/util.c tests/calc_snr.c libsamplerate.dll.a
 	$(CC) $(CFLAGS) $(FFTW3_CFLAGS) $+ $(FFTW3_LIBS) -o $@
+
+tests/varispeed_test.exe: tests/varispeed_test.c tests/util.c libsamplerate.dll.a
+	$(CC) $(CFLAGS) $+ -o $@
+
+tests/callback_hang_test.exe: tests/callback_hang_test.c tests/util.c libsamplerate.dll.a
+	$(CC) $(CFLAGS) $+ -o $@
+
+tests/src-evaluate.exe: tests/src-evaluate.c tests/util.c libsamplerate.dll.a
+	$(CC) $(CFLAGS) $+ -o $@
+
+tests/throughput_test.exe: tests/throughput_test.c tests/util.c libsamplerate.dll.a
+	$(CC) $(CFLAGS) $+ -o $@
+
+tests/multichan_throughput_test.exe: tests/multichan_throughput_test.c tests/util.c libsamplerate.dll.a
+	$(CC) $(CFLAGS) $+ -o $@
+
+tests/downsample_test.exe: tests/downsample_test.c tests/util.c libsamplerate.dll.a
+	$(CC) $(CFLAGS) $+ -o $@
+
+tests/nullptr_test.exe: tests/nullptr_test.c tests/util.c libsamplerate.dll.a
+	$(CC) $(CFLAGS) $+ -o $@
 
 # End of Makefile
 #====================================================================
