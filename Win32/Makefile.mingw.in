@@ -2,7 +2,7 @@
 
 @SET_MAKE@
 
-PROGRAMS = sndfile-resample.exe
+PROGRAMS = varispeed-play.exe
 TARGETS = libsamplerate.dll $(PROGRAMS) varispeed-play.exe samplerate.pc
 
 AR = @AR@
@@ -81,9 +81,6 @@ LINK_OBJS = \
 libsamplerate.dll libsamplerate.lib : $(LINK_OBJS)
 	$(DLLWRAP) --def Win32/libsamplerate.def $(LINK_OBJS) --output-lib libsamplerate.lib -o libsamplerate.dll
 	$(STRIP) libsamplerate.dll
-
-sndfile-resample.exe : examples/sndfile-resample.c libsamplerate.lib
-	$(CC) $(CFLAGS) $(SNDFILE_CFLAGS) $+ $(SNDFILE_LIBS) -o $@
 
 varispeed-play.exe : examples/varispeed-play.c examples/audio_out.o libsamplerate.lib
 	$(CC) $(CFLAGS) $(SNDFILE_CFLAGS) $+ $(SNDFILE_LIBS) -lwinmm -o $@

@@ -80,10 +80,11 @@ SHARED_VERSION_INFO="1:$VERSION_MINOR:1"
 
 dnl ====================================================================================
 
-AS_IF([test "x${build_os}${host_os}" = "xmingw32mingw32"], [
-		AC_CHECK_PROG(DLLTOOL, dlltool, dlltool)
-		AC_CHECK_PROG(DLLWRAP, dllwrap, dllwrap)
-		AC_CHECK_PROG(PEXPORTS, pexports, pexports)
+AS_CASE([${host_os}],
+	[mingw32*], [
+		AC_CHECK_TOOL(DLLTOOL, dlltool, dlltool)
+		AC_CHECK_TOOL(DLLWRAP, dllwrap, dllwrap)
+		AC_CHECK_TOOL(PEXPORTS, pexports, pexports)
 	])
 
 AC_HEADER_STDC

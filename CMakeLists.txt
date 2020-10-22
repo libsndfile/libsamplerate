@@ -131,7 +131,7 @@ add_library(samplerate
   src/src_linear.c
   src/src_sinc.c
   src/src_zoh.c
-  $<$<AND:$<BOOL:${WIN32}>,$<BOOL:${BUILD_SHARED_LIBS}>>:Win32/libsamplerate-0.def>)
+  $<$<AND:$<BOOL:${WIN32}>,$<BOOL:${BUILD_SHARED_LIBS}>>:Win32/libsamplerate.def>)
 
 # ALIAS to use if libsamplerate is included from other project with add_subdirectory()
 add_library(SampleRate::samplerate ALIAS samplerate)
