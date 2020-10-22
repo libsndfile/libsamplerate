@@ -46,3 +46,11 @@ pre {
 .nf {
   font-weight: bold;
 }
+
+.container {
+  display: flex;
+}
+
+.content {
+  flex: 1;
+}
