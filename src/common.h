@@ -66,9 +66,12 @@
 enum
 {	SRC_FALSE	= 0,
 	SRC_TRUE	= 1,
+} ;
 
-	SRC_MODE_PROCESS	= 555,
-	SRC_MODE_CALLBACK	= 556
+enum SRC_MODE
+{
+	SRC_MODE_PROCESS	= 0,
+	SRC_MODE_CALLBACK	= 1
 } ;
 
 enum
@@ -108,7 +111,7 @@ struct SRC_STATE_tag
 	int		channels ;
 
 	/* SRC_MODE_PROCESS or SRC_MODE_CALLBACK */
-	int		mode ;
+	enum SRC_MODE	mode ;
 
 	/* Pointer to data to converter specific data. */
 	void	*private_data ;
