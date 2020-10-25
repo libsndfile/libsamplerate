@@ -92,6 +92,7 @@ clip_mode()
 check_function_exists(alarm HAVE_ALARM)
 check_function_exists(signal HAVE_SIGNAL)
 
+check_include_file(stdbool.h HAVE_STDBOOL_H)
 check_include_file(sys/times.h HAVE_SYS_TIMES_H)
 check_include_file(unistd.h HAVE_UNISTD_H)
 

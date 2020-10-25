@@ -87,6 +87,7 @@ AS_IF([test "x${build_os}${host_os}" = "xmingw32mingw32"], [
 	])
 
 AC_HEADER_STDC
+AC_HEADER_STDBOOL
 
 AC_CHECK_HEADERS([stdint.h sys/times.h])
 

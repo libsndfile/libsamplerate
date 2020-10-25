@@ -48,6 +48,9 @@
 /* Set to 1 if you have libsndfile. */
 #cmakedefine01 HAVE_SNDFILE
 
+/* Define to 1 if you have the <stdbool.h> header file. */
+#cmakedefine HAVE_STDBOOL_H
+
 /* Define to 1 if you have the <stdint.h> header file. */
 #cmakedefine01 HAVE_STDINT_H
 

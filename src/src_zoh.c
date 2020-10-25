@@ -26,7 +26,7 @@ static int zoh_copy (SRC_STATE *from, SRC_STATE *to) ;
 typedef struct
 {	int		zoh_magic_marker ;
 	int		channels ;
-	int		dirty ;
+	bool	dirty ;
 	long	in_count, in_used ;
 	long	out_count, out_gen ;
 	float	last_value [] ;
@@ -53,7 +53,7 @@ zoh_vari_process (SRC_STATE *state, SRC_DATA *data)
 	{	/* If we have just been reset, set the last_value data. */
 		for (ch = 0 ; ch < priv->channels ; ch++)
 			priv->last_value [ch] = data->data_in [ch] ;
-		priv->dirty = 1 ;
+		priv->dirty = true ;
 		} ;
 
 	priv->in_count = data->input_frames * priv->channels ;
@@ -194,7 +194,7 @@ zoh_reset (SRC_STATE *state)
 		return ;
 
 	priv->channels = state->channels ;
-	priv->dirty = 0 ;
+	priv->dirty = false ;
 	memset (priv->last_value, 0, sizeof (priv->last_value [0]) * priv->channels) ;
 
 	return ;
