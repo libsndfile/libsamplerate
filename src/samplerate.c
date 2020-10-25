@@ -16,13 +16,12 @@
 #include	"samplerate.h"
 #include	"common.h"
 
-static int psrc_set_converter (SRC_PRIVATE	*psrc, int converter_type) ;
+static int psrc_set_converter (SRC_STATE *state, int converter_type) ;
 
 
 SRC_STATE *
 src_new (int converter_type, int channels, int *error)
-{	SRC_PRIVATE	*psrc ;
-
+{
 	if (error)
 		*error = SRC_ERR_NO_ERROR ;
 
@@ -32,58 +31,59 @@ src_new (int converter_type, int channels, int *error)
 		return NULL ;
 		} ;
 
-	if ((psrc = ZERO_ALLOC (SRC_PRIVATE, sizeof (*psrc))) == NULL)
+	SRC_STATE *state = ZERO_ALLOC (SRC_STATE, sizeof (SRC_STATE)) ;
+	if (state == NULL)
 	{	if (error)
 			*error = SRC_ERR_MALLOC_FAILED ;
 		return NULL ;
 		} ;
 
-	psrc->channels = channels ;
-	psrc->mode = SRC_MODE_PROCESS ;
+	state->channels = channels ;
+	state->mode = SRC_MODE_PROCESS ;
 
-	if (psrc_set_converter (psrc, converter_type) != SRC_ERR_NO_ERROR)
+	if (psrc_set_converter (state, converter_type) != SRC_ERR_NO_ERROR)
 	{	if (error)
 			*error = SRC_ERR_BAD_CONVERTER ;
-		free (psrc) ;
-		psrc = NULL ;
+		free (state) ;
+		state = NULL ;
 		} ;
 
-	src_reset ((SRC_STATE*) psrc) ;
+	src_reset (state) ;
 
-	return (SRC_STATE*) psrc ;
+	return state ;
 } /* src_new */
 
 SRC_STATE*
 src_clone (SRC_STATE* orig, int *error)
 {
-	SRC_PRIVATE	*psrc ;
+	SRC_STATE *state ;
 	int copy_error ;
 
 	if (error)
 		*error = SRC_ERR_NO_ERROR ;
 
-	if ((psrc = ZERO_ALLOC (SRC_PRIVATE, sizeof (*psrc))) == NULL)
+	if ((state = ZERO_ALLOC (SRC_STATE, sizeof (SRC_STATE))) ==  NULL)
 	{	if (error)
 			*error = SRC_ERR_MALLOC_FAILED ;
 		return NULL ;
 		} ;
 
-	SRC_PRIVATE *orig_priv = (SRC_PRIVATE*) orig ;
-	memcpy (psrc, orig_priv, sizeof (SRC_PRIVATE)) ;
+	SRC_STATE *orig_state = orig ;
+	memcpy (state, orig_state, sizeof (SRC_STATE)) ;
 
-	if ((copy_error = orig_priv->copy (orig_priv, psrc)) != SRC_ERR_NO_ERROR)
+	if ((copy_error = orig_state->copy (orig_state, state)) != SRC_ERR_NO_ERROR)
 	{	if (error)
 			*error = copy_error ;
-		free (psrc) ;
-		psrc = NULL ;
+		free (state) ;
+		state = NULL ;
 		} ;
 
-	return (SRC_STATE*) psrc ;
+	return state ;
 }
 
 SRC_STATE*
 src_callback_new (src_callback_t func, int converter_type, int channels, int *error, void* cb_data)
-{	SRC_STATE	*src_state ;
+{	SRC_STATE	*state ;
 
 	if (func == NULL)
 	{	if (error)
@@ -94,28 +94,26 @@ src_callback_new (src_callback_t func, int converter_type, int channels, int *er
 	if (error != NULL)
 		*error = 0 ;
 
-	if ((src_state = src_new (converter_type, channels, error)) == NULL)
+	if ((state = src_new (converter_type, channels, error)) == NULL)
 		return NULL ;
 
-	src_reset (src_state) ;
+	src_reset (state) ;
 
-	((SRC_PRIVATE*) src_state)->mode = SRC_MODE_CALLBACK ;
-	((SRC_PRIVATE*) src_state)->callback_func = func ;
-	((SRC_PRIVATE*) src_state)->user_callback_data = cb_data ;
+	state->mode = SRC_MODE_CALLBACK ;
+	state->callback_func = func ;
+	state->user_callback_data = cb_data ;
 
-	return src_state ;
+	return state ;
 } /* src_callback_new */
 
 SRC_STATE *
 src_delete (SRC_STATE *state)
-{	SRC_PRIVATE *psrc ;
-
-	psrc = (SRC_PRIVATE*) state ;
-	if (psrc)
-	{	if (psrc->private_data)
-			free (psrc->private_data) ;
-		memset (psrc, 0, sizeof (SRC_PRIVATE)) ;
-		free (psrc) ;
+{
+	if (state)
+	{	if (state->private_data)
+			free (state->private_data) ;
+		memset (state, 0, sizeof (SRC_STATE)) ;
+		free (state) ;
 		} ;
 
 	return NULL ;
@@ -123,17 +121,15 @@ src_delete (SRC_STATE *state)
 
 int
 src_process (SRC_STATE *state, SRC_DATA *data)
-{	SRC_PRIVATE *psrc ;
+{
 	int error ;
 
-	psrc = (SRC_PRIVATE*) state ;
-
-	if (psrc == NULL)
+	if (state == NULL)
 		return SRC_ERR_BAD_STATE ;
-	if (psrc->vari_process == NULL || psrc->const_process == NULL)
+	if (state->vari_process == NULL || state->const_process == NULL)
 		return SRC_ERR_BAD_PROC_PTR ;
 
-	if (psrc->mode != SRC_MODE_PROCESS)
+	if (state->mode != SRC_MODE_PROCESS)
 		return SRC_ERR_BAD_MODE ;
 
 	/* Check for valid SRC_DATA first. */
@@ -155,13 +151,13 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 		data->output_frames = 0 ;
 
 	if (data->data_in < data->data_out)
-	{	if (data->data_in + data->input_frames * psrc->channels > data->data_out)
+	{	if (data->data_in + data->input_frames * state->channels > data->data_out)
 		{	/*-printf ("\n\ndata_in: %p    data_out: %p\n",
 				(void*) (data->data_in + data->input_frames * psrc->channels), (void*) data->data_out) ;-*/
 			return SRC_ERR_DATA_OVERLAP ;
 			} ;
 		}
-	else if (data->data_out + data->output_frames * psrc->channels > data->data_in)
+	else if (data->data_out + data->output_frames * state->channels > data->data_in)
 	{	/*-printf ("\n\ndata_in : %p   ouput frames: %ld    data_out: %p\n", (void*) data->data_in, data->output_frames, (void*) data->data_out) ;
 
 		printf ("data_out: %p (%p)    data_in: %p\n", (void*) data->data_out,
@@ -174,21 +170,21 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 	data->output_frames_gen = 0 ;
 
 	/* Special case for when last_ratio has not been set. */
-	if (psrc->last_ratio < (1.0 / SRC_MAX_RATIO))
-		psrc->last_ratio = data->src_ratio ;
+	if (state->last_ratio < (1.0 / SRC_MAX_RATIO))
+		state->last_ratio = data->src_ratio ;
 
 	/* Now process. */
-	if (fabs (psrc->last_ratio - data->src_ratio) < 1e-15)
-		error = psrc->const_process (psrc, data) ;
+	if (fabs (state->last_ratio - data->src_ratio) < 1e-15)
+		error = state->const_process (state, data) ;
 	else
-		error = psrc->vari_process (psrc, data) ;
+		error = state->vari_process (state, data) ;
 
 	return error ;
 } /* src_process */
 
 long
 src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
-{	SRC_PRIVATE	*psrc ;
+{
 	SRC_DATA	src_data ;
 
 	long	output_frames_gen ;
@@ -200,15 +196,13 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 	if (frames <= 0)
 		return 0 ;
 
-	psrc = (SRC_PRIVATE*) state ;
-
-	if (psrc->mode != SRC_MODE_CALLBACK)
-	{	psrc->error = SRC_ERR_BAD_MODE ;
+	if (state->mode != SRC_MODE_CALLBACK)
+	{	state->error = SRC_ERR_BAD_MODE ;
 		return 0 ;
 		} ;
 
-	if (psrc->callback_func == NULL)
-	{	psrc->error = SRC_ERR_NULL_CALLBACK ;
+	if (state->callback_func == NULL)
+	{	state->error = SRC_ERR_NULL_CALLBACK ;
 		return 0 ;
 		} ;
 
@@ -216,7 +210,7 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 
 	/* Check src_ratio is in range. */
 	if (is_bad_src_ratio (src_ratio))
-	{	psrc->error = SRC_ERR_BAD_SRC_RATIO ;
+	{	state->error = SRC_ERR_BAD_SRC_RATIO ;
 		return 0 ;
 		} ;
 
@@ -225,8 +219,8 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 	src_data.data_out = data ;
 	src_data.output_frames = frames ;
 
-	src_data.data_in = psrc->saved_data ;
-	src_data.input_frames = psrc->saved_frames ;
+	src_data.data_in = state->saved_data ;
+	src_data.input_frames = state->saved_frames ;
 
 	output_frames_gen = 0 ;
 	while (output_frames_gen < frames)
@@ -238,7 +232,7 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 		if (src_data.input_frames == 0)
 		{	float *ptr = dummy ;
 
-			src_data.input_frames = psrc->callback_func (psrc->user_callback_data, &ptr) ;
+			src_data.input_frames = state->callback_func (state->user_callback_data, &ptr) ;
 			src_data.data_in = ptr ;
 
 			if (src_data.input_frames == 0)
@@ -250,17 +244,17 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 		** to SRC_MODE_PROCESS first and when we return set it back to
 		** SRC_MODE_CALLBACK.
 		*/
-		psrc->mode = SRC_MODE_PROCESS ;
+		state->mode = SRC_MODE_PROCESS ;
 		error = src_process (state, &src_data) ;
-		psrc->mode = SRC_MODE_CALLBACK ;
+		state->mode = SRC_MODE_CALLBACK ;
 
 		if (error != 0)
 			break ;
 
-		src_data.data_in += src_data.input_frames_used * psrc->channels ;
+		src_data.data_in += src_data.input_frames_used * state->channels ;
 		src_data.input_frames -= src_data.input_frames_used ;
 
-		src_data.data_out += src_data.output_frames_gen * psrc->channels ;
+		src_data.data_out += src_data.output_frames_gen * state->channels ;
 		src_data.output_frames -= src_data.output_frames_gen ;
 
 		output_frames_gen += src_data.output_frames_gen ;
@@ -269,11 +263,11 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 			break ;
 		} ;
 
-	psrc->saved_data = src_data.data_in ;
-	psrc->saved_frames = src_data.input_frames ;
+	state->saved_data = src_data.data_in ;
+	state->saved_frames = src_data.input_frames ;
 
 	if (error != 0)
-	{	psrc->error = error ;
+	{	state->error = error ;
 		return 0 ;
 		} ;
 
@@ -285,54 +279,47 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 
 int
 src_set_ratio (SRC_STATE *state, double new_ratio)
-{	SRC_PRIVATE *psrc ;
-
-	psrc = (SRC_PRIVATE*) state ;
-
-	if (psrc == NULL)
+{
+	if (state == NULL)
 		return SRC_ERR_BAD_STATE ;
-	if (psrc->vari_process == NULL || psrc->const_process == NULL)
+	if (state->vari_process == NULL || state->const_process == NULL)
 		return SRC_ERR_BAD_PROC_PTR ;
 
 	if (is_bad_src_ratio (new_ratio))
 		return SRC_ERR_BAD_SRC_RATIO ;
 
-	psrc->last_ratio = new_ratio ;
+	state->last_ratio = new_ratio ;
 
 	return SRC_ERR_NO_ERROR ;
 } /* src_set_ratio */
 
 int
 src_get_channels (SRC_STATE *state)
-{	SRC_PRIVATE *psrc ;
-
-	psrc = (SRC_PRIVATE*) state ;
-
-	if (psrc == NULL)
+{
+	if (state == NULL)
 		return -SRC_ERR_BAD_STATE ;
-	if (psrc->vari_process == NULL || psrc->const_process == NULL)
+	if (state->vari_process == NULL || state->const_process == NULL)
 		return -SRC_ERR_BAD_PROC_PTR ;
 
-	return psrc->channels ;
+	return state->channels ;
 } /* src_get_channels */
 
 int
 src_reset (SRC_STATE *state)
-{	SRC_PRIVATE *psrc ;
-
-	if ((psrc = (SRC_PRIVATE*) state) == NULL)
+{
+	if (state == NULL)
 		return SRC_ERR_BAD_STATE ;
 
-	if (psrc->reset != NULL)
-		psrc->reset (psrc) ;
+	if (state->reset != NULL)
+		state->reset (state) ;
 
-	psrc->last_position = 0.0 ;
-	psrc->last_ratio = 0.0 ;
+	state->last_position = 0.0 ;
+	state->last_ratio = 0.0 ;
 
-	psrc->saved_data = NULL ;
-	psrc->saved_frames = 0 ;
+	state->saved_data = NULL ;
+	state->saved_frames = 0 ;
 
-	psrc->error = SRC_ERR_NO_ERROR ;
+	state->error = SRC_ERR_NO_ERROR ;
 
 	return SRC_ERR_NO_ERROR ;
 } /* src_reset */
@@ -394,7 +381,7 @@ src_is_valid_ratio (double ratio)
 int
 src_error (SRC_STATE *state)
 {	if (state)
-		return ((SRC_PRIVATE*) state)->error ;
+		return state->error ;
 	return SRC_ERR_NO_ERROR ;
 } /* src_error */
 
@@ -547,15 +534,15 @@ src_float_to_int_array (const float *in, int *out, int len)
 */
 
 static int
-psrc_set_converter (SRC_PRIVATE	*psrc, int converter_type)
+psrc_set_converter (SRC_STATE	*state, int converter_type)
 {
-	if (sinc_set_converter (psrc, converter_type) == SRC_ERR_NO_ERROR)
+	if (sinc_set_converter (state, converter_type) == SRC_ERR_NO_ERROR)
 		return SRC_ERR_NO_ERROR ;
 
-	if (zoh_set_converter (psrc, converter_type) == SRC_ERR_NO_ERROR)
+	if (zoh_set_converter (state, converter_type) == SRC_ERR_NO_ERROR)
 		return SRC_ERR_NO_ERROR ;
 
-	if (linear_set_converter (psrc, converter_type) == SRC_ERR_NO_ERROR)
+	if (linear_set_converter (state, converter_type) == SRC_ERR_NO_ERROR)
 		return SRC_ERR_NO_ERROR ;
 
 	return SRC_ERR_BAD_CONVERTER ;
