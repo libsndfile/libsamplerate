@@ -28,7 +28,7 @@ static int linear_copy (SRC_STATE *from, SRC_STATE *to) ;
 typedef struct
 {	int		linear_magic_marker ;
 	int		channels ;
-	int		reset ;
+	int		dirty ;
 	long	in_count, in_used ;
 	long	out_count, out_gen ;
 	float	last_value [] ;
@@ -51,11 +51,11 @@ linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 
 	priv = (LINEAR_DATA*) state->private_data ;
 
-	if (priv->reset)
+	if (!priv->dirty)
 	{	/* If we have just been reset, set the last_value data. */
 		for (ch = 0 ; ch < priv->channels ; ch++)
 			priv->last_value [ch] = data->data_in [ch] ;
-		priv->reset = 0 ;
+		priv->dirty = 1 ;
 		} ;
 
 	priv->in_count = data->input_frames * priv->channels ;
@@ -203,7 +203,7 @@ linear_reset (SRC_STATE *state)
 		return ;
 
 	priv->channels = state->channels ;
-	priv->reset = 1 ;
+	priv->dirty = 0 ;
 	memset (priv->last_value, 0, sizeof (priv->last_value [0]) * priv->channels) ;
 
 	return ;
