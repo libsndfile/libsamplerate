@@ -14,9 +14,9 @@
 #include "src_config.h"
 #include "common.h"
 
-static int linear_vari_process (SRC_STATE *state, SRC_DATA *data) ;
+static enum SRC_ERR linear_vari_process (SRC_STATE *state, SRC_DATA *data) ;
 static void linear_reset (SRC_STATE *state) ;
-static int linear_copy (SRC_STATE *from, SRC_STATE *to) ;
+static enum SRC_ERR linear_copy (SRC_STATE *from, SRC_STATE *to) ;
 
 /*========================================================================================
 */
@@ -37,7 +37,7 @@ typedef struct
 /*----------------------------------------------------------------------------------------
 */
 
-static int
+static enum SRC_ERR
 linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	LINEAR_DATA *priv ;
 	double		src_ratio, input_index, rem ;
@@ -158,7 +158,7 @@ linear_get_description (int src_enum)
 	return NULL ;
 } /* linear_get_descrition */
 
-int
+enum SRC_ERR
 linear_set_converter (SRC_STATE *state, int src_enum)
 {	LINEAR_DATA *priv = NULL ;
 
@@ -209,7 +209,7 @@ linear_reset (SRC_STATE *state)
 	return ;
 } /* linear_reset */
 
-static int
+static enum SRC_ERR
 linear_copy (SRC_STATE *from, SRC_STATE *to)
 {
 	if (from->private_data == NULL)
