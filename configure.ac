@@ -249,6 +249,8 @@ AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
 		# Disable -Wall for Apple Darwin/Rhapsody.
 		# System headers on these systems are broken.
 		AS_CASE([${host_os}],
+			[mingw*|cygwin*], [
+				SHLIB_VERSION_ARG="-export-symbols \$(top_builddir)/Win32/libsamplerate-0.def"],
 			[darwin* | rhapsody*], [
 				temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall//"`
 				CFLAGS=$temp_CFLAGS],
