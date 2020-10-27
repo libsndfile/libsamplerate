@@ -53,8 +53,7 @@ typedef struct
 	/* Sure hope noone does more than 128 channels at once. */
 	double left_calc [128], right_calc [128] ;
 
-	/* C99 struct flexible array. */
-	float	buffer [] ;
+	float	*buffer ;
 } SINC_FILTER ;
 
 static enum SRC_ERR sinc_multichan_vari_process (SRC_STATE *state, SRC_DATA *data) ;
@@ -220,10 +219,16 @@ sinc_set_converter (SRC_STATE *state, int src_enum)
 	temp_filter.b_len *= state->channels ;
 	temp_filter.b_len += 1 ; // There is a <= check against samples_in_hand requiring a buffer bigger than the calculation above
 
-	if ((filter = ZERO_ALLOC (SINC_FILTER, sizeof (SINC_FILTER) + sizeof (filter->buffer [0]) * (temp_filter.b_len + state->channels))) == NULL)
+	if ((filter = ZERO_ALLOC (SINC_FILTER, sizeof (SINC_FILTER))) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 
 	*filter = temp_filter ;
+	filter->buffer = calloc (temp_filter.b_len + state->channels, sizeof (float)) ;
+	if (!filter->buffer)
+	{	free (filter) ;
+		return SRC_ERR_MALLOC_FAILED ;
+		} ;
+
 	memset (&temp_filter, 0xEE, sizeof (temp_filter)) ;
 
 	state->private_data = filter ;
@@ -267,12 +272,18 @@ sinc_copy (SRC_STATE *from, SRC_STATE *to)
 
 	SINC_FILTER *to_filter = NULL ;
 	SINC_FILTER* from_filter = (SINC_FILTER*) from->private_data ;
-	size_t private_length = sizeof (SINC_FILTER) + sizeof (from_filter->buffer [0]) * (from_filter->b_len + from->channels) ;
 
-	if ((to_filter = ZERO_ALLOC (SINC_FILTER, private_length)) == NULL)
+	if ((to_filter = ZERO_ALLOC (SINC_FILTER, sizeof (SINC_FILTER))) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
+	memcpy (to_filter, from_filter, sizeof (SINC_FILTER)) ;
+	to_filter->buffer = malloc (sizeof (float) * (from_filter->b_len + from->channels)) ;
+	if (!to_filter->buffer)
+	{
+		free (to_filter) ;
+		return SRC_ERR_MALLOC_FAILED ;
+	}
+	memcpy (to_filter->buffer, from_filter->buffer, sizeof (float) * (from_filter->b_len + from->channels)) ;
 
-	memcpy (to_filter, from_filter, private_length) ;
 	to->private_data = to_filter ;
 
 	return SRC_ERR_NO_ERROR ;
@@ -1150,10 +1161,15 @@ sinc_close (SRC_STATE *state)
 {
 	if (state)
 	{
-		if (state->private_data)
+		SINC_FILTER *sinc = (SINC_FILTER *) state->private_data ;
+		if (sinc)
 		{
-			free (state->private_data) ;
-			state->private_data = NULL ;
+			if (sinc->buffer)
+			{	free (sinc->buffer) ;
+				sinc->buffer = NULL ;
+				} ;
+			free (sinc) ;
+			sinc = NULL ;
 		}
 	}
 } /* sinc_close */

@@ -31,7 +31,7 @@ typedef struct
 	bool	dirty ;
 	long	in_count, in_used ;
 	long	out_count, out_gen ;
-	float	last_value [] ;
+	float	*last_value ;
 } LINEAR_DATA ;
 
 /*----------------------------------------------------------------------------------------
@@ -160,7 +160,8 @@ linear_get_description (int src_enum)
 
 enum SRC_ERR
 linear_set_converter (SRC_STATE *state, int src_enum)
-{	LINEAR_DATA *priv = NULL ;
+{
+	LINEAR_DATA *priv = NULL ;
 
 	if (src_enum != SRC_LINEAR)
 		return SRC_ERR_BAD_CONVERTER ;
@@ -168,12 +169,23 @@ linear_set_converter (SRC_STATE *state, int src_enum)
 	linear_close (state) ;
 
 	if (state->private_data == NULL)
-	{	priv = ZERO_ALLOC (LINEAR_DATA, sizeof (*priv) + state->channels * sizeof (float)) ;
-		state->private_data = priv ;
-		} ;
+	{
+		priv = ZERO_ALLOC (ZOH_DATA, sizeof (*priv)) ;
+		if (priv)
+		{
+			priv->last_value = calloc (state->channels, sizeof (float)) ;
+			if (!priv->last_value)
+			{
+				free (priv) ;
+				priv = NULL ;
+			}
+		}
+	}
 
 	if (priv == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
+
+	state->private_data = priv ;
 
 	priv->linear_magic_marker = LINEAR_MAGIC_MARKER ;
 
@@ -213,12 +225,18 @@ linear_copy (SRC_STATE *from, SRC_STATE *to)
 
 	LINEAR_DATA *to_priv = NULL ;
 	LINEAR_DATA* from_priv = (LINEAR_DATA*) from->private_data ;
-	size_t private_size = sizeof (*to_priv) + from->channels * sizeof (float) ;
-
-	if ((to_priv = ZERO_ALLOC (LINEAR_DATA, private_size)) == NULL)
+	if ((to_priv = ZERO_ALLOC (LINEAR_DATA, sizeof (LINEAR_DATA))) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 
-	memcpy (to_priv, from_priv, private_size) ;
+	memcpy (to_priv, from_priv, sizeof (LINEAR_DATA)) ;
+	to_priv->last_value = malloc (sizeof (float) * from->channels) ;
+	if (!to_priv->last_value)
+	{
+		free (to_priv) ;
+		return SRC_ERR_MALLOC_FAILED ;
+	}
+	memcpy (to_priv->last_value, from_priv->last_value, sizeof (float) * from->channels) ;
+
 	to->private_data = to_priv ;
 
 	return SRC_ERR_NO_ERROR ;
@@ -229,10 +247,15 @@ linear_close (SRC_STATE *state)
 {
 	if (state)
 	{
-		if (state->private_data)
+		LINEAR_DATA *linear = (LINEAR_DATA *) state->private_data ;
+		if (linear)
 		{
-			free (state->private_data) ;
-			state->private_data = NULL ;
+			if (linear->last_value)
+			{	free (linear->last_value) ;
+				linear->last_value = NULL ;
+				} ;
+			free (linear) ;
+			linear = NULL ;
 		}
 	}
 } /* linear_close */

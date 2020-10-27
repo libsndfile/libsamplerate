@@ -29,7 +29,7 @@ typedef struct
 	bool	dirty ;
 	long	in_count, in_used ;
 	long	out_count, out_gen ;
-	float	last_value [] ;
+	float	*last_value ;
 } ZOH_DATA ;
 
 /*----------------------------------------------------------------------------------------
@@ -151,7 +151,8 @@ zoh_get_description (int src_enum)
 
 enum SRC_ERR
 zoh_set_converter (SRC_STATE *state, int src_enum)
-{	ZOH_DATA *priv = NULL ;
+{
+	ZOH_DATA *priv = NULL ;
 
 	if (src_enum != SRC_ZERO_ORDER_HOLD)
 		return SRC_ERR_BAD_CONVERTER ;
@@ -159,12 +160,23 @@ zoh_set_converter (SRC_STATE *state, int src_enum)
 	zoh_close (state) ;
 
 	if (state->private_data == NULL)
-	{	priv = ZERO_ALLOC (ZOH_DATA, sizeof (*priv) + state->channels * sizeof (float)) ;
-		state->private_data = priv ;
-		} ;
+	{
+		priv = ZERO_ALLOC (ZOH_DATA, sizeof (*priv)) ;
+		if (priv)
+		{
+			priv->last_value = calloc (state->channels, sizeof (float)) ;
+			if (!priv->last_value)
+			{
+				free (priv) ;
+				priv = NULL ;
+			}
+		}
+	}
 
 	if (priv == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
+
+	state->private_data = priv ;
 
 	priv->zoh_magic_marker = ZOH_MAGIC_MARKER ;
 
@@ -191,7 +203,7 @@ zoh_reset (SRC_STATE *state)
 		return ;
 
 	priv->dirty = false ;
-	memset (priv->last_value, 0, sizeof (priv->last_value [0]) * state->channels) ;
+	memset (priv->last_value, 0, sizeof (float) * state->channels) ;
 
 	return ;
 } /* zoh_reset */
@@ -204,12 +216,18 @@ zoh_copy (SRC_STATE *from, SRC_STATE *to)
 
 	ZOH_DATA *to_priv = NULL ;
 	ZOH_DATA* from_priv = (ZOH_DATA*) from->private_data ;
-	size_t private_size = sizeof (*to_priv) + from->channels * sizeof (float) ;
 
-	if ((to_priv = ZERO_ALLOC (ZOH_DATA, private_size)) == NULL)
+	if ((to_priv = ZERO_ALLOC (ZOH_DATA, sizeof (ZOH_DATA))) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 
-	memcpy (to_priv, from_priv, private_size) ;
+	memcpy (to_priv, from_priv, sizeof (ZOH_DATA)) ;
+	to_priv->last_value = malloc (sizeof (float) * from->channels) ;
+	if (!to_priv->last_value)
+	{	free (to_priv) ;
+		return SRC_ERR_MALLOC_FAILED ;
+		} ;
+	memcpy (to_priv->last_value, from_priv->last_value, sizeof (float) * from->channels) ;
+
 	to->private_data = to_priv ;
 
 	return SRC_ERR_NO_ERROR ;
@@ -220,10 +238,15 @@ zoh_close (SRC_STATE *state)
 {
 	if (state)
 	{
-		if (state->private_data)
+		ZOH_DATA *zoh = (ZOH_DATA *) state->private_data ;
+		if (zoh)
 		{
-			free (state->private_data) ;
-			state->private_data = NULL ;
+			if (zoh->last_value)
+			{	free (zoh->last_value) ;
+				zoh->last_value = NULL ;
+				} ;
+			free (zoh) ;
+			zoh = NULL ;
 		}
 	}
 } /* zoh_close */
