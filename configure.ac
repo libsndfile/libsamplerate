@@ -290,7 +290,6 @@ AC_SUBST(OS_SPECIFIC_LINKS)
 AC_CONFIG_FILES([
 		Makefile
 		src/Version_script
-		Win32/Makefile.mingw
 		libsamplerate.spec
 		samplerate.pc
 	])
