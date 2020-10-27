@@ -17,6 +17,7 @@
 static enum SRC_ERR linear_vari_process (SRC_STATE *state, SRC_DATA *data) ;
 static void linear_reset (SRC_STATE *state) ;
 static enum SRC_ERR linear_copy (SRC_STATE *from, SRC_STATE *to) ;
+static void linear_close (SRC_STATE *state) ;
 
 /*========================================================================================
 */
@@ -164,10 +165,7 @@ linear_set_converter (SRC_STATE *state, int src_enum)
 	if (src_enum != SRC_LINEAR)
 		return SRC_ERR_BAD_CONVERTER ;
 
-	if (state->private_data != NULL)
-	{	free (state->private_data) ;
-		state->private_data = NULL ;
-		} ;
+	linear_close (state) ;
 
 	if (state->private_data == NULL)
 	{	priv = ZERO_ALLOC (LINEAR_DATA, sizeof (*priv) + state->channels * sizeof (float)) ;
@@ -183,6 +181,7 @@ linear_set_converter (SRC_STATE *state, int src_enum)
 	state->vari_process = linear_vari_process ;
 	state->reset = linear_reset ;
 	state->copy = linear_copy ;
+	state->close = linear_close ;
 
 	linear_reset (state) ;
 
@@ -224,3 +223,16 @@ linear_copy (SRC_STATE *from, SRC_STATE *to)
 
 	return SRC_ERR_NO_ERROR ;
 } /* linear_copy */
+
+static void
+linear_close (SRC_STATE *state)
+{
+	if (state)
+	{
+		if (state->private_data)
+		{
+			free (state->private_data) ;
+			state->private_data = NULL ;
+		}
+	}
+} /* linear_close */

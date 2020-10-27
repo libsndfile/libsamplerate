@@ -110,8 +110,8 @@ SRC_STATE *
 src_delete (SRC_STATE *state)
 {
 	if (state)
-	{	if (state->private_data)
-			free (state->private_data) ;
+	{	if (state->close)
+			state->close (state) ;
 		memset (state, 0, sizeof (SRC_STATE)) ;
 		free (state) ;
 		} ;

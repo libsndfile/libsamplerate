@@ -67,6 +67,7 @@ static int prepare_data (SINC_FILTER *filter, int channels, SRC_DATA *data, int 
 
 static void sinc_reset (SRC_STATE *state) ;
 static enum SRC_ERR sinc_copy (SRC_STATE *from, SRC_STATE *to) ;
+static void sinc_close (SRC_STATE *state) ;
 
 static inline increment_t
 double_to_fp (double x)
@@ -151,10 +152,7 @@ sinc_set_converter (SRC_STATE *state, int src_enum)
 	if (SHIFT_BITS >= sizeof (increment_t) * 8 - 1)
 		return SRC_ERR_SHIFT_BITS ;
 
-	if (state->private_data != NULL)
-	{	free (state->private_data) ;
-		state->private_data = NULL ;
-		} ;
+	sinc_close (state) ;
 
 	memset (&temp_filter, 0, sizeof (temp_filter)) ;
 
@@ -187,6 +185,7 @@ sinc_set_converter (SRC_STATE *state, int src_enum)
 		} ;
 	state->reset = sinc_reset ;
 	state->copy = sinc_copy ;
+	state->close = sinc_close ;
 
 	switch (src_enum)
 	{	case SRC_SINC_FASTEST :
@@ -1146,4 +1145,15 @@ prepare_data (SINC_FILTER *filter, int channels, SRC_DATA *data, int half_filter
 	return 0 ;
 } /* prepare_data */
 
-
+static void
+sinc_close (SRC_STATE *state)
+{
+	if (state)
+	{
+		if (state->private_data)
+		{
+			free (state->private_data) ;
+			state->private_data = NULL ;
+		}
+	}
+} /* sinc_close */

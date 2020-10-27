@@ -17,6 +17,7 @@
 static enum SRC_ERR zoh_vari_process (SRC_STATE *state, SRC_DATA *data) ;
 static void zoh_reset (SRC_STATE *state) ;
 static enum SRC_ERR zoh_copy (SRC_STATE *from, SRC_STATE *to) ;
+static void zoh_close (SRC_STATE *state) ;
 
 /*========================================================================================
 */
@@ -155,10 +156,7 @@ zoh_set_converter (SRC_STATE *state, int src_enum)
 	if (src_enum != SRC_ZERO_ORDER_HOLD)
 		return SRC_ERR_BAD_CONVERTER ;
 
-	if (state->private_data != NULL)
-	{	free (state->private_data) ;
-		state->private_data = NULL ;
-		} ;
+	zoh_close (state) ;
 
 	if (state->private_data == NULL)
 	{	priv = ZERO_ALLOC (ZOH_DATA, sizeof (*priv) + state->channels * sizeof (float)) ;
@@ -174,6 +172,7 @@ zoh_set_converter (SRC_STATE *state, int src_enum)
 	state->vari_process = zoh_vari_process ;
 	state->reset = zoh_reset ;
 	state->copy = zoh_copy ;
+	state->close = zoh_close ;
 
 	zoh_reset (state) ;
 
@@ -215,3 +214,16 @@ zoh_copy (SRC_STATE *from, SRC_STATE *to)
 
 	return SRC_ERR_NO_ERROR ;
 } /* zoh_copy */
+
+static void
+zoh_close (SRC_STATE *state)
+{
+	if (state)
+	{
+		if (state->private_data)
+		{
+			free (state->private_data) ;
+			state->private_data = NULL ;
+		}
+	}
+} /* zoh_close */

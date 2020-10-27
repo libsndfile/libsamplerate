@@ -129,6 +129,9 @@ struct SRC_STATE_tag
 	/* State clone. */
 	enum SRC_ERR	(*copy) (SRC_STATE *from, SRC_STATE *to) ;
 
+	/* State private_data close. */
+	void			(*close) (SRC_STATE *state) ;
+
 	/* Data specific to SRC_MODE_CALLBACK. */
 	src_callback_t	callback_func ;
 	void			*user_callback_data ;
