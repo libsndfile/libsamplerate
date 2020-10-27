@@ -27,7 +27,7 @@ static enum SRC_ERR linear_copy (SRC_STATE *from, SRC_STATE *to) ;
 
 typedef struct
 {	int		linear_magic_marker ;
-	int		dirty ;
+	bool	dirty ;
 	long	in_count, in_used ;
 	long	out_count, out_gen ;
 	float	last_value [] ;
