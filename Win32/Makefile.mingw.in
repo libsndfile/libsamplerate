@@ -59,7 +59,7 @@ install : $(TARGETS)
 		echo "installing ... $$prog" ; \
 		$(install_sh) -c "$$prog" $(bindir) ; \
 		done;
-	$(install_sh) -c src/samplerate.h $(includedir)
+	$(install_sh) -c include/samplerate.h $(includedir)
  
 uninstall :
 	rm -f $(libdir)/libsamplerate.dll
