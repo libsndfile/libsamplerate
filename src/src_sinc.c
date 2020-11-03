@@ -56,16 +56,16 @@ typedef struct
 	float	*buffer ;
 } SINC_FILTER ;
 
-static enum SRC_ERR sinc_multichan_vari_process (SRC_STATE *state, SRC_DATA *data) ;
-static enum SRC_ERR sinc_hex_vari_process (SRC_STATE *state, SRC_DATA *data) ;
-static enum SRC_ERR sinc_quad_vari_process (SRC_STATE *state, SRC_DATA *data) ;
-static enum SRC_ERR sinc_stereo_vari_process (SRC_STATE *state, SRC_DATA *data) ;
-static enum SRC_ERR sinc_mono_vari_process (SRC_STATE *state, SRC_DATA *data) ;
+static SRC_ERROR sinc_multichan_vari_process (SRC_STATE *state, SRC_DATA *data) ;
+static SRC_ERROR sinc_hex_vari_process (SRC_STATE *state, SRC_DATA *data) ;
+static SRC_ERROR sinc_quad_vari_process (SRC_STATE *state, SRC_DATA *data) ;
+static SRC_ERROR sinc_stereo_vari_process (SRC_STATE *state, SRC_DATA *data) ;
+static SRC_ERROR sinc_mono_vari_process (SRC_STATE *state, SRC_DATA *data) ;
 
 static int prepare_data (SINC_FILTER *filter, int channels, SRC_DATA *data, int half_filter_chan_len) WARN_UNUSED ;
 
 static void sinc_reset (SRC_STATE *state) ;
-static enum SRC_ERR sinc_copy (SRC_STATE *from, SRC_STATE *to) ;
+static SRC_ERROR sinc_copy (SRC_STATE *from, SRC_STATE *to) ;
 static void sinc_close (SRC_STATE *state) ;
 
 static inline increment_t
@@ -141,7 +141,7 @@ sinc_get_description (int src_enum)
 	return NULL ;
 } /* sinc_get_descrition */
 
-enum SRC_ERR
+SRC_ERROR
 sinc_set_converter (SRC_STATE *state, int src_enum)
 {	SINC_FILTER *filter, temp_filter ;
 	increment_t count ;
@@ -264,7 +264,7 @@ sinc_reset (SRC_STATE *state)
 	memset (filter->buffer + filter->b_len, 0xAA, state->channels * sizeof (filter->buffer [0])) ;
 } /* sinc_reset */
 
-static enum SRC_ERR
+static SRC_ERROR
 sinc_copy (SRC_STATE *from, SRC_STATE *to)
 {
 	if (from->private_data == NULL)
@@ -353,7 +353,7 @@ calc_output_single (SINC_FILTER *filter, increment_t increment, increment_t star
 	return (left + right) ;
 } /* calc_output_single */
 
-static enum SRC_ERR
+static SRC_ERROR
 sinc_mono_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
 	double		input_index, src_ratio, count, float_increment, terminate, rem ;
@@ -509,7 +509,7 @@ calc_output_stereo (SINC_FILTER *filter, int channels, increment_t increment, in
 		output [ch] = (float) (scale * (left [ch] + right [ch])) ;
 } /* calc_output_stereo */
 
-static enum SRC_ERR
+SRC_ERROR
 sinc_stereo_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
 	double		input_index, src_ratio, count, float_increment, terminate, rem ;
@@ -665,7 +665,7 @@ calc_output_quad (SINC_FILTER *filter, int channels, increment_t increment, incr
 		output [ch] = (float) (scale * (left [ch] + right [ch])) ;
 } /* calc_output_quad */
 
-static enum SRC_ERR
+SRC_ERROR
 sinc_quad_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
 	double		input_index, src_ratio, count, float_increment, terminate, rem ;
@@ -820,7 +820,7 @@ calc_output_hex (SINC_FILTER *filter, int channels, increment_t increment, incre
 		output [ch] = (float) (scale * (left [ch] + right [ch])) ;
 } /* calc_output_hex */
 
-static enum SRC_ERR
+SRC_ERROR
 sinc_hex_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
 	double		input_index, src_ratio, count, float_increment, terminate, rem ;
@@ -985,7 +985,7 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 	return ;
 } /* calc_output_multi */
 
-static enum SRC_ERR
+static SRC_ERROR
 sinc_multichan_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
 	double		input_index, src_ratio, count, float_increment, terminate, rem ;

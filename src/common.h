@@ -74,7 +74,7 @@ enum SRC_MODE
 	SRC_MODE_CALLBACK	= 1
 } ;
 
-enum SRC_ERR
+typedef enum SRC_ERROR
 {
 	SRC_ERR_NO_ERROR = 0,
 
@@ -103,12 +103,12 @@ enum SRC_ERR
 
 	/* This must be the last error number. */
 	SRC_ERR_MAX_ERROR
-} ;
+} SRC_ERROR ;
 
 struct SRC_STATE_tag
 {	double	last_ratio, last_position ;
 
-	enum SRC_ERR	error ;
+	SRC_ERROR	error ;
 	int		channels ;
 
 	/* SRC_MODE_PROCESS or SRC_MODE_CALLBACK */
@@ -118,16 +118,16 @@ struct SRC_STATE_tag
 	void	*private_data ;
 
 	/* Varispeed process function. */
-	enum SRC_ERR	(*vari_process) (SRC_STATE *state, SRC_DATA *data) ;
+	SRC_ERROR		(*vari_process) (SRC_STATE *state, SRC_DATA *data) ;
 
 	/* Constant speed process function. */
-	enum SRC_ERR	(*const_process) (SRC_STATE *state, SRC_DATA *data) ;
+	SRC_ERROR		(*const_process) (SRC_STATE *state, SRC_DATA *data) ;
 
 	/* State reset. */
 	void			(*reset) (SRC_STATE *state) ;
 
 	/* State clone. */
-	enum SRC_ERR	(*copy) (SRC_STATE *from, SRC_STATE *to) ;
+	SRC_ERROR		(*copy) (SRC_STATE *from, SRC_STATE *to) ;
 
 	/* State private_data close. */
 	void			(*close) (SRC_STATE *state) ;
@@ -143,19 +143,19 @@ struct SRC_STATE_tag
 const char* sinc_get_name (int src_enum) ;
 const char* sinc_get_description (int src_enum) ;
 
-enum SRC_ERR sinc_set_converter (SRC_STATE *state, int src_enum) ;
+SRC_ERROR sinc_set_converter (SRC_STATE *state, int src_enum) ;
 
 /* In src_linear.c */
 const char* linear_get_name (int src_enum) ;
 const char* linear_get_description (int src_enum) ;
 
-enum SRC_ERR linear_set_converter (SRC_STATE *state, int src_enum) ;
+SRC_ERROR linear_set_converter (SRC_STATE *state, int src_enum) ;
 
 /* In src_zoh.c */
 const char* zoh_get_name (int src_enum) ;
 const char* zoh_get_description (int src_enum) ;
 
-enum SRC_ERR zoh_set_converter (SRC_STATE *state, int src_enum) ;
+SRC_ERROR zoh_set_converter (SRC_STATE *state, int src_enum) ;
 
 /*----------------------------------------------------------
 **	Common static inline functions.

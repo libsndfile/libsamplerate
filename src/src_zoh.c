@@ -14,9 +14,9 @@
 #include "src_config.h"
 #include "common.h"
 
-static enum SRC_ERR zoh_vari_process (SRC_STATE *state, SRC_DATA *data) ;
+static SRC_ERROR zoh_vari_process (SRC_STATE *state, SRC_DATA *data) ;
 static void zoh_reset (SRC_STATE *state) ;
-static enum SRC_ERR zoh_copy (SRC_STATE *from, SRC_STATE *to) ;
+static SRC_ERROR zoh_copy (SRC_STATE *from, SRC_STATE *to) ;
 static void zoh_close (SRC_STATE *state) ;
 
 /*========================================================================================
@@ -35,7 +35,7 @@ typedef struct
 /*----------------------------------------------------------------------------------------
 */
 
-static enum SRC_ERR
+static SRC_ERROR
 zoh_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	ZOH_DATA 	*priv ;
 	double		src_ratio, input_index, rem ;
@@ -149,7 +149,7 @@ zoh_get_description (int src_enum)
 	return NULL ;
 } /* zoh_get_descrition */
 
-enum SRC_ERR
+SRC_ERROR
 zoh_set_converter (SRC_STATE *state, int src_enum)
 {
 	ZOH_DATA *priv = NULL ;
@@ -208,7 +208,7 @@ zoh_reset (SRC_STATE *state)
 	return ;
 } /* zoh_reset */
 
-static enum SRC_ERR
+static SRC_ERROR
 zoh_copy (SRC_STATE *from, SRC_STATE *to)
 {
 	if (from->private_data == NULL)
