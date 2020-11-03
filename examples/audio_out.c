@@ -809,7 +809,11 @@ win32_close (AUDIO_OUT *audio_out)
 
 static DWORD CALLBACK
 win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD_PTR data, DWORD_PTR param1, DWORD_PTR param2)
-{	WIN32_AUDIO_OUT	*win32_out ;
+{
+	UNREFERENCED_PARAMETER (hwave) ;
+	UNREFERENCED_PARAMETER (param1) ;
+	UNREFERENCED_PARAMETER (param2) ;
+	WIN32_AUDIO_OUT	*win32_out ;
 	int		read_count, frame_count, k ;
 	short	*sptr ;
 
@@ -843,7 +847,7 @@ win32_audio_out_callback (HWAVEOUT hwave, UINT msg, DWORD_PTR data, DWORD_PTR pa
 
 	if (read_count > 0)
 	{	/* Fix buffer length is only a partial block. */
-		if (read_count * sizeof (short) < win32_out->bufferlen)
+		if (read_count * (int) sizeof (short) < win32_out->bufferlen)
 			win32_out->whdr [win32_out->current].dwBufferLength = read_count * sizeof (short) ;
 
 		/* Queue the WAVEHDR */
