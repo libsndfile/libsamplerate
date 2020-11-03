@@ -25,7 +25,13 @@
 #define	SHIFT_BITS				12
 #define	FP_ONE					((double) (((increment_t) 1) << SHIFT_BITS))
 #define	INV_FP_ONE				(1.0 / FP_ONE)
+
+/* Customixe max channls from Kconfig. */
+#ifndef CONFIG_CHAN_NR
 #define MAX_CHANNELS			128
+#else
+#define MAX_CHANNELS 			CONFIG_CHAN_NR
+#endif
 
 /*========================================================================================
 */
