@@ -46,7 +46,7 @@ if(FFTW3_INCLUDE_DIR)
 endif(FFTW3_INCLUDE_DIR)
 
 find_package(PkgConfig QUIET)
-pkg_check_modules(PC_FFTW3 QUIET fftw)
+pkg_check_modules(PC_FFTW3 QUIET fftw3)
 
 set(FFTW3_VERSION ${PC_FFTW3_VERSION})
 
