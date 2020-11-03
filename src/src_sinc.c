@@ -40,9 +40,9 @@ typedef int32_t increment_t ;
 typedef float	coeff_t ;
 typedef int _CHECK_SHIFT_BITS[2 * (SHIFT_BITS < sizeof (increment_t) * 8 - 1) - 1]; /* sanity check. */
 
-#include "fastest_coeffs.h"
-#include "mid_qual_coeffs.h"
-#include "high_qual_coeffs.h"
+#include "coeffs_fastest.h"
+#include "coeffs_mid_qual.h"
+#include "coeffs_high_qual.h"
 
 typedef struct
 {	int		sinc_magic_marker ;
