@@ -1,4 +1,4 @@
-![Logo](doc/SRC.png)
+![Logo](docs/SRC.png)
 
 This is libsamplerate, `0.1.9`.
 
