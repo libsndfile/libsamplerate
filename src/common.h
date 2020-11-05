@@ -35,15 +35,6 @@
 #define	MAKE_MAGIC(a,b,c,d,e,f)	((a) + ((b) << 4) + ((c) << 8) + ((d) << 12) + ((e) << 16) + ((f) << 20))
 
 /*
-** Adds casting needed if compiled/included within cpp
-*/
-#ifdef __cplusplus
-#define ZERO_ALLOC(type, size)	static_cast<type*>(calloc(1, size))
-#else // __cplusplus
-#define ZERO_ALLOC(type, size)	calloc(1, size)
-#endif
-
-/*
 ** Inspiration : http://sourcefrog.net/weblog/software/languages/C/unused.html
 */
 #ifdef UNUSED

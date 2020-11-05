@@ -219,7 +219,7 @@ sinc_set_converter (SRC_STATE *state, int src_enum)
 	temp_filter.b_len *= state->channels ;
 	temp_filter.b_len += 1 ; // There is a <= check against samples_in_hand requiring a buffer bigger than the calculation above
 
-	if ((filter = ZERO_ALLOC (SINC_FILTER, sizeof (SINC_FILTER))) == NULL)
+	if ((filter = (SINC_FILTER *) calloc (1, sizeof (SINC_FILTER))) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 
 	*filter = temp_filter ;
@@ -273,7 +273,7 @@ sinc_copy (SRC_STATE *from, SRC_STATE *to)
 	SINC_FILTER *to_filter = NULL ;
 	SINC_FILTER* from_filter = (SINC_FILTER*) from->private_data ;
 
-	if ((to_filter = ZERO_ALLOC (SINC_FILTER, sizeof (SINC_FILTER))) == NULL)
+	if ((to_filter = (SINC_FILTER *) calloc (1, sizeof (SINC_FILTER))) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 	memcpy (to_filter, from_filter, sizeof (SINC_FILTER)) ;
 	to_filter->buffer = malloc (sizeof (float) * (from_filter->b_len + from->channels)) ;

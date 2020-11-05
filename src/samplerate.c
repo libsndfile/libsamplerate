@@ -31,7 +31,7 @@ src_new (int converter_type, int channels, int *error)
 		return NULL ;
 		} ;
 
-	SRC_STATE *state = ZERO_ALLOC (SRC_STATE, sizeof (SRC_STATE)) ;
+	SRC_STATE *state = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
 	if (state == NULL)
 	{	if (error)
 			*error = SRC_ERR_MALLOC_FAILED ;
@@ -62,7 +62,7 @@ src_clone (SRC_STATE* orig, int *error)
 	if (error)
 		*error = SRC_ERR_NO_ERROR ;
 
-	if ((state = ZERO_ALLOC (SRC_STATE, sizeof (SRC_STATE))) ==  NULL)
+	if ((state = (SRC_STATE *) calloc (1, sizeof (SRC_STATE))) ==  NULL)
 	{	if (error)
 			*error = SRC_ERR_MALLOC_FAILED ;
 		return NULL ;
