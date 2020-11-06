@@ -223,7 +223,7 @@ sinc_set_converter (SRC_STATE *state, int src_enum)
 		return SRC_ERR_MALLOC_FAILED ;
 
 	*filter = temp_filter ;
-	filter->buffer = calloc (temp_filter.b_len + state->channels, sizeof (float)) ;
+	filter->buffer = (float *) calloc (temp_filter.b_len + state->channels, sizeof (float)) ;
 	if (!filter->buffer)
 	{	free (filter) ;
 		return SRC_ERR_MALLOC_FAILED ;
@@ -276,7 +276,7 @@ sinc_copy (SRC_STATE *from, SRC_STATE *to)
 	if ((to_filter = (SINC_FILTER *) calloc (1, sizeof (SINC_FILTER))) == NULL)
 		return SRC_ERR_MALLOC_FAILED ;
 	memcpy (to_filter, from_filter, sizeof (SINC_FILTER)) ;
-	to_filter->buffer = malloc (sizeof (float) * (from_filter->b_len + from->channels)) ;
+	to_filter->buffer = (float *) malloc (sizeof (float) * (from_filter->b_len + from->channels)) ;
 	if (!to_filter->buffer)
 	{
 		free (to_filter) ;

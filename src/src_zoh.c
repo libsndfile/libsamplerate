@@ -164,7 +164,7 @@ zoh_set_converter (SRC_STATE *state, int src_enum)
 		priv = (ZOH_DATA *) calloc (1, sizeof (ZOH_DATA)) ;
 		if (priv)
 		{
-			priv->last_value = calloc (state->channels, sizeof (float)) ;
+			priv->last_value = (float *) calloc (state->channels, sizeof (float)) ;
 			if (!priv->last_value)
 			{
 				free (priv) ;
@@ -221,7 +221,7 @@ zoh_copy (SRC_STATE *from, SRC_STATE *to)
 		return SRC_ERR_MALLOC_FAILED ;
 
 	memcpy (to_priv, from_priv, sizeof (ZOH_DATA)) ;
-	to_priv->last_value = malloc (sizeof (float) * from->channels) ;
+	to_priv->last_value = (float *) malloc (sizeof (float) * from->channels) ;
 	if (!to_priv->last_value)
 	{	free (to_priv) ;
 		return SRC_ERR_MALLOC_FAILED ;
