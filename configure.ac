@@ -81,9 +81,8 @@ SHARED_VERSION_INFO="1:$VERSION_MINOR:1"
 dnl ====================================================================================
 
 AC_HEADER_STDC
-AC_HEADER_STDBOOL
 
-AC_CHECK_HEADERS([stdint.h sys/times.h])
+AC_CHECK_HEADERS([stdbool.h stdint.h sys/times.h])
 
 dnl ====================================================================================
 dnl  Couple of initializations here. Fill in real values later.
