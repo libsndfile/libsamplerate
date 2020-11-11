@@ -25,6 +25,7 @@
 #define	SHIFT_BITS				12
 #define	FP_ONE					((double) (((increment_t) 1) << SHIFT_BITS))
 #define	INV_FP_ONE				(1.0 / FP_ONE)
+#define MAX_CHANNELS			128
 
 /*========================================================================================
 */
@@ -51,7 +52,7 @@ typedef struct
 	int		b_current, b_end, b_real_end, b_len ;
 
 	/* Sure hope noone does more than 128 channels at once. */
-	double left_calc [128], right_calc [128] ;
+	double left_calc [MAX_CHANNELS], right_calc [MAX_CHANNELS] ;
 
 	float	*buffer ;
 } SINC_FILTER ;
@@ -141,109 +142,131 @@ sinc_get_description (int src_enum)
 	return NULL ;
 } /* sinc_get_descrition */
 
-SRC_ERROR
-sinc_set_converter (SRC_STATE *state, int src_enum)
-{	SINC_FILTER *filter, temp_filter ;
-	increment_t count ;
-	uint32_t bits ;
+static SINC_FILTER *
+sinc_filter_new (int converter_type, int channels)
+{
+	assert (converter_type == SRC_SINC_FASTEST ||
+		converter_type == SRC_SINC_MEDIUM_QUALITY ||
+		converter_type == SRC_SINC_BEST_QUALITY) ;
+	assert (channels > 0 && channels <= MAX_CHANNELS) ;
+
+	SINC_FILTER *priv = (SINC_FILTER *) calloc (1, sizeof (SINC_FILTER)) ;
+	if (priv)
+	{
+		priv->sinc_magic_marker = SINC_MAGIC_MARKER ;
+		switch (converter_type)
+		{
+		case SRC_SINC_FASTEST :
+			priv->coeffs = fastest_coeffs.coeffs ;
+			priv->coeff_half_len = ARRAY_LEN (fastest_coeffs.coeffs) - 2 ;
+			priv->index_inc = fastest_coeffs.increment ;
+			break ;
+
+		case SRC_SINC_MEDIUM_QUALITY :
+			priv->coeffs = slow_mid_qual_coeffs.coeffs ;
+			priv->coeff_half_len = ARRAY_LEN (slow_mid_qual_coeffs.coeffs) - 2 ;
+			priv->index_inc = slow_mid_qual_coeffs.increment ;
+			break ;
+
+		case SRC_SINC_BEST_QUALITY :
+			priv->coeffs = slow_high_qual_coeffs.coeffs ;
+			priv->coeff_half_len = ARRAY_LEN (slow_high_qual_coeffs.coeffs) - 2 ;
+			priv->index_inc = slow_high_qual_coeffs.increment ;
+			break ;
+		}
+
+		priv->b_len = 3 * (int) lrint ((priv->coeff_half_len + 2.0) / priv->index_inc * SRC_MAX_RATIO + 1) ;
+		priv->b_len = MAX (priv->b_len, 4096) ;
+		priv->b_len *= channels ;
+		priv->b_len += 1 ; // There is a <= check against samples_in_hand requiring a buffer bigger than the calculation above
+
+
+		priv->buffer = (float *) calloc (priv->b_len + channels, sizeof (float)) ;
+		if (!priv->buffer)
+		{
+			free (priv) ;
+			priv = NULL ;
+		}
+	}
+
+	return priv ;
+}
+
+SRC_STATE *
+sinc_state_new (int converter_type, int channels, SRC_ERROR *error)
+{
+	assert (converter_type == SRC_SINC_FASTEST ||
+		converter_type == SRC_SINC_MEDIUM_QUALITY ||
+		converter_type == SRC_SINC_BEST_QUALITY) ;
+	assert (channels > 0) ;
+	assert (error != NULL) ;
 
 	/* Quick sanity check. */
 	if (SHIFT_BITS >= sizeof (increment_t) * 8 - 1)
-		return SRC_ERR_SHIFT_BITS ;
+	{
+		*error = SRC_ERR_SHIFT_BITS ;
+		return NULL ;
+	}
 
-	sinc_close (state) ;
+	if (channels > MAX_CHANNELS)
+	{
+		*error = SRC_ERR_BAD_CHANNEL_COUNT ;
+		return NULL ;
+	}
 
-	memset (&temp_filter, 0, sizeof (temp_filter)) ;
+	SRC_STATE *state = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
+	if (!state)
+	{
+		*error = SRC_ERR_MALLOC_FAILED ;
+		return NULL ;
+	}
 
-	temp_filter.sinc_magic_marker = SINC_MAGIC_MARKER ;
+	state->channels = channels ;
+	state->mode = SRC_MODE_PROCESS ;
 
-	if (state->channels > ARRAY_LEN (temp_filter.left_calc))
-		return SRC_ERR_BAD_CHANNEL_COUNT ;
-	else if (state->channels == 1)
-	{	state->const_process = sinc_mono_vari_process ;
+	if (state->channels == 1)
+	{
+		state->const_process = sinc_mono_vari_process ;
 		state->vari_process = sinc_mono_vari_process ;
-		}
-	else
-	if (state->channels == 2)
-	{	state->const_process = sinc_stereo_vari_process ;
+	}
+	else if (state->channels == 2)
+	{
+		state->const_process = sinc_stereo_vari_process ;
 		state->vari_process = sinc_stereo_vari_process ;
-		}
-	else
-	if (state->channels == 4)
-	{	state->const_process = sinc_quad_vari_process ;
+	}
+	else if (state->channels == 4)
+	{
+		state->const_process = sinc_quad_vari_process ;
 		state->vari_process = sinc_quad_vari_process ;
-		}
-	else
-	if (state->channels == 6)
-	{	state->const_process = sinc_hex_vari_process ;
+	}
+	else if (state->channels == 6)
+	{
+		state->const_process = sinc_hex_vari_process ;
 		state->vari_process = sinc_hex_vari_process ;
-		}
+	}
 	else
-	{	state->const_process = sinc_multichan_vari_process ;
+	{
+		state->const_process = sinc_multichan_vari_process ;
 		state->vari_process = sinc_multichan_vari_process ;
-		} ;
+	}
 	state->reset = sinc_reset ;
 	state->copy = sinc_copy ;
 	state->close = sinc_close ;
 
-	switch (src_enum)
-	{	case SRC_SINC_FASTEST :
-				temp_filter.coeffs = fastest_coeffs.coeffs ;
-				temp_filter.coeff_half_len = ARRAY_LEN (fastest_coeffs.coeffs) - 2 ;
-				temp_filter.index_inc = fastest_coeffs.increment ;
-				break ;
-
-		case SRC_SINC_MEDIUM_QUALITY :
-				temp_filter.coeffs = slow_mid_qual_coeffs.coeffs ;
-				temp_filter.coeff_half_len = ARRAY_LEN (slow_mid_qual_coeffs.coeffs) - 2 ;
-				temp_filter.index_inc = slow_mid_qual_coeffs.increment ;
-				break ;
-
-		case SRC_SINC_BEST_QUALITY :
-				temp_filter.coeffs = slow_high_qual_coeffs.coeffs ;
-				temp_filter.coeff_half_len = ARRAY_LEN (slow_high_qual_coeffs.coeffs) - 2 ;
-				temp_filter.index_inc = slow_high_qual_coeffs.increment ;
-				break ;
-
-		default :
-				return SRC_ERR_BAD_CONVERTER ;
-		} ;
-
-	/*
-	** FIXME : This needs to be looked at more closely to see if there is
-	** a better way. Need to look at prepare_data () at the same time.
-	*/
-
-	temp_filter.b_len = 3 * (int) lrint ((temp_filter.coeff_half_len + 2.0) / temp_filter.index_inc * SRC_MAX_RATIO + 1) ;
-	temp_filter.b_len = MAX (temp_filter.b_len, 4096) ;
-	temp_filter.b_len *= state->channels ;
-	temp_filter.b_len += 1 ; // There is a <= check against samples_in_hand requiring a buffer bigger than the calculation above
-
-	if ((filter = (SINC_FILTER *) calloc (1, sizeof (SINC_FILTER))) == NULL)
-		return SRC_ERR_MALLOC_FAILED ;
-
-	*filter = temp_filter ;
-	filter->buffer = (float *) calloc (temp_filter.b_len + state->channels, sizeof (float)) ;
-	if (!filter->buffer)
-	{	free (filter) ;
-		return SRC_ERR_MALLOC_FAILED ;
-		} ;
-
-	memset (&temp_filter, 0xEE, sizeof (temp_filter)) ;
-
-	state->private_data = filter ;
+	state->private_data = sinc_filter_new (converter_type, state->channels) ;
+	if (!state->private_data)
+	{
+		free (state) ;
+		*error = SRC_ERR_MALLOC_FAILED ;
+		return NULL ;
+	}
 
 	sinc_reset (state) ;
 
-	count = filter->coeff_half_len ;
-	for (bits = 0 ; (MAKE_INCREMENT_T (1) << bits) < count ; bits++)
-		count |= (MAKE_INCREMENT_T (1) << bits) ;
+	*error = SRC_ERR_NO_ERROR ;
 
-	if (bits + SHIFT_BITS - 1 >= (int) (sizeof (increment_t) * 8))
-		return SRC_ERR_FILTER_LEN ;
-
-	return SRC_ERR_NO_ERROR ;
-} /* sinc_set_converter */
+	return state ;
+}
 
 static void
 sinc_reset (SRC_STATE *state)

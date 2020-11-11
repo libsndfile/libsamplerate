@@ -134,19 +134,19 @@ struct SRC_STATE_tag
 const char* sinc_get_name (int src_enum) ;
 const char* sinc_get_description (int src_enum) ;
 
-SRC_ERROR sinc_set_converter (SRC_STATE *state, int src_enum) ;
+SRC_STATE *sinc_state_new (int converter_type, int channels, SRC_ERROR *error) ;
 
 /* In src_linear.c */
 const char* linear_get_name (int src_enum) ;
 const char* linear_get_description (int src_enum) ;
 
-SRC_ERROR linear_set_converter (SRC_STATE *state, int src_enum) ;
+SRC_STATE *linear_state_new (int channels, SRC_ERROR *error) ;
 
 /* In src_zoh.c */
 const char* zoh_get_name (int src_enum) ;
 const char* zoh_get_description (int src_enum) ;
 
-SRC_ERROR zoh_set_converter (SRC_STATE *state, int src_enum) ;
+SRC_STATE *zoh_state_new (int channels, SRC_ERROR *error) ;
 
 /*----------------------------------------------------------
 **	Common static inline functions.

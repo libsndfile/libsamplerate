@@ -6,6 +6,7 @@
 ** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -158,36 +159,49 @@ linear_get_description (int src_enum)
 	return NULL ;
 } /* linear_get_descrition */
 
-SRC_ERROR
-linear_set_converter (SRC_STATE *state, int src_enum)
+static LINEAR_DATA *
+linear_data_new (int channels)
 {
-	LINEAR_DATA *priv = NULL ;
+	assert (channels > 0) ;
 
-	if (src_enum != SRC_LINEAR)
-		return SRC_ERR_BAD_CONVERTER ;
-
-	linear_close (state) ;
-
-	if (state->private_data == NULL)
+	LINEAR_DATA *priv = (LINEAR_DATA *) calloc (1, sizeof (LINEAR_DATA)) ;
+	if (priv)
 	{
-		priv = (LINEAR_DATA *) calloc (1, sizeof (LINEAR_DATA)) ;
-		if (priv)
+		priv->linear_magic_marker = LINEAR_MAGIC_MARKER ;
+		priv->last_value = (float *) calloc (channels, sizeof (float)) ;
+		if (!priv->last_value)
 		{
-			priv->last_value = (float *) calloc (state->channels, sizeof (float)) ;
-			if (!priv->last_value)
-			{
-				free (priv) ;
-				priv = NULL ;
-			}
+			free (priv) ;
+			priv = NULL ;
 		}
 	}
 
-	if (priv == NULL)
-		return SRC_ERR_MALLOC_FAILED ;
+	return priv ;
+}
 
-	state->private_data = priv ;
+SRC_STATE *
+linear_state_new (int channels, SRC_ERROR *error)
+{
+	assert (channels > 0) ;
+	assert (error != NULL) ;
 
-	priv->linear_magic_marker = LINEAR_MAGIC_MARKER ;
+	SRC_STATE *state = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
+	if (!state)
+	{
+		*error = SRC_ERR_MALLOC_FAILED ;
+		return NULL ;
+	}
+
+	state->channels = channels ;
+	state->mode = SRC_MODE_PROCESS ;
+
+	state->private_data = linear_data_new (state->channels) ;
+	if (!state->private_data)
+	{
+		free (state) ;
+		*error = SRC_ERR_MALLOC_FAILED ;
+		return NULL ;
+	}
 
 	state->const_process = linear_vari_process ;
 	state->vari_process = linear_vari_process ;
@@ -197,8 +211,10 @@ linear_set_converter (SRC_STATE *state, int src_enum)
 
 	linear_reset (state) ;
 
-	return SRC_ERR_NO_ERROR ;
-} /* linear_set_converter */
+	*error = SRC_ERR_NO_ERROR ;
+
+	return state ;
+}
 
 /*===================================================================================
 */

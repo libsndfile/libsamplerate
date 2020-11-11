@@ -6,6 +6,7 @@
 ** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -149,36 +150,49 @@ zoh_get_description (int src_enum)
 	return NULL ;
 } /* zoh_get_descrition */
 
-SRC_ERROR
-zoh_set_converter (SRC_STATE *state, int src_enum)
+static ZOH_DATA *
+zoh_data_new (int channels)
 {
-	ZOH_DATA *priv = NULL ;
+	assert (channels > 0) ;
 
-	if (src_enum != SRC_ZERO_ORDER_HOLD)
-		return SRC_ERR_BAD_CONVERTER ;
-
-	zoh_close (state) ;
-
-	if (state->private_data == NULL)
+	ZOH_DATA *priv = (ZOH_DATA *) calloc (1, sizeof (ZOH_DATA)) ;
+	if (priv)
 	{
-		priv = (ZOH_DATA *) calloc (1, sizeof (ZOH_DATA)) ;
-		if (priv)
+		priv->zoh_magic_marker = ZOH_MAGIC_MARKER ;
+		priv->last_value = (float *) calloc (channels, sizeof (float)) ;
+		if (!priv->last_value)
 		{
-			priv->last_value = (float *) calloc (state->channels, sizeof (float)) ;
-			if (!priv->last_value)
-			{
-				free (priv) ;
-				priv = NULL ;
-			}
+			free (priv) ;
+			priv = NULL ;
 		}
 	}
 
-	if (priv == NULL)
-		return SRC_ERR_MALLOC_FAILED ;
+	return priv ;
+}
 
-	state->private_data = priv ;
+SRC_STATE *
+zoh_state_new (int channels, SRC_ERROR *error)
+{
+	assert (channels > 0) ;
+	assert (error != NULL) ;
 
-	priv->zoh_magic_marker = ZOH_MAGIC_MARKER ;
+	SRC_STATE *state = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
+	if (!state)
+	{
+		*error = SRC_ERR_MALLOC_FAILED ;
+		return NULL ;
+	}
+
+	state->channels = channels ;
+	state->mode = SRC_MODE_PROCESS ;
+
+	state->private_data = zoh_data_new (state->channels) ;
+	if (!state->private_data)
+	{
+		free (state) ;
+		*error = SRC_ERR_MALLOC_FAILED ;
+		return NULL ;
+	}
 
 	state->const_process = zoh_vari_process ;
 	state->vari_process = zoh_vari_process ;
@@ -188,8 +202,10 @@ zoh_set_converter (SRC_STATE *state, int src_enum)
 
 	zoh_reset (state) ;
 
-	return SRC_ERR_NO_ERROR ;
-} /* zoh_set_converter */
+	*error = SRC_ERR_NO_ERROR ;
+
+	return state ;
+}
 
 /*===================================================================================
 */

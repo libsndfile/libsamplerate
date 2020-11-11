@@ -16,41 +16,13 @@
 #include	"samplerate.h"
 #include	"common.h"
 
-static int psrc_set_converter (SRC_STATE *state, int converter_type) ;
+static SRC_STATE *psrc_set_converter (int converter_type, int channels, int *error) ;
 
 
 SRC_STATE *
 src_new (int converter_type, int channels, int *error)
 {
-	if (error)
-		*error = SRC_ERR_NO_ERROR ;
-
-	if (channels < 1)
-	{	if (error)
-			*error = SRC_ERR_BAD_CHANNEL_COUNT ;
-		return NULL ;
-		} ;
-
-	SRC_STATE *state = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
-	if (state == NULL)
-	{	if (error)
-			*error = SRC_ERR_MALLOC_FAILED ;
-		return NULL ;
-		} ;
-
-	state->channels = channels ;
-	state->mode = SRC_MODE_PROCESS ;
-
-	if (psrc_set_converter (state, converter_type) != SRC_ERR_NO_ERROR)
-	{	if (error)
-			*error = SRC_ERR_BAD_CONVERTER ;
-		free (state) ;
-		state = NULL ;
-		} ;
-
-	src_reset (state) ;
-
-	return state ;
+	return psrc_set_converter (converter_type, channels, error) ;
 } /* src_new */
 
 SRC_STATE*
@@ -533,18 +505,33 @@ src_float_to_int_array (const float *in, int *out, int len)
 **	Private functions.
 */
 
-static int
-psrc_set_converter (SRC_STATE	*state, int converter_type)
+static SRC_STATE *
+psrc_set_converter (int converter_type, int channels, int *error)
 {
-	if (sinc_set_converter (state, converter_type) == SRC_ERR_NO_ERROR)
-		return SRC_ERR_NO_ERROR ;
+	SRC_ERROR temp_error;
+	SRC_STATE *state ;
+	switch (converter_type)
+	{
+	case SRC_SINC_BEST_QUALITY :
+	case SRC_SINC_MEDIUM_QUALITY :
+	case SRC_SINC_FASTEST :
+		state = sinc_state_new (converter_type, channels, &temp_error) ;
+		break ;
+	case SRC_ZERO_ORDER_HOLD :
+		state = zoh_state_new (channels, &temp_error) ;
+		break ;
+	case SRC_LINEAR :
+		state = linear_state_new (channels, &temp_error) ;
+		break ;
+	default :
+		temp_error = SRC_ERR_BAD_CONVERTER ;
+		state = NULL ;
+		break ;
+	}
 
-	if (zoh_set_converter (state, converter_type) == SRC_ERR_NO_ERROR)
-		return SRC_ERR_NO_ERROR ;
+	if (error)
+		*error = (int) temp_error ;
 
-	if (linear_set_converter (state, converter_type) == SRC_ERR_NO_ERROR)
-		return SRC_ERR_NO_ERROR ;
-
-	return SRC_ERR_BAD_CONVERTER ;
+	return state ;
 } /* psrc_set_converter */
 
