@@ -239,13 +239,11 @@ dnl  GCC stuff.
 
 AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
 		# OS specific tweaks.
-		# Disable -Wall for Apple Darwin/Rhapsody.
-		# System headers on these systems are broken.
 		AS_CASE([${host_os}],
 			[mingw*|cygwin*], [
 				SHLIB_VERSION_ARG="-export-symbols \$(top_builddir)/Win32/libsamplerate-0.def"],
-			[darwin* | rhapsody*], [
-				temp_CFLAGS=`echo $CFLAGS | sed "s/-Wall//"`
+			[darwin*], [dnl lots of warnings from xxx_coeff.h, otherwise:
+				temp_CFLAGS=`echo $CFLAGS | sed "s/-Wshorten-64-to-32//"`
 				CFLAGS=$temp_CFLAGS],
 			[linux*|kfreebsd*-gnu*|gnu*], [
 				SHLIB_VERSION_ARG="-Wl,--version-script=\$(top_builddir)/src/Version_script"
