@@ -480,15 +480,18 @@ src_float_to_int_array (const float *in, int *out, int len)
 	{	len -- ;
 
 		scaled_value = in [len] * (8.0 * 0x10000000) ;
-		if (CPU_CLIPS_POSITIVE == 0 && scaled_value >= (1.0 * 0x7FFFFFFF))
+#if CPU_CLIPS_POSITIVE == 0
+		if (scaled_value >= (1.0 * 0x7FFFFFFF))
 		{	out [len] = 0x7fffffff ;
 			continue ;
 			} ;
-		if (CPU_CLIPS_NEGATIVE == 0 && scaled_value <= (-8.0 * 0x10000000))
+#endif
+#if CPU_CLIPS_NEGATIVE == 0
+		if (scaled_value <= (-8.0 * 0x10000000))
 		{	out [len] = -1 - 0x7fffffff ;
 			continue ;
 			} ;
-
+#endif
 		out [len] = (int) lrint (scaled_value) ;
 		} ;
 
