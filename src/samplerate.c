@@ -43,7 +43,7 @@ src_clone (SRC_STATE* orig, int *error)
 	SRC_STATE *orig_state = orig ;
 	memcpy (state, orig_state, sizeof (SRC_STATE)) ;
 
-	if ((copy_error = orig_state->copy (orig_state, state)) != SRC_ERR_NO_ERROR)
+	if ((copy_error = orig_state->vt->copy (orig_state, state)) != SRC_ERR_NO_ERROR)
 	{	if (error)
 			*error = copy_error ;
 		free (state) ;
@@ -82,11 +82,11 @@ SRC_STATE *
 src_delete (SRC_STATE *state)
 {
 	if (state)
-	{	if (state->close)
-			state->close (state) ;
+	{
+		state->vt->close (state) ;
 		memset (state, 0, sizeof (SRC_STATE)) ;
 		free (state) ;
-		} ;
+	}
 
 	return NULL ;
 } /* src_state */
@@ -98,8 +98,6 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 
 	if (state == NULL)
 		return SRC_ERR_BAD_STATE ;
-	if (state->vari_process == NULL || state->const_process == NULL)
-		return SRC_ERR_BAD_PROC_PTR ;
 
 	if (state->mode != SRC_MODE_PROCESS)
 		return SRC_ERR_BAD_MODE ;
@@ -147,9 +145,9 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 
 	/* Now process. */
 	if (fabs (state->last_ratio - data->src_ratio) < 1e-15)
-		error = state->const_process (state, data) ;
+		error = state->vt->const_process (state, data) ;
 	else
-		error = state->vari_process (state, data) ;
+		error = state->vt->vari_process (state, data) ;
 
 	return error ;
 } /* src_process */
@@ -254,8 +252,6 @@ src_set_ratio (SRC_STATE *state, double new_ratio)
 {
 	if (state == NULL)
 		return SRC_ERR_BAD_STATE ;
-	if (state->vari_process == NULL || state->const_process == NULL)
-		return SRC_ERR_BAD_PROC_PTR ;
 
 	if (is_bad_src_ratio (new_ratio))
 		return SRC_ERR_BAD_SRC_RATIO ;
@@ -270,8 +266,6 @@ src_get_channels (SRC_STATE *state)
 {
 	if (state == NULL)
 		return -SRC_ERR_BAD_STATE ;
-	if (state->vari_process == NULL || state->const_process == NULL)
-		return -SRC_ERR_BAD_PROC_PTR ;
 
 	return state->channels ;
 } /* src_get_channels */
@@ -282,8 +276,7 @@ src_reset (SRC_STATE *state)
 	if (state == NULL)
 		return SRC_ERR_BAD_STATE ;
 
-	if (state->reset != NULL)
-		state->reset (state) ;
+	state->vt->reset (state) ;
 
 	state->last_position = 0.0 ;
 	state->last_ratio = 0.0 ;

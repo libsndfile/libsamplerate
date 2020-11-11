@@ -96,18 +96,8 @@ typedef enum SRC_ERROR
 	SRC_ERR_MAX_ERROR
 } SRC_ERROR ;
 
-struct SRC_STATE_tag
-{	double	last_ratio, last_position ;
-
-	SRC_ERROR	error ;
-	int		channels ;
-
-	/* SRC_MODE_PROCESS or SRC_MODE_CALLBACK */
-	enum SRC_MODE	mode ;
-
-	/* Pointer to data to converter specific data. */
-	void	*private_data ;
-
+typedef struct SRC_STATE_VT_tag
+{
 	/* Varispeed process function. */
 	SRC_ERROR		(*vari_process) (SRC_STATE *state, SRC_DATA *data) ;
 
@@ -122,6 +112,22 @@ struct SRC_STATE_tag
 
 	/* State private_data close. */
 	void			(*close) (SRC_STATE *state) ;
+} SRC_STATE_VT ;
+
+struct SRC_STATE_tag
+{
+	SRC_STATE_VT *vt ;
+
+	double	last_ratio, last_position ;
+
+	SRC_ERROR	error ;
+	int		channels ;
+
+	/* SRC_MODE_PROCESS or SRC_MODE_CALLBACK */
+	enum SRC_MODE	mode ;
+
+	/* Pointer to data to converter specific data. */
+	void	*private_data ;
 
 	/* Data specific to SRC_MODE_CALLBACK. */
 	src_callback_t	callback_func ;

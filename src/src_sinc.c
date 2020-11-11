@@ -69,6 +69,51 @@ static void sinc_reset (SRC_STATE *state) ;
 static SRC_ERROR sinc_copy (SRC_STATE *from, SRC_STATE *to) ;
 static void sinc_close (SRC_STATE *state) ;
 
+static SRC_STATE_VT sinc_multichan_state_vt =
+{
+	sinc_multichan_vari_process,
+	sinc_multichan_vari_process,
+	sinc_reset,
+	sinc_copy,
+	sinc_close
+} ;
+
+static SRC_STATE_VT sinc_hex_state_vt =
+{
+	sinc_hex_vari_process,
+	sinc_hex_vari_process,
+	sinc_reset,
+	sinc_copy,
+	sinc_close
+} ;
+
+static SRC_STATE_VT sinc_quad_state_vt =
+{
+	sinc_quad_vari_process,
+	sinc_quad_vari_process,
+	sinc_reset,
+	sinc_copy,
+	sinc_close
+} ;
+
+static SRC_STATE_VT sinc_stereo_state_vt =
+{
+	sinc_stereo_vari_process,
+	sinc_stereo_vari_process,
+	sinc_reset,
+	sinc_copy,
+	sinc_close
+} ;
+
+static SRC_STATE_VT sinc_mono_state_vt =
+{
+	sinc_mono_vari_process,
+	sinc_mono_vari_process,
+	sinc_reset,
+	sinc_copy,
+	sinc_close
+} ;
+
 static inline increment_t
 double_to_fp (double x)
 {	return (increment_t) (lrint ((x) * FP_ONE)) ;
@@ -225,33 +270,15 @@ sinc_state_new (int converter_type, int channels, SRC_ERROR *error)
 	state->mode = SRC_MODE_PROCESS ;
 
 	if (state->channels == 1)
-	{
-		state->const_process = sinc_mono_vari_process ;
-		state->vari_process = sinc_mono_vari_process ;
-	}
+		state->vt = &sinc_mono_state_vt ;
 	else if (state->channels == 2)
-	{
-		state->const_process = sinc_stereo_vari_process ;
-		state->vari_process = sinc_stereo_vari_process ;
-	}
+		state->vt = &sinc_stereo_state_vt ;
 	else if (state->channels == 4)
-	{
-		state->const_process = sinc_quad_vari_process ;
-		state->vari_process = sinc_quad_vari_process ;
-	}
+		state->vt = &sinc_quad_state_vt ;
 	else if (state->channels == 6)
-	{
-		state->const_process = sinc_hex_vari_process ;
-		state->vari_process = sinc_hex_vari_process ;
-	}
+		state->vt = &sinc_hex_state_vt ;
 	else
-	{
-		state->const_process = sinc_multichan_vari_process ;
-		state->vari_process = sinc_multichan_vari_process ;
-	}
-	state->reset = sinc_reset ;
-	state->copy = sinc_copy ;
-	state->close = sinc_close ;
+		state->vt = &sinc_multichan_state_vt ;
 
 	state->private_data = sinc_filter_new (converter_type, state->channels) ;
 	if (!state->private_data)

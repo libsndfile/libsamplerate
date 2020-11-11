@@ -35,6 +35,15 @@ typedef struct
 	float	*last_value ;
 } LINEAR_DATA ;
 
+static SRC_STATE_VT linear_state_vt =
+{
+	linear_vari_process,
+	linear_vari_process,
+	linear_reset,
+	linear_copy,
+	linear_close
+} ;
+
 /*----------------------------------------------------------------------------------------
 */
 
@@ -203,11 +212,7 @@ linear_state_new (int channels, SRC_ERROR *error)
 		return NULL ;
 	}
 
-	state->const_process = linear_vari_process ;
-	state->vari_process = linear_vari_process ;
-	state->reset = linear_reset ;
-	state->copy = linear_copy ;
-	state->close = linear_close ;
+	state->vt = &linear_state_vt ;
 
 	linear_reset (state) ;
 

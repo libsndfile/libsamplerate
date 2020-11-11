@@ -33,6 +33,15 @@ typedef struct
 	float	*last_value ;
 } ZOH_DATA ;
 
+static SRC_STATE_VT zoh_state_vt =
+{
+	zoh_vari_process,
+	zoh_vari_process,
+	zoh_reset,
+	zoh_copy,
+	zoh_close
+} ;
+
 /*----------------------------------------------------------------------------------------
 */
 
@@ -194,11 +203,7 @@ zoh_state_new (int channels, SRC_ERROR *error)
 		return NULL ;
 	}
 
-	state->const_process = zoh_vari_process ;
-	state->vari_process = zoh_vari_process ;
-	state->reset = zoh_reset ;
-	state->copy = zoh_copy ;
-	state->close = zoh_close ;
+	state->vt = &zoh_state_vt ;
 
 	zoh_reset (state) ;
 
