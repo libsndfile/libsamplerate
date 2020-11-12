@@ -108,10 +108,12 @@ linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 		if (priv->out_count > 0 && fabs (state->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
 			src_ratio = state->last_ratio + priv->out_gen * (data->src_ratio - state->last_ratio) / priv->out_count ;
 
-		if (SRC_DEBUG && priv->in_used < state->channels && input_index < 1.0)
+#if SRC_DEBUG
+		if (priv->in_used < state->channels && input_index < 1.0)
 		{	printf ("Whoops!!!!   in_used : %ld     channels : %d     input_index : %f\n", priv->in_used, state->channels, input_index) ;
 			exit (1) ;
 			} ;
+#endif
 
 		for (ch = 0 ; ch < state->channels ; ch++)
 		{	data->data_out [priv->out_gen] = (float) (data->data_in [priv->in_used - state->channels + ch] + input_index *
