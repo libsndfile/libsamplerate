@@ -32,6 +32,7 @@
 
 typedef int32_t increment_t ;
 typedef float	coeff_t ;
+typedef int _CHECK_SHIFT_BITS[2 * (SHIFT_BITS < sizeof (increment_t) * 8 - 1) - 1]; /* sanity check. */
 
 #include "fastest_coeffs.h"
 #include "mid_qual_coeffs.h"
@@ -245,13 +246,6 @@ sinc_state_new (int converter_type, int channels, SRC_ERROR *error)
 		converter_type == SRC_SINC_BEST_QUALITY) ;
 	assert (channels > 0) ;
 	assert (error != NULL) ;
-
-	/* Quick sanity check. */
-	if (SHIFT_BITS >= sizeof (increment_t) * 8 - 1)
-	{
-		*error = SRC_ERR_SHIFT_BITS ;
-		return NULL ;
-	}
 
 	if (channels > MAX_CHANNELS)
 	{
