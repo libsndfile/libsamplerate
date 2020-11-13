@@ -108,7 +108,7 @@ typedef struct SRC_STATE_VT_tag
 	void			(*reset) (SRC_STATE *state) ;
 
 	/* State clone. */
-	SRC_ERROR		(*copy) (SRC_STATE *from, SRC_STATE *to) ;
+	SRC_STATE		*(*copy) (SRC_STATE *state) ;
 
 	/* State private_data close. */
 	void			(*close) (SRC_STATE *state) ;

@@ -73,7 +73,7 @@ static SRC_ERROR sinc_mono_vari_process (SRC_STATE *state, SRC_DATA *data) ;
 static SRC_ERROR prepare_data (SINC_FILTER *filter, int channels, SRC_DATA *data, int half_filter_chan_len) WARN_UNUSED ;
 
 static void sinc_reset (SRC_STATE *state) ;
-static SRC_ERROR sinc_copy (SRC_STATE *from, SRC_STATE *to) ;
+static SRC_STATE *sinc_copy (SRC_STATE *state) ;
 static void sinc_close (SRC_STATE *state) ;
 
 static SRC_STATE_VT sinc_multichan_state_vt =
@@ -314,29 +314,40 @@ sinc_reset (SRC_STATE *state)
 	memset (filter->buffer + filter->b_len, 0xAA, state->channels * sizeof (filter->buffer [0])) ;
 } /* sinc_reset */
 
-static SRC_ERROR
-sinc_copy (SRC_STATE *from, SRC_STATE *to)
+static SRC_STATE *
+sinc_copy (SRC_STATE *state)
 {
-	if (from->private_data == NULL)
+	assert (state != NULL) ;
+
+	if (state->private_data == NULL)
 		return SRC_ERR_NO_PRIVATE ;
 
-	SINC_FILTER *to_filter = NULL ;
-	SINC_FILTER* from_filter = (SINC_FILTER*) from->private_data ;
+	SRC_STATE *to = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
+	if (!state)
+		return NULL ;
+	memcpy (to, state, sizeof (SRC_STATE)) ;
 
-	if ((to_filter = (SINC_FILTER *) calloc (1, sizeof (SINC_FILTER))) == NULL)
-		return SRC_ERR_MALLOC_FAILED ;
+
+	SINC_FILTER* from_filter = (SINC_FILTER*) state->private_data ;
+	SINC_FILTER *to_filter = (SINC_FILTER *) calloc (1, sizeof (SINC_FILTER)) ;
+	if (!to_filter)
+	{
+		free (to) ;
+		return NULL ;
+	}
 	memcpy (to_filter, from_filter, sizeof (SINC_FILTER)) ;
-	to_filter->buffer = (float *) malloc (sizeof (float) * (from_filter->b_len + from->channels)) ;
+	to_filter->buffer = (float *) malloc (sizeof (float) * (from_filter->b_len + state->channels)) ;
 	if (!to_filter->buffer)
 	{
+		free (to) ;
 		free (to_filter) ;
-		return SRC_ERR_MALLOC_FAILED ;
+		return NULL ;
 	}
-	memcpy (to_filter->buffer, from_filter->buffer, sizeof (float) * (from_filter->b_len + from->channels)) ;
+	memcpy (to_filter->buffer, from_filter->buffer, sizeof (float) * (from_filter->b_len + state->channels)) ;
 
 	to->private_data = to_filter ;
 
-	return SRC_ERR_NO_ERROR ;
+	return to ;
 } /* sinc_copy */
 
 /*========================================================================================

@@ -17,7 +17,7 @@
 
 static SRC_ERROR linear_vari_process (SRC_STATE *state, SRC_DATA *data) ;
 static void linear_reset (SRC_STATE *state) ;
-static SRC_ERROR linear_copy (SRC_STATE *from, SRC_STATE *to) ;
+static SRC_STATE *linear_copy (SRC_STATE *state) ;
 static void linear_close (SRC_STATE *state) ;
 
 /*========================================================================================
@@ -240,29 +240,40 @@ linear_reset (SRC_STATE *state)
 	return ;
 } /* linear_reset */
 
-SRC_ERROR
-linear_copy (SRC_STATE *from, SRC_STATE *to)
+SRC_STATE *
+linear_copy (SRC_STATE *state)
 {
-	if (from->private_data == NULL)
-		return SRC_ERR_NO_PRIVATE ;
+	assert (state != NULL) ;
 
-	LINEAR_DATA *to_priv = NULL ;
-	LINEAR_DATA* from_priv = (LINEAR_DATA*) from->private_data ;
-	if ((to_priv = (LINEAR_DATA*) calloc (1, sizeof (LINEAR_DATA))) == NULL)
-		return SRC_ERR_MALLOC_FAILED ;
+	if (state->private_data == NULL)
+		return NULL ;
+
+	SRC_STATE *to = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
+	if (!state)
+		return NULL ;
+	memcpy (to, state, sizeof (SRC_STATE)) ;
+
+	LINEAR_DATA* from_priv = (LINEAR_DATA*) state->private_data ;
+	LINEAR_DATA *to_priv = (LINEAR_DATA *) calloc (1, sizeof (LINEAR_DATA)) ;
+	if (!to_priv)
+	{
+		free (to) ;
+		return NULL ;
+	}
 
 	memcpy (to_priv, from_priv, sizeof (LINEAR_DATA)) ;
-	to_priv->last_value = (float *) malloc (sizeof (float) * from->channels) ;
+	to_priv->last_value = (float *) malloc (sizeof (float) * state->channels) ;
 	if (!to_priv->last_value)
 	{
+		free (to) ;
 		free (to_priv) ;
-		return SRC_ERR_MALLOC_FAILED ;
+		return NULL ;
 	}
-	memcpy (to_priv->last_value, from_priv->last_value, sizeof (float) * from->channels) ;
+	memcpy (to_priv->last_value, from_priv->last_value, sizeof (float) * state->channels) ;
 
 	to->private_data = to_priv ;
 
-	return SRC_ERR_NO_ERROR ;
+	return to ;
 } /* linear_copy */
 
 static void

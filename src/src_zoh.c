@@ -17,7 +17,7 @@
 
 static SRC_ERROR zoh_vari_process (SRC_STATE *state, SRC_DATA *data) ;
 static void zoh_reset (SRC_STATE *state) ;
-static SRC_ERROR zoh_copy (SRC_STATE *from, SRC_STATE *to) ;
+static SRC_STATE *zoh_copy (SRC_STATE *state) ;
 static void zoh_close (SRC_STATE *state) ;
 
 /*========================================================================================
@@ -229,29 +229,40 @@ zoh_reset (SRC_STATE *state)
 	return ;
 } /* zoh_reset */
 
-static SRC_ERROR
-zoh_copy (SRC_STATE *from, SRC_STATE *to)
+static SRC_STATE *
+zoh_copy (SRC_STATE *state)
 {
-	if (from->private_data == NULL)
-		return SRC_ERR_NO_PRIVATE ;
+	assert (state != NULL) ;
 
-	ZOH_DATA *to_priv = NULL ;
-	ZOH_DATA* from_priv = (ZOH_DATA*) from->private_data ;
+	if (state->private_data == NULL)
+		return NULL ;
 
-	if ((to_priv = (ZOH_DATA *) calloc (1, sizeof (ZOH_DATA))) == NULL)
-		return SRC_ERR_MALLOC_FAILED ;
+	SRC_STATE *to = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
+	if (!state)
+		return NULL ;
+	memcpy (to, state, sizeof (SRC_STATE)) ;
+
+	ZOH_DATA* from_priv = (ZOH_DATA*) state->private_data ;
+	ZOH_DATA *to_priv = (ZOH_DATA *) calloc (1, sizeof (ZOH_DATA)) ;
+	if (!to_priv)
+	{
+		free (to) ;
+		return NULL ;
+	}
 
 	memcpy (to_priv, from_priv, sizeof (ZOH_DATA)) ;
-	to_priv->last_value = (float *) malloc (sizeof (float) * from->channels) ;
+	to_priv->last_value = (float *) malloc (sizeof (float) * state->channels) ;
 	if (!to_priv->last_value)
-	{	free (to_priv) ;
-		return SRC_ERR_MALLOC_FAILED ;
-		} ;
-	memcpy (to_priv->last_value, from_priv->last_value, sizeof (float) * from->channels) ;
+	{
+		free (to) ;
+		free (to_priv) ;
+		return NULL ;
+	}
+	memcpy (to_priv->last_value, from_priv->last_value, sizeof (float) * state->channels) ;
 
 	to->private_data = to_priv ;
 
-	return SRC_ERR_NO_ERROR ;
+	return to ;
 } /* zoh_copy */
 
 static void

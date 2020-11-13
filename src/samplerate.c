@@ -28,27 +28,19 @@ src_new (int converter_type, int channels, int *error)
 SRC_STATE*
 src_clone (SRC_STATE* orig, int *error)
 {
-	SRC_STATE *state ;
-	int copy_error ;
-
+	if (!orig)
+	{
+		if (error)
+			*error = SRC_ERR_BAD_STATE ;
+		return NULL ;
+	}
 	if (error)
 		*error = SRC_ERR_NO_ERROR ;
 
-	if ((state = (SRC_STATE *) calloc (1, sizeof (SRC_STATE))) ==  NULL)
-	{	if (error)
+	SRC_STATE *state = orig->vt->copy (orig) ;
+	if (!state)
+		if (error)
 			*error = SRC_ERR_MALLOC_FAILED ;
-		return NULL ;
-		} ;
-
-	SRC_STATE *orig_state = orig ;
-	memcpy (state, orig_state, sizeof (SRC_STATE)) ;
-
-	if ((copy_error = orig_state->vt->copy (orig_state, state)) != SRC_ERR_NO_ERROR)
-	{	if (error)
-			*error = copy_error ;
-		free (state) ;
-		state = NULL ;
-		} ;
 
 	return state ;
 }
