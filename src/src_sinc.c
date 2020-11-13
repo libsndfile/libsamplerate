@@ -320,7 +320,7 @@ sinc_copy (SRC_STATE *state)
 	assert (state != NULL) ;
 
 	if (state->private_data == NULL)
-		return SRC_ERR_NO_PRIVATE ;
+		return NULL ;
 
 	SRC_STATE *to = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
 	if (!state)
