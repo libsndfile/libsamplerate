@@ -74,11 +74,7 @@ SRC_STATE *
 src_delete (SRC_STATE *state)
 {
 	if (state)
-	{
 		state->vt->close (state) ;
-		memset (state, 0, sizeof (SRC_STATE)) ;
-		free (state) ;
-	}
 
 	return NULL ;
 } /* src_state */

@@ -285,11 +285,14 @@ linear_close (SRC_STATE *state)
 		if (linear)
 		{
 			if (linear->last_value)
-			{	free (linear->last_value) ;
+			{
+				free (linear->last_value) ;
 				linear->last_value = NULL ;
-				} ;
+			}
 			free (linear) ;
 			linear = NULL ;
 		}
+		free (state) ;
+		state = NULL ;
 	}
 } /* linear_close */

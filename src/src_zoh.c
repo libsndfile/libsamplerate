@@ -274,11 +274,14 @@ zoh_close (SRC_STATE *state)
 		if (zoh)
 		{
 			if (zoh->last_value)
-			{	free (zoh->last_value) ;
+			{
+				free (zoh->last_value) ;
 				zoh->last_value = NULL ;
-				} ;
+			}
 			free (zoh) ;
 			zoh = NULL ;
 		}
+		free (state) ;
+		state = NULL ;
 	}
 } /* zoh_close */

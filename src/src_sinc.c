@@ -1226,11 +1226,14 @@ sinc_close (SRC_STATE *state)
 		if (sinc)
 		{
 			if (sinc->buffer)
-			{	free (sinc->buffer) ;
+			{
+				free (sinc->buffer) ;
 				sinc->buffer = NULL ;
-				} ;
+			}
 			free (sinc) ;
 			sinc = NULL ;
 		}
+		free (state) ;
+		state = NULL ;
 	}
 } /* sinc_close */

@@ -110,7 +110,7 @@ typedef struct SRC_STATE_VT_tag
 	/* State clone. */
 	SRC_STATE		*(*copy) (SRC_STATE *state) ;
 
-	/* State private_data close. */
+	/* State close. */
 	void			(*close) (SRC_STATE *state) ;
 } SRC_STATE_VT ;
 
