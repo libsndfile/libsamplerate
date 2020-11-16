@@ -126,14 +126,14 @@ struct SRC_STATE_tag
 	/* SRC_MODE_PROCESS or SRC_MODE_CALLBACK */
 	enum SRC_MODE	mode ;
 
-	/* Pointer to data to converter specific data. */
-	void	*private_data ;
-
 	/* Data specific to SRC_MODE_CALLBACK. */
 	src_callback_t	callback_func ;
 	void			*user_callback_data ;
 	long			saved_frames ;
 	const float		*saved_data ;
+
+	/* Pointer to data to converter specific data. */
+	void	*private_data ;
 } ;
 
 /* In src_sinc.c */
