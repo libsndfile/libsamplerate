@@ -56,6 +56,7 @@ main (void)
 		callback_test	(SRC_LINEAR, k, target) ;
 		} ;
 
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 	puts ("\n    Sinc interpolator :") ;
 	target = 100.0 ;
 	for (k = 1 ; k <= MAX_CHANNELS ; k++)
@@ -63,6 +64,7 @@ main (void)
 		process_test	(SRC_SINC_FASTEST, k, target) ;
 		callback_test	(SRC_SINC_FASTEST, k, target) ;
 		} ;
+#endif
 
 	fftw_cleanup () ;
 	puts ("") ;

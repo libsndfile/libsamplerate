@@ -17,7 +17,9 @@
 #define	SHORT_BUFFER_LEN	2048
 #define	LONG_BUFFER_LEN		((1 << 16) - 20)
 
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 static void simple_test (int converter) ;
+#endif
 static void stream_test (int converter, double ratio) ;
 static void init_term_test (int converter, double ratio) ;
 
@@ -49,6 +51,7 @@ main (void)
 		stream_test (SRC_LINEAR, src_ratios [k]) ;
 
 
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 	puts ("\n    Sinc interpolator:") ;
 	for (k = 0 ; k < ARRAY_LEN (src_ratios) ; k++)
 		init_term_test (SRC_SINC_FASTEST, src_ratios [k]) ;
@@ -59,10 +62,12 @@ main (void)
 	puts ("") ;
 
 	simple_test (SRC_SINC_FASTEST) ;
+#endif
 
 	return 0 ;
 } /* main */
 
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 static void
 simple_test (int converter)
 {
@@ -91,6 +96,7 @@ simple_test (int converter)
 
     return ;
 } /* simple_test */
+#endif
 
 static void
 init_term_test (int converter, double src_ratio)

@@ -40,9 +40,15 @@ typedef int32_t increment_t ;
 typedef float	coeff_t ;
 typedef int _CHECK_SHIFT_BITS[2 * (SHIFT_BITS < sizeof (increment_t) * 8 - 1) - 1]; /* sanity check. */
 
-#include "fastest_coeffs.h"
-#include "mid_qual_coeffs.h"
-#include "high_qual_coeffs.h"
+#ifdef ENABLE_SYNC_FAST_CONVERTER
+  #include "fastest_coeffs.h"
+#endif
+#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
+  #include "mid_qual_coeffs.h"
+#endif
+#ifdef ENABLE_SYNC_BEST_CONVERTER
+  #include "high_qual_coeffs.h"
+#endif
 
 typedef struct
 {	int		sinc_magic_marker ;
@@ -208,23 +214,27 @@ sinc_filter_new (int converter_type, int channels)
 		priv->sinc_magic_marker = SINC_MAGIC_MARKER ;
 		switch (converter_type)
 		{
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 		case SRC_SINC_FASTEST :
 			priv->coeffs = fastest_coeffs.coeffs ;
 			priv->coeff_half_len = ARRAY_LEN (fastest_coeffs.coeffs) - 2 ;
 			priv->index_inc = fastest_coeffs.increment ;
 			break ;
-
+#endif
+#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
 		case SRC_SINC_MEDIUM_QUALITY :
 			priv->coeffs = slow_mid_qual_coeffs.coeffs ;
 			priv->coeff_half_len = ARRAY_LEN (slow_mid_qual_coeffs.coeffs) - 2 ;
 			priv->index_inc = slow_mid_qual_coeffs.increment ;
 			break ;
-
+#endif
+#ifdef ENABLE_SYNC_BEST_CONVERTER
 		case SRC_SINC_BEST_QUALITY :
 			priv->coeffs = slow_high_qual_coeffs.coeffs ;
 			priv->coeff_half_len = ARRAY_LEN (slow_high_qual_coeffs.coeffs) - 2 ;
 			priv->index_inc = slow_high_qual_coeffs.increment ;
 			break ;
+#endif
 		}
 
 		priv->b_len = 3 * (int) lrint ((priv->coeff_half_len + 2.0) / priv->index_inc * SRC_MAX_RATIO + 1) ;

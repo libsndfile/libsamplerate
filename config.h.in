@@ -60,6 +60,15 @@
 /* Set to 1 if compiling for Win32 */
 #cmakedefine01 OS_IS_WIN32
 
+/* define fast samplerate convertor */
+#cmakedefine ENABLE_SYNC_FAST_CONVERTER
+
+/* define balanced samplerate convertor */
+#cmakedefine ENABLE_SYNC_MEDIUM_CONVERTER
+
+/* define best samplerate convertor */
+#cmakedefine ENABLE_SYNC_BEST_CONVERTER
+
 /* The size of `int', as computed by sizeof. */
 #define SIZEOF_INT ${SIZEOF_INT}
 

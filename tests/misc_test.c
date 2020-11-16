@@ -36,12 +36,14 @@ main (void)
 
 	zero_input_test (SRC_ZERO_ORDER_HOLD) ;
 	zero_input_test (SRC_LINEAR) ;
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 	zero_input_test (SRC_SINC_FASTEST) ;
-
+#endif
 	get_channels_test (SRC_ZERO_ORDER_HOLD) ;
 	get_channels_test (SRC_LINEAR) ;
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 	get_channels_test (SRC_SINC_FASTEST) ;
-
+#endif
 	puts ("") ;
 	return 0 ;
 } /* main */
