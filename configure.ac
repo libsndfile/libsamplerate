@@ -107,6 +107,15 @@ AC_ARG_ENABLE([alsa],
 AC_ARG_ENABLE([fftw],
 	[AS_HELP_STRING([--disable-fftw], [disable usage of FFTW (default=autodetect)])], [], [enable_fftw=auto])
 
+AC_ARG_ENABLE([sinc_fast],
+	[AS_HELP_STRING([--disable-sinc-fast], [disable sinc fast converter support (default=autodetect)])], [], [enable_sinc_fast=yes])
+
+AC_ARG_ENABLE([sinc_medium],
+	[AS_HELP_STRING([--disable-sinc-medium], [disable sinc balanced converter support (default=autodetect)])], [], [enable_sinc_medium=yes])
+
+AC_ARG_ENABLE([sinc_best],
+	[AS_HELP_STRING([--disable-sinc-best], [disable sinc best converter support (default=autodetect)])], [], [enable_sinc_best=yes])
+
 dnl ====================================================================================
 dnl  Check types and their sizes.
 
@@ -214,6 +223,27 @@ AS_IF([test "x$enable_fftw" != "xno"], [
 	])
 
 dnl ====================================================================================
+dnl  Set Sinc Quality.
+
+AS_IF([test "x$enable_sinc_fast" != "xno"], [
+		AC_DEFINE_UNQUOTED([ENABLE_SYNC_FAST_CONVERTER], [${enable_sinc_fast}], [Enable sinc fast converter.])
+	], [
+		enable_sinc_fast="no"
+	])
+
+AS_IF([test "x$enable_sinc_medium" != "xno"], [
+		AC_DEFINE_UNQUOTED([ENABLE_SYNC_MEDIUM_CONVERTER], [${enable_sinc_medium}], [Enable sinc balanced converter.])
+	], [
+		enable_sinc_medium="no"
+	])
+
+AS_IF([test "x$enable_sinc_best" != "xno"], [
+		AC_DEFINE_UNQUOTED([ENABLE_SYNC_BEST_CONVERTER], [${enable_sinc_best}], [Enable sinc best converter.])
+	], [
+		enable_sinc_best="no"
+	])
+
+dnl ====================================================================================
 dnl  Compiler stuff.
 
 AS_IF([test "x$enable_flags_setting" = "xyes"], [
@@ -316,6 +346,11 @@ AC_MSG_RESULT([
     Have libsndfile : ..................... ${enable_sndfile}
     Have ALSA : ........................... ${enable_alsa}
     Have FFTW : ........................... ${enable_fftw}
+
+  Converter configuration :
+    Sinc fast : ........................... ${enable_sinc_fast}
+    Sinc balanced : ....................... ${enable_sinc_medium}
+    Sinc best : ........................... ${enable_sinc_best}
 
   Installation directories :
 

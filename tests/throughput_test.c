@@ -112,9 +112,15 @@ single_run (void)
 
 	throughput_test (SRC_ZERO_ORDER_HOLD, 0) ;
 	throughput_test (SRC_LINEAR, 0) ;
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 	throughput_test (SRC_SINC_FASTEST, 0) ;
+#endif
+#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
 	throughput_test (SRC_SINC_MEDIUM_QUALITY, 0) ;
+#endif
+#ifdef ENABLE_SYNC_BEST_CONVERTER
 	throughput_test (SRC_SINC_BEST_QUALITY, 0) ;
+#endif
 
 	puts ("") ;
 	return ;
@@ -123,7 +129,18 @@ single_run (void)
 static void
 multi_run (int run_count)
 {	long zero_order_hold = 0, linear = 0 ;
-	long sinc_fastest = 0, sinc_medium = 0, sinc_best = 0 ;
+
+#ifdef ENABLE_SYNC_FAST_CONVERTER
+	long sinc_fastest = 0 ;
+#endif
+
+#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
+	long sinc_medium = 0 ;
+#endif
+
+#ifdef ENABLE_SYNC_BEST_CONVERTER
+	long sinc_best = 0 ;
+#endif
 	int k ;
 
 	puts (
@@ -135,10 +152,15 @@ multi_run (int run_count)
 	for (k = 0 ; k < run_count ; k++)
 	{	zero_order_hold =	throughput_test (SRC_ZERO_ORDER_HOLD, zero_order_hold) ;
 		linear =			throughput_test (SRC_LINEAR, linear) ;
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 		sinc_fastest =		throughput_test (SRC_SINC_FASTEST, sinc_fastest) ;
+#endif
+#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
 		sinc_medium =		throughput_test (SRC_SINC_MEDIUM_QUALITY, sinc_medium) ;
+#endif
+#ifdef ENABLE_SYNC_BEST_CONVERTER
 		sinc_best =			throughput_test (SRC_SINC_BEST_QUALITY, sinc_best) ;
-
+#endif
 		puts ("") ;
 
 		/* Let the CPU cool down. We might be running on a laptop. */
@@ -158,9 +180,15 @@ multi_run (int run_count)
 		) ;
 	printf ("    %-30s    %10ld\n", src_get_name (SRC_ZERO_ORDER_HOLD), zero_order_hold) ;
 	printf ("    %-30s    %10ld\n", src_get_name (SRC_LINEAR), linear) ;
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 	printf ("    %-30s    %10ld\n", src_get_name (SRC_SINC_FASTEST), sinc_fastest) ;
+#endif
+#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
 	printf ("    %-30s    %10ld\n", src_get_name (SRC_SINC_MEDIUM_QUALITY), sinc_medium) ;
+#endif
+#ifdef ENABLE_SYNC_BEST_CONVERTER
 	printf ("    %-30s    %10ld\n", src_get_name (SRC_SINC_BEST_QUALITY), sinc_best) ;
+#endif
 
 	puts ("") ;
 } /* multi_run */

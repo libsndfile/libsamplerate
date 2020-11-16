@@ -90,6 +90,7 @@ main (int argc, char *argv [])
 				}
 			},
 
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 		{	SRC_SINC_FASTEST,
 			9,
 			BOOLEAN_TRUE,
@@ -104,7 +105,9 @@ main (int argc, char *argv [])
 				{	1,	{ 0.3511111111 },		1.33,		1,	 97.0,	1.0 }
 				}
 			},
+#endif
 
+#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
 		{	SRC_SINC_MEDIUM_QUALITY,
 			9,
 			BOOLEAN_TRUE,
@@ -119,7 +122,9 @@ main (int argc, char *argv [])
 				{	1,	{ 0.43111111111 },		1.33,		1,	121.0,	1.0 }
 				}
 			},
+#endif
 
+#ifdef ENABLE_SYNC_BEST_CONVERTER
 		{	SRC_SINC_BEST_QUALITY,
 			9,
 			BOOLEAN_TRUE,
@@ -134,6 +139,8 @@ main (int argc, char *argv [])
 				{	1,	{ 0.43111111111 },		1.33,		1,	145.0,	1.0 }
 				}
 			},
+#endif
+
 		} ; /* snr_test_data */
 
 	double	best_snr, snr, freq3dB ;

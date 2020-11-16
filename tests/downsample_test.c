@@ -12,6 +12,8 @@
 
 #include "util.h"
 
+#include "config.h"
+
 static void
 downsample_test (int converter)
 {	static float in [1000], out [10] ;
@@ -41,9 +43,15 @@ main (void)
 
 	downsample_test (SRC_ZERO_ORDER_HOLD) ;
 	downsample_test (SRC_LINEAR) ;
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 	downsample_test (SRC_SINC_FASTEST) ;
+#endif
+#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
 	downsample_test (SRC_SINC_MEDIUM_QUALITY) ;
+#endif
+#ifdef ENABLE_SYNC_BEST_CONVERTER
 	downsample_test (SRC_SINC_BEST_QUALITY) ;
+#endif
 
 	puts ("") ;
 

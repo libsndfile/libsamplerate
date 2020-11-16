@@ -496,11 +496,21 @@ psrc_set_converter (int converter_type, int channels, int *error)
 	SRC_STATE *state ;
 	switch (converter_type)
 	{
+#ifdef ENABLE_SYNC_BEST_CONVERTER
 	case SRC_SINC_BEST_QUALITY :
+		state = sinc_state_new (converter_type, channels, &temp_error) ;
+		break ;
+#endif
+#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
 	case SRC_SINC_MEDIUM_QUALITY :
+		state = sinc_state_new (converter_type, channels, &temp_error) ;
+		break ;
+#endif
+#ifdef ENABLE_SYNC_FAST_CONVERTER
 	case SRC_SINC_FASTEST :
 		state = sinc_state_new (converter_type, channels, &temp_error) ;
 		break ;
+#endif
 	case SRC_ZERO_ORDER_HOLD :
 		state = zoh_state_new (channels, &temp_error) ;
 		break ;
