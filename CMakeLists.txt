@@ -27,6 +27,10 @@ option(LIBSAMPLERATE_EXAMPLES "Enable to generate examples" ${IS_ROOT_PROJECT})
 option(LIBSAMPLERATE_INSTALL "Enable to add install directives" ${IS_ROOT_PROJECT})
 option(LIBSAMPLERATE_COMPATIBLE_NAME "Use old dll name on Windows platform" OFF)
 
+option(LIBSAMPLERATE_WITH_SINC_BEST_CONVERTER "Enable Fastest Sinc Interpolator converter" ON)
+
+set(WITH_SINC_BEST_CONVERTER ${LIBSAMPLERATE_WITH_SINC_BEST_CONVERTER})
+
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 set(CMAKE_C_STANDARD 99)

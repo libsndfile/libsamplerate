@@ -6,6 +6,8 @@
 ** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <samplerate.h>
@@ -43,7 +45,9 @@ main (void)
 	downsample_test (SRC_LINEAR) ;
 	downsample_test (SRC_SINC_FASTEST) ;
 	downsample_test (SRC_SINC_MEDIUM_QUALITY) ;
+#ifdef WITH_SINC_BEST_CONVERTER
 	downsample_test (SRC_SINC_BEST_QUALITY) ;
+#endif
 
 	puts ("") ;
 

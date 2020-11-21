@@ -120,6 +120,7 @@ main (int argc, char *argv [])
 				}
 			},
 
+#ifdef WITH_SINC_BEST_CONVERTER
 		{	SRC_SINC_BEST_QUALITY,
 			9,
 			BOOLEAN_TRUE,
@@ -134,6 +135,7 @@ main (int argc, char *argv [])
 				{	1,	{ 0.43111111111 },		1.33,		1,	145.0,	1.0 }
 				}
 			},
+#endif
 		} ; /* snr_test_data */
 
 	double	best_snr, snr, freq3dB ;

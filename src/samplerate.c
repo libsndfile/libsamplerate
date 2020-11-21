@@ -496,7 +496,9 @@ psrc_set_converter (int converter_type, int channels, int *error)
 	SRC_STATE *state ;
 	switch (converter_type)
 	{
+#ifdef LIBSAMPLERATE_WITH_SINC_BEST_CONVERTER
 	case SRC_SINC_BEST_QUALITY :
+#endif
 	case SRC_SINC_MEDIUM_QUALITY :
 	case SRC_SINC_FASTEST :
 		state = sinc_state_new (converter_type, channels, &temp_error) ;
