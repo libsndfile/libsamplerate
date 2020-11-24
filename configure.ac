@@ -226,19 +226,19 @@ dnl ============================================================================
 dnl  Set Sinc Quality.
 
 AS_IF([test "x$enable_sinc_fast" != "xno"], [
-		AC_DEFINE_UNQUOTED([ENABLE_SYNC_FAST_CONVERTER], [${enable_sinc_fast}], [Enable sinc fast converter.])
+		AC_DEFINE_UNQUOTED([ENABLE_SINC_FAST_CONVERTER], [${enable_sinc_fast}], [Enable sinc fast converter.])
 	], [
 		enable_sinc_fast="no"
 	])
 
 AS_IF([test "x$enable_sinc_medium" != "xno"], [
-		AC_DEFINE_UNQUOTED([ENABLE_SYNC_MEDIUM_CONVERTER], [${enable_sinc_medium}], [Enable sinc balanced converter.])
+		AC_DEFINE_UNQUOTED([ENABLE_SINC_MEDIUM_CONVERTER], [${enable_sinc_medium}], [Enable sinc balanced converter.])
 	], [
 		enable_sinc_medium="no"
 	])
 
 AS_IF([test "x$enable_sinc_best" != "xno"], [
-		AC_DEFINE_UNQUOTED([ENABLE_SYNC_BEST_CONVERTER], [${enable_sinc_best}], [Enable sinc best converter.])
+		AC_DEFINE_UNQUOTED([ENABLE_SINC_BEST_CONVERTER], [${enable_sinc_best}], [Enable sinc best converter.])
 	], [
 		enable_sinc_best="no"
 	])

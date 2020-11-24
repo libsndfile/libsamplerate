@@ -39,7 +39,7 @@ main (void)
 	for (k = 0 ; k < ARRAY_LEN (src_ratios) ; k++)
 		callback_test (SRC_LINEAR, src_ratios [k]) ;
 
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 	puts ("    Sinc interpolator :") ;
 	for (k = 0 ; k < ARRAY_LEN (src_ratios) ; k++)
 		callback_test (SRC_SINC_FASTEST, src_ratios [k]) ;
@@ -49,7 +49,7 @@ main (void)
 	puts ("    End of stream test :") ;
 	end_of_stream_test (SRC_ZERO_ORDER_HOLD) ;
 	end_of_stream_test (SRC_LINEAR) ;
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 	end_of_stream_test (SRC_SINC_FASTEST) ;
 #endif
 
