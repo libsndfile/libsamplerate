@@ -28,8 +28,8 @@
 
 static float input [BUFFER_LEN] ;
 
-#if (defined(ENABLE_SYNC_FAST_CONVERTER) || defined(ENABLE_SYNC_MEDIUM_CONVERTER) || \
-	defined(ENABLE_SYNC_BEST_CONVERTER))
+#if (defined(ENABLE_SINC_FAST_CONVERTER) || defined(ENABLE_SINC_MEDIUM_CONVERTER) || \
+	defined(ENABLE_SINC_BEST_CONVERTER))
 static float output [BUFFER_LEN] ;
 
 static void
@@ -102,8 +102,8 @@ throughput_test (int converter, int channels, long *best_throughput)
 static void
 single_run (void)
 {
-#if (defined(ENABLE_SYNC_FAST_CONVERTER) || defined(ENABLE_SYNC_MEDIUM_CONVERTER) || \
-	defined(ENABLE_SYNC_BEST_CONVERTER))
+#if (defined(ENABLE_SINC_FAST_CONVERTER) || defined(ENABLE_SINC_MEDIUM_CONVERTER) || \
+	defined(ENABLE_SINC_BEST_CONVERTER))
 	const int max_channels = 10 ;
 	int k ;
 #endif
@@ -116,21 +116,21 @@ single_run (void)
 		"    ---------------------------------------------------------------------"
 		) ;
 
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 	for (k = 1 ; k <= max_channels / 2 ; k++)
 		throughput_test (SRC_SINC_FASTEST, k, 0) ;
 
 	puts ("") ;
 #endif
 
-#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
+#ifdef ENABLE_SINC_MEDIUM_CONVERTER
 	for (k = 1 ; k <= max_channels / 2 ; k++)
 		throughput_test (SRC_SINC_MEDIUM_QUALITY, k, 0) ;
 
 	puts ("") ;
 #endif
 
-#ifdef ENABLE_SYNC_BEST_CONVERTER
+#ifdef ENABLE_SINC_BEST_CONVERTER
 	for (k = 1 ; k <= max_channels ; k++)
 		throughput_test (SRC_SINC_BEST_QUALITY, k, 0) ;
 	puts ("") ;
@@ -152,26 +152,26 @@ multi_run (int run_count)
 
 	for (int i = 0 ; i < ARRAY_LEN(channels) ; i++)
 	{
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 		long sinc_fastest = 0 ;
 #endif
-#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
+#ifdef ENABLE_SINC_MEDIUM_CONVERTER
 		long sinc_medium = 0 ;
 #endif
-#ifdef ENABLE_SYNC_BEST_CONVERTER
+#ifdef ENABLE_SINC_BEST_CONVERTER
 		long sinc_best = 0 ;
 #endif
 		int ch = channels[i];
 
 		for (int k = 0 ; k < run_count ; k++)
 		{
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 			throughput_test (SRC_SINC_FASTEST, ch, &sinc_fastest) ;
 #endif
-#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
+#ifdef ENABLE_SINC_MEDIUM_CONVERTER
 			throughput_test (SRC_SINC_MEDIUM_QUALITY, ch, &sinc_medium) ;
 #endif
-#ifdef ENABLE_SYNC_BEST_CONVERTER
+#ifdef ENABLE_SINC_BEST_CONVERTER
 			throughput_test (SRC_SINC_BEST_QUALITY, ch, &sinc_best) ;
 #endif
 
@@ -191,13 +191,13 @@ multi_run (int run_count)
 			"    ------------------------------------------------\n",
 			ch
 			) ;
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 		printf ("    %-30s    %10ld\n", src_get_name (SRC_SINC_FASTEST), sinc_fastest) ;
 #endif
-#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
+#ifdef ENABLE_SINC_MEDIUM_CONVERTER
 		printf ("    %-30s    %10ld\n", src_get_name (SRC_SINC_MEDIUM_QUALITY), sinc_medium) ;
 #endif
-#ifdef ENABLE_SYNC_BEST_CONVERTER
+#ifdef ENABLE_SINC_BEST_CONVERTER
 		printf ("    %-30s    %10ld\n", src_get_name (SRC_SINC_BEST_QUALITY), sinc_best) ;
 #endif
 		} ;

@@ -121,7 +121,7 @@ main (void)
 
 	clone_test (SRC_ZERO_ORDER_HOLD) ;
 	clone_test (SRC_LINEAR) ;
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 	clone_test (SRC_SINC_FASTEST) ;
 #endif
 	puts("");

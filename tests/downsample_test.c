@@ -43,13 +43,13 @@ main (void)
 
 	downsample_test (SRC_ZERO_ORDER_HOLD) ;
 	downsample_test (SRC_LINEAR) ;
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 	downsample_test (SRC_SINC_FASTEST) ;
 #endif
-#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
+#ifdef ENABLE_SINC_MEDIUM_CONVERTER
 	downsample_test (SRC_SINC_MEDIUM_QUALITY) ;
 #endif
-#ifdef ENABLE_SYNC_BEST_CONVERTER
+#ifdef ENABLE_SINC_BEST_CONVERTER
 	downsample_test (SRC_SINC_BEST_QUALITY) ;
 #endif
 

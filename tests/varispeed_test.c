@@ -43,7 +43,7 @@ main (void)
 	varispeed_test (SRC_LINEAR, 10.0) ;
 	puts ("ok") ;
 
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 	printf ("        Sinc interpolator               : ") ;
 	fflush (stdout) ;
 	varispeed_test (SRC_SINC_FASTEST, 115.0) ;
@@ -61,7 +61,7 @@ main (void)
 	varispeed_bounds_test (SRC_LINEAR) ;
 	puts ("ok") ;
 
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 	printf ("        Sinc interpolator               : ") ;
 	fflush (stdout) ;
 	varispeed_bounds_test (SRC_SINC_FASTEST) ;

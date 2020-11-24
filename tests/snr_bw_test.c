@@ -90,7 +90,7 @@ main (int argc, char *argv [])
 				}
 			},
 
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 		{	SRC_SINC_FASTEST,
 			9,
 			BOOLEAN_TRUE,
@@ -107,7 +107,7 @@ main (int argc, char *argv [])
 			},
 #endif
 
-#ifdef ENABLE_SYNC_MEDIUM_CONVERTER
+#ifdef ENABLE_SINC_MEDIUM_CONVERTER
 		{	SRC_SINC_MEDIUM_QUALITY,
 			9,
 			BOOLEAN_TRUE,
@@ -124,7 +124,7 @@ main (int argc, char *argv [])
 			},
 #endif
 
-#ifdef ENABLE_SYNC_BEST_CONVERTER
+#ifdef ENABLE_SINC_BEST_CONVERTER
 		{	SRC_SINC_BEST_QUALITY,
 			9,
 			BOOLEAN_TRUE,

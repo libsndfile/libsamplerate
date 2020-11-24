@@ -43,7 +43,7 @@ main (void)
 		src_simple_produces_output_test (SRC_LINEAR, src_ratios [k]) ;
 		}
 
-#ifdef ENABLE_SYNC_FAST_CONVERTER
+#ifdef ENABLE_SINC_FAST_CONVERTER
 	puts ("    Sinc interpolator :") ;
 	for (k = 0 ; k < ARRAY_LEN (src_ratios) ; k++)
 	{	simple_test (SRC_SINC_FASTEST, src_ratios [k]) ;
