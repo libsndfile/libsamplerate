@@ -135,7 +135,7 @@ add_library(samplerate
   src/high_qual_coeffs.h
   src/mid_qual_coeffs.h
   src/samplerate.c
-  src/samplerate.h
+  include/samplerate.h
   src/src_linear.c
   src/src_sinc.c
   src/src_zoh.c
@@ -161,7 +161,7 @@ endif()
 
 target_include_directories(samplerate
   PUBLIC
-    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>
+    $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
   PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR})
@@ -171,7 +171,7 @@ if(LIBM_REQUIRED)
 endif()
 
 # Set public header
-set_property(TARGET samplerate PROPERTY PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/src/samplerate.h)
+set_property(TARGET samplerate PROPERTY PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/include/samplerate.h)
 
 if(BUILD_SHARED_LIBS)
   # Set ABI version. This is critical for Unix-like OSes
