@@ -12,7 +12,9 @@
 #include <string.h>
 #include <math.h>
 
-#include "src_config.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "common.h"
 
 #define	SINC_MAGIC_MARKER	MAKE_MAGIC (' ', 's', 'i', 'n', 'c', ' ')

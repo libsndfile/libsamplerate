@@ -136,7 +136,6 @@ add_library(samplerate
   src/mid_qual_coeffs.h
   src/samplerate.c
   src/samplerate.h
-  src/src_config.h
   src/src_linear.c
   src/src_sinc.c
   src/src_zoh.c

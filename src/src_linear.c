@@ -12,7 +12,9 @@
 #include <string.h>
 #include <math.h>
 
-#include "src_config.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 #include "common.h"
 
 static SRC_ERROR linear_vari_process (SRC_STATE *state, SRC_DATA *data) ;

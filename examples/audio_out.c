@@ -17,7 +17,9 @@
 #include <mmsystem.h>
 #endif
 
-#include "src_config.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #include "audio_out.h"
 

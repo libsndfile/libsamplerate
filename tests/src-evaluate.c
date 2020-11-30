@@ -12,7 +12,9 @@
 #include <string.h>
 #include <ctype.h>
 
-#include "src_config.h"
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #if (HAVE_FFTW3 && HAVE_SNDFILE && HAVE_SYS_TIMES_H)
 
