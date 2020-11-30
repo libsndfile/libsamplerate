@@ -271,7 +271,7 @@ AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
 		# OS specific tweaks.
 		AS_CASE([${host_os}],
 			[mingw*|cygwin*], [
-				SHLIB_VERSION_ARG="-export-symbols \$(top_builddir)/Win32/libsamplerate-0.def"],
+				SHLIB_VERSION_ARG="-export-symbols \$(top_srcdir)/Win32/libsamplerate-0.def"],
 			[darwin*], [dnl lots of warnings from xxx_coeff.h, otherwise:
 				temp_CFLAGS=`echo $CFLAGS | sed "s/-Wshorten-64-to-32//"`
 				CFLAGS=$temp_CFLAGS],
