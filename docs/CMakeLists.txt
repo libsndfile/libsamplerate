@@ -1,1 +1,21 @@
-install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} DESTINATION ${CMAKE_INSTALL_DOCDIR})
+install(
+  FILES 
+    api.md
+    api_callback.md
+    api_full.md
+    api_misc.md
+    api_simple.md
+    bugs.md
+    download.md
+    faq.md
+    history.md
+    index.md
+    license.md
+    lists.md
+    quality.md
+    win32.md
+    foo_dsp_src9.png
+    paypal.png
+    SRC.png
+  DESTINATION
+    ${CMAKE_INSTALL_DOCDIR})
