@@ -56,6 +56,7 @@ endif()
 include(CTest)
 
 add_definitions(-DHAVE_CONFIG_H)
+include_directories(${PROJECT_BINARY_DIR})
 if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
@@ -162,9 +163,7 @@ endif()
 target_include_directories(samplerate
   PUBLIC
     $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
-  PRIVATE
-    ${CMAKE_CURRENT_BINARY_DIR})
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 if(LIBM_REQUIRED)
     target_link_libraries(samplerate PRIVATE m)
@@ -211,58 +210,48 @@ endif()
 if(BUILD_TESTING)
 
   add_executable(misc_test tests/misc_test.c tests/util.c tests/util.h)
-  target_include_directories(misc_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(misc_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME misc_test COMMAND misc_test)
 
   add_executable(termination_test tests/termination_test.c tests/util.c tests/util.h)
-  target_include_directories(termination_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(termination_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME termination_test COMMAND termination_test)
 
   add_executable(callback_hang_test tests/callback_hang_test.c tests/util.c tests/util.h)
   target_include_directories(callback_hang_test
     PRIVATE
-      ${PROJECT_BINARY_DIR}
       $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
   target_link_libraries(callback_hang_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME callback_hang_test COMMAND callback_hang_test)
 
   add_executable(downsample_test tests/downsample_test.c tests/util.c tests/util.h)
-  target_include_directories(downsample_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(downsample_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME downsample_test COMMAND downsample_test)
 
   add_executable(simple_test tests/simple_test.c tests/util.c tests/util.h)
-  target_include_directories(simple_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(simple_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME simple_test COMMAND simple_test)
 
   add_executable(callback_test tests/callback_test.c tests/util.c tests/util.h)
   target_include_directories(callback_test
     PRIVATE
-      ${PROJECT_BINARY_DIR}
       $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
   target_link_libraries(callback_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME callback_test COMMAND callback_test)
 
   add_executable(reset_test tests/reset_test.c tests/util.c tests/util.h)
-  target_include_directories(reset_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(reset_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME reset_test COMMAND reset_test)
 
   add_executable(clone_test tests/clone_test.c tests/util.c tests/util.h)
-  target_include_directories(clone_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(clone_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME clone_test COMMAND clone_test)
 
   add_executable(nullptr_test tests/nullptr_test.c tests/util.c tests/util.h)
-  target_include_directories(nullptr_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(nullptr_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME nullptr_test COMMAND nullptr_test)
 
   add_executable(multi_channel_test tests/multi_channel_test.c tests/calc_snr.c tests/util.c tests/util.h)
-  target_include_directories(multi_channel_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(multi_channel_test
     PRIVATE
       samplerate
@@ -271,7 +260,6 @@ if(BUILD_TESTING)
   add_test(NAME multi_channel_test COMMAND multi_channel_test)
 
   add_executable(varispeed_test tests/varispeed_test.c tests/calc_snr.c tests/util.c tests/util.h)
-  target_include_directories(varispeed_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(varispeed_test
     PRIVATE samplerate
       $<$<BOOL:${FFTW3_FOUND}>:FFTW3::fftw3>
@@ -280,12 +268,10 @@ if(BUILD_TESTING)
   add_test(NAME varispeed_test COMMAND varispeed_test tests/util.c tests/util.h)
 
   add_executable(float_short_test tests/float_short_test.c)
-  target_include_directories(float_short_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(float_short_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
   add_test(NAME float_short_test COMMAND float_short_test)
 
   add_executable(snr_bw_test tests/snr_bw_test.c tests/calc_snr.c tests/util.c tests/util.h)
-  target_include_directories(snr_bw_test PRIVATE ${PROJECT_BINARY_DIR})
   target_link_libraries(snr_bw_test
     PRIVATE
       samplerate
@@ -296,21 +282,18 @@ if(BUILD_TESTING)
   add_executable(throughput_test tests/throughput_test.c tests/util.c tests/util.h)
   target_include_directories(throughput_test
     PRIVATE
-      ${PROJECT_BINARY_DIR}
       $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
   target_link_libraries(throughput_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
 
   add_executable(multichan_throughput_test tests/multichan_throughput_test.c tests/util.c tests/util.h)
   target_include_directories(multichan_throughput_test
     PRIVATE
-      ${PROJECT_BINARY_DIR}
       $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
   target_link_libraries(multichan_throughput_test PRIVATE samplerate $<$<BOOL:${LIBM_REQUIRED}>:m>)
 
   add_executable(src-evaluate tests/src-evaluate.c tests/util.c tests/util.h tests/calc_snr.c)
   target_include_directories(src-evaluate
     PRIVATE
-      ${PROJECT_BINARY_DIR}
       $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
   target_link_libraries(src-evaluate
     PRIVATE
@@ -328,7 +311,6 @@ if(LIBSAMPLERATE_EXAMPLES)
   add_executable(timewarp-file examples/timewarp-file.c)
   target_include_directories(timewarp-file
     PRIVATE
-      ${PROJECT_BINARY_DIR}
       $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
   target_link_libraries(timewarp-file
     PRIVATE
@@ -339,7 +321,6 @@ if(LIBSAMPLERATE_EXAMPLES)
   add_executable(varispeed-play examples/varispeed-play.c examples/audio_out.c examples/audio_out.h)
   target_include_directories(varispeed-play
     PRIVATE
-      ${PROJECT_BINARY_DIR}
       $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
   target_link_libraries(varispeed-play
     PRIVATE
