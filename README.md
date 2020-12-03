@@ -21,7 +21,7 @@ Additional references:
 
 | Branch         | Status                                                                                                            |
 |----------------|-------------------------------------------------------------------------------------------------------------------|
-| `master`       | ![Build](https://github.com/libsndfile/libsamplerate/workflows/Build%20&%20test/badge.svg)       |
+| `master`       | ![Build](https://github.com/libsndfile/libsamplerate/workflows/Build/badge.svg)       |
 
 Branches [actively built](https://github.com/libsndfile/libsamplerate/actions) by GitHub Actions.
 
