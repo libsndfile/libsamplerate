@@ -21,9 +21,9 @@ Additional references:
 
 | Branch         | Status                                                                                                            |
 |----------------|-------------------------------------------------------------------------------------------------------------------|
-| `master`       | [![Build Status](https://travis-ci.org/libsndfile/libsamplerate.svg?branch=master)](https://travis-ci.org/libsndfile/libsamplerate)       |
+| `master`       | ![Build](https://github.com/libsndfile/libsamplerate/workflows/Build%20&%20test/badge.svg)       |
 
-Branches [actively built](https://travis-ci.org/libsndfile/libsamplerate/branches) by TravisCI.
+Branches [actively built](https://github.com/libsndfile/libsamplerate/actions) by GitHub Actions.
 
 ---
 
