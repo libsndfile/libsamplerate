@@ -176,6 +176,11 @@ get_cpu_name (void)
 	search = "hw.model" ;
 	is_pipe = 1 ;
 #else
+	(void) search ;
+	(void) buffer ;
+	(void) file ;
+	(void) is_pipe ;
+
 	return name;
 #endif
 
