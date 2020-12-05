@@ -5,7 +5,7 @@ This is libsamplerate, `0.1.9`.
 libsamplerate (also known as Secret Rabbit Code) is a library for performing sample rate conversion of audio data.
 
 * The [`src/`](https://github.com/libsndfile/libsamplerate/tree/master/src) directory contains the source code for library itself.
-* The [`doc/`](https://github.com/libsndfile/libsamplerate/tree/master/doc) directory contains the libsamplerate documentation.
+* The [`docs/`](https://github.com/libsndfile/libsamplerate/tree/master/docs) directory contains the libsamplerate documentation.
 * The [`examples/`](https://github.com/libsndfile/libsamplerate/tree/master/examples) directory contains examples of how to write code using libsamplerate.
 * The [`tests/`](https://github.com/libsndfile/libsamplerate/tree/master/tests) directory contains programs which link against libsamplerate and test its functionality.
 * The [`Win32/`](https://github.com/libsndfile/libsamplerate/tree/master/Win32) directory contains files and documentation to allow libsamplerate to compile under Win32 with the Microsoft Visual C++ compiler.
@@ -29,7 +29,7 @@ Branches [actively built](https://github.com/libsndfile/libsamplerate/actions) b
 
 ## Win32
 
-There are detailed instructions for building libsamplerate on Win32 in the file [`doc/win32.html`](http://libsndfile.github.io/libsamplerate/win32.html).
+There are detailed instructions for building libsamplerate on Win32 in the file [`docs/win32.md`](https://github.com/libsndfile/libsamplerate/tree/master/docs/win32.md).
 
 ## macOS
 
