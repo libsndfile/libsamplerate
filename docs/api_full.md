@@ -137,7 +137,7 @@ When using the **src_process** or **src_callback_process** APIs and updating the
 smoothly transition between the conversion ratio of the last call and the
 conversion ratio of the current call.
 
-If the user want to bypass this smooth transition and achieve a step response in
+If the user wants to bypass this smooth transition and achieve a step response in
 the conversion ratio, the **src_set_ratio** function can be used to set the
 starting conversion ratio of the next call to **src_process** or
 **src_callback_process**.
