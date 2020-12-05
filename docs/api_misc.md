@@ -8,7 +8,7 @@ layout: default
 
 Most of the API functions either return an integer error (ie **src_simple** and
 **src_process**) or return an integer error value via an int pointer parameter
-(**src_new**). These integer error values can be converted into a human readable
+(**src_new**). These integer error values can be converted into human-readable
 text strings by calling the function:
 
 ```c
@@ -36,7 +36,7 @@ enum
 } ;
 ```
 
-As new converters are added, they will given a number corresponding to the next
+As new converters are added, they will be given a number corresponding to the next
 integer.
 
 The details of these converters are as follows:
@@ -46,7 +46,7 @@ The details of these converters are as follows:
   converter, providing a worst case Signal-to-Noise Ratio (SNR) of 97 decibels
   (dB) at a bandwidth of 97%. All three SRC_SINC_* converters are based on the
   techniques of [Julius O. Smith](http://ccrma.stanford.edu/~jos/resample/)
-  although this code was developed independantly.
+  although this code was developed independently.
 - **SRC_SINC_MEDIUM_QUALITY** - This is another bandlimited interpolator much
   like the previous one. It has an SNR of 97dB and a bandwidth of 90%. The speed
   of the conversion is much faster than the previous one.
@@ -98,14 +98,14 @@ typedef struct
 
 The **data_in** pointer is used to pass audio data into the converter while the
 **data_out** pointer supplies the converter with an array to hold the
-converter's output. For a converter which has been configured for mulitchannel
+converter's output. For a converter which has been configured for multichannel
 operation, these pointers need to point to a single array of interleaved data.
 
 The **input_frames** and **output_frames** fields supply the converter with the
 lengths of the arrays (in frames) pointed to by the **data_in** and **data_out**
-pointers respectively. For monophinc data, these values would indicate the
+pointers respectively. For monophonic data, these values would indicate the
 length of the arrays while for multi channel data these values would be equal to
-the the length of the array divided by the number of channels.
+the length of the array divided by the number of channels.
 
 The **end_of_input** field is only used when the sample rate converter is used
 by calling the **src_process** function. In this case it should be set to zero
@@ -114,7 +114,7 @@ the last.
 
 Finally, the **src_ratio** field specifies the conversion ratio defined as the
 output sample rate divided by the input sample rate. For a connected set of
-buffers, this value can be varies on each call to **src_process** resulting in a
+buffers, this value can vary on each call to **src_process** resulting in a
 time varying sample rate conversion process. For time varying sample rate
 conversions, the ratio will be linearly interpolated between the **src_ratio**
 value of the previous call to **src_process** and the value for the current
