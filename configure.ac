@@ -202,7 +202,6 @@ AS_IF([test "x$enable_alsa" != "xno"], [
 					])
 			])
 	])
-AM_CONDITIONAL([HAVE_LIBALSA], [test "x$enable_alsa" = "xyes"])
 
 dnl ====================================================================================
 dnl  Check for libfftw3 which is required for the test and example programs.
@@ -278,22 +277,25 @@ AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
 	])
 
 dnl ====================================================================================
-dnl  Find known host OS.
+dnl  Find known host OS, set OS-specific audio-out flags.
 
-OS_SPECIFIC_INCLUDES=""
 os_is_win32=0
 
+AUDIO_CFLAGS=""
+AUDIO_LIBS=""
+
 AS_CASE([${host_os}],
-	[darwin* | rhapsody*], [
-		OS_SPECIFIC_INCLUDES="-fpascal-strings -I/Developer/Headers/FlatCarbon"
-		OS_SPECIFIC_LINKS="-framework CoreAudio"],
+	[darwin*], [dnl this requires 10.5+
+		AUDIO_LIBS="-framework CoreAudio"],
 	[mingw32*], [
-		OS_SPECIFIC_LINKS="-lwinmm"
+		AUDIO_LIBS="-lwinmm"
 		os_is_win32=1],
-	[
-		OS_SPECIFIC_INCLUDES=""
-		OS_SPECIFIC_LINKS=""
-	])
+	[linux*], [dnl have OSS as fallback if no ALSA
+		AS_IF([test "x$enable_alsa" = "xyes"], [
+			AUDIO_LIBS="$ALSA_LIBS"
+			AUDIO_CFLAGS="$ALSA_CFLAGS"
+		])],
+	[])
 
 dnl ====================================================================================
 dnl  Now use the information from the checking stage.
@@ -302,8 +304,8 @@ AC_DEFINE_UNQUOTED([OS_IS_WIN32], [${os_is_win32}], [Set to 1 if compiling for W
 
 AC_SUBST(SHLIB_VERSION_ARG)
 AC_SUBST(SHARED_VERSION_INFO)
-AC_SUBST(OS_SPECIFIC_INCLUDES)
-AC_SUBST(OS_SPECIFIC_LINKS)
+AC_SUBST(AUDIO_CFLAGS)
+AC_SUBST(AUDIO_LIBS)
 
 AC_CONFIG_FILES([
 		Makefile

@@ -2,7 +2,7 @@
 
 DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 
-AM_CPPFLAGS = -I$(top_srcdir)/include $(OS_SPECIFIC_INCLUDES)
+AM_CPPFLAGS = -I$(top_srcdir)/include
 
 EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat Win32 \
     Octave/generate_filter.m Octave/make_filter.m Octave/measure_filter.m \
@@ -60,17 +60,15 @@ dist_doc_DATA = docs/SRC.png docs/SRC.css docs/index.md docs/license.md docs/his
 #############
 
 if HAVE_LIBSNDFILE
-if HAVE_LIBALSA
 noinst_PROGRAMS = examples/varispeed-play examples/timewarp-file
 
 examples_varispeed_play_SOURCES = examples/varispeed-play.c examples/audio_out.c examples/audio_out.h
-examples_varispeed_play_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
-examples_varispeed_play_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS) $(OS_SPECIFIC_LINKS)
+examples_varispeed_play_CFLAGS = $(SNDFILE_CFLAGS) $(AUDIO_CFLAGS)
+examples_varispeed_play_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(AUDIO_LIBS)
 
 examples_timewarp_file_SOURCES = examples/timewarp-file.c
-examples_timewarp_file_CFLAGS = $(SNDFILE_CFLAGS) $(ALSA_CFLAGS)
-examples_timewarp_file_LDADD = src/libsamplerate.la $(SNDFILE_LIBS) $(ALSA_LIBS)
-endif
+examples_timewarp_file_CFLAGS = $(SNDFILE_CFLAGS)
+examples_timewarp_file_LDADD = src/libsamplerate.la $(SNDFILE_LIBS)
 endif
 
 ##########
