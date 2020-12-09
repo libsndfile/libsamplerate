@@ -23,13 +23,6 @@
 
 #include "audio_out.h"
 
-#if HAVE_ALSA
-	#define ALSA_PCM_NEW_HW_PARAMS_API
-	#define ALSA_PCM_NEW_SW_PARAMS_API
-	#include <alsa/asoundlib.h>
-	#include <sys/time.h>
-#endif
-
 #if (HAVE_SNDFILE)
 
 #include <math.h>
@@ -48,6 +41,12 @@
 #if defined (__linux__)
 
 #if HAVE_ALSA
+
+#define ALSA_PCM_NEW_HW_PARAMS_API
+#define ALSA_PCM_NEW_SW_PARAMS_API
+
+#include <alsa/asoundlib.h>
+#include <sys/time.h>
 
 #define	ALSA_MAGIC		MAKE_MAGIC ('L', 'n', 'x', '-', 'A', 'L', 'S', 'A')
 
@@ -547,7 +546,7 @@ macosx_open (int channels, int samplerate)
 		return NULL ;
 		} ;
 
-	return (MACOSX_AUDIO_OUT *) macosx_out ;
+	return (AUDIO_OUT *) macosx_out ;
 } /* macosx_open */
 
 static void
@@ -614,8 +613,15 @@ macosx_audio_out_callback (AudioDeviceID device, const AudioTimeStamp* current_t
 	const AudioBufferList* data_in, const AudioTimeStamp* time_in,
 	AudioBufferList* data_out, const AudioTimeStamp* time_out, void* client_data)
 {	MACOSX_AUDIO_OUT	*macosx_out ;
-	int		k, size, frame_count, read_count ;
+	int		size, frame_count, read_count ;
 	float	*buffer ;
+
+	/* unused params: */
+	(void) device;
+	(void) current_time;
+	(void) data_in;
+	(void) time_in;
+	(void) time_out;
 
 	if ((macosx_out = (MACOSX_AUDIO_OUT*) client_data) == NULL)
 	{	printf ("macosx_play : AUDIO_OUT is NULL.\n") ;
