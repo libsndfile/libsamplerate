@@ -1,5 +1,17 @@
 Unreleased
 
+  * API:
+    * Add `src_clone()` function to clone a SRC_STATE* handle
+  * Cleanup Autotools build system.
+  * Require C99 compiler
+  * Move `sndfile-resample` to sndfile-tools package
+  * Add missing `src_get_channels`() export to windows def file
+  * Fix macOS compile errors and modernize audio api on that platform
+  * Add Octave scripts to generate filter coefficients
+  * Fix two potential undefined behaviours
+  * Fix a buffer out-of-bounds read error in src/src_sinc.c
+  * Improve multichan_throughput_test
+  * Replace buggy implementationg of Duffs device by regular loop
   * CMake:
     * Fix CMake generated shared library ABI compliance with Autotools build 
   * Documentation:
