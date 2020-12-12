@@ -82,7 +82,7 @@ dnl ============================================================================
 
 AC_HEADER_STDC
 
-AC_CHECK_HEADERS([stdbool.h stdint.h sys/times.h])
+AC_CHECK_HEADERS([stdbool.h stdint.h sys/times.h unistd.h])
 
 dnl ====================================================================================
 dnl  Couple of initializations here. Fill in real values later.
@@ -277,9 +277,7 @@ AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
 	])
 
 dnl ====================================================================================
-dnl  Find known host OS, set OS-specific audio-out flags.
-
-os_is_win32=0
+dnl  Set OS-specific audio-out flags.
 
 AUDIO_CFLAGS=""
 AUDIO_LIBS=""
@@ -288,19 +286,15 @@ AS_CASE([${host_os}],
 	[darwin*], [dnl this requires 10.5+
 		AUDIO_LIBS="-framework CoreAudio"],
 	[mingw32*], [
-		AUDIO_LIBS="-lwinmm"
-		os_is_win32=1],
+		AUDIO_LIBS="-lwinmm"],
 	[linux*], [dnl have OSS as fallback if no ALSA
 		AS_IF([test "x$enable_alsa" = "xyes"], [
 			AUDIO_LIBS="$ALSA_LIBS"
-			AUDIO_CFLAGS="$ALSA_CFLAGS"
-		])],
+			AUDIO_CFLAGS="$ALSA_CFLAGS"])],
 	[])
 
 dnl ====================================================================================
 dnl  Now use the information from the checking stage.
-
-AC_DEFINE_UNQUOTED([OS_IS_WIN32], [${os_is_win32}], [Set to 1 if compiling for Win32])
 
 AC_SUBST(SHLIB_VERSION_ARG)
 AC_SUBST(SHARED_VERSION_INFO)

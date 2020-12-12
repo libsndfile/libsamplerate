@@ -6,6 +6,10 @@
 ** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,7 +32,7 @@ clone_test (int converter)
 	SRC_STATE* src_state_cloned ;
 	SRC_DATA src_data, src_data_cloned ;
 
-	int error, frame, ch, index ;
+	int error, frame, ch, idx ;
 
 	printf ("        clone_test          (%-28s) ....... ", src_get_name (converter)) ;
 	fflush (stdout) ;
@@ -99,8 +103,8 @@ clone_test (int converter)
 
 	for (ch = 0 ; ch < NUM_CHANNELS ; ch++)
 	{	for (frame = 0 ; frame < src_data.output_frames_gen ; frame++)
-		{	index = ch * NUM_CHANNELS + ch ;
-			if (output [index] != output_cloned [index])
+		{	idx = ch * NUM_CHANNELS + ch ;
+			if (output[idx] != output_cloned[idx])
 			{	printf ("\n\nLine %d : cloned data does not equal original data at channel %d, frame %d\n\n",
 						__LINE__, ch, frame) ;
 				exit (1) ;

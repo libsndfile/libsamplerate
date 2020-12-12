@@ -12,7 +12,9 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <math.h>
 
 #if HAVE_ALARM && HAVE_SIGNAL && HAVE_SIGALRM

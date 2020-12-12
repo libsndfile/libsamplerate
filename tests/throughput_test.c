@@ -6,23 +6,27 @@
 ** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <math.h>
 
 #ifdef _WIN32
+#ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
+#endif
 #include <windows.h>
 #endif
 
 #include <samplerate.h>
-
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 
 #include "util.h"
 
@@ -50,10 +54,10 @@ throughput_test (int converter, long best_throughput)
 
 	src_data.src_ratio = 0.99 ;
 
-#ifndef _WIN32
-	sleep (2) ;
-#else
+#ifdef _WIN32
 	Sleep (2000) ;
+#else
+	sleep (2) ;
 #endif
 
 	start_time = clock () ;
@@ -166,10 +170,10 @@ multi_run (int run_count)
 		puts ("") ;
 
 		/* Let the CPU cool down. We might be running on a laptop. */
-#ifndef _WIN32
-		sleep (10) ;
-#else
+#ifdef _WIN32
 		Sleep (10000) ;
+#else
+		sleep (10) ;
 #endif
 		} ;
 

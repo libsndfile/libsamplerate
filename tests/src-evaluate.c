@@ -6,14 +6,21 @@
 ** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
+#endif
 #include <string.h>
 #include <ctype.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#if defined(_WIN32)
+#define popen _popen
+#define pclose _pclose
 #endif
 
 #if (HAVE_FFTW3 && HAVE_SNDFILE && HAVE_SYS_TIMES_H)

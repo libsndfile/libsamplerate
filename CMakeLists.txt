@@ -54,8 +54,6 @@ if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-set(OS_IS_WIN32 ${WIN32})
-
 if(NOT WIN32)
   find_library(MATH_LIBRARY m)
   if(MATH_LIBRARY)
@@ -118,7 +116,7 @@ if(LIBSAMPLERATE_EXAMPLES)
   add_subdirectory(examples)
 endif()
 
-configure_file(config.h.in config.h)
+configure_file(config.h.cmake config.h)
 
 if(LIBSAMPLERATE_INSTALL)
   add_subdirectory(docs)

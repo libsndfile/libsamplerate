@@ -17,9 +17,6 @@ target_link_libraries(termination_test PRIVATE samplerate)
 add_test(NAME termination_test COMMAND termination_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
 
 add_executable(callback_hang_test callback_hang_test.c util.c util.h)
-target_include_directories(callback_hang_test
-  PRIVATE
-    $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
 target_link_libraries(callback_hang_test PRIVATE samplerate)
 add_test(NAME callback_hang_test COMMAND callback_hang_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
 
@@ -32,9 +29,6 @@ target_link_libraries(simple_test PRIVATE samplerate)
 add_test(NAME simple_test COMMAND simple_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
 
 add_executable(callback_test callback_test.c util.c util.h)
-target_include_directories(callback_test
-  PRIVATE
-    $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
 target_link_libraries(callback_test PRIVATE samplerate)
 add_test(NAME callback_test COMMAND callback_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
 
@@ -78,21 +72,12 @@ target_link_libraries(snr_bw_test
 add_test(NAME snr_bw_test COMMAND snr_bw_test util.c util.h WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
 
 add_executable(throughput_test throughput_test.c util.c util.h)
-target_include_directories(throughput_test
-  PRIVATE
-    $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
 target_link_libraries(throughput_test PRIVATE samplerate)
 
 add_executable(multichan_throughput_test multichan_throughput_test.c util.c util.h)
-target_include_directories(multichan_throughput_test
-  PRIVATE
-    $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
 target_link_libraries(multichan_throughput_test PRIVATE samplerate)
 
 add_executable(src-evaluate src-evaluate.c util.c util.h calc_snr.c)
-target_include_directories(src-evaluate
-  PRIVATE
-    $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
 target_link_libraries(src-evaluate
   PRIVATE
     samplerate

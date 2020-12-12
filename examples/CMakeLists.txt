@@ -12,18 +12,12 @@ if(ALSA_FOUND)
 endif()
 
 add_executable(timewarp-file timewarp-file.c)
-target_include_directories(timewarp-file
-  PRIVATE
-    $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
 target_link_libraries(timewarp-file
   PRIVATE
     samplerate
     $<$<BOOL:${SndFile_FOUND}>:SndFile::sndfile>)
 
 add_executable(varispeed-play varispeed-play.c audio_out.c audio_out.h)
-target_include_directories(varispeed-play
-  PRIVATE
-    $<$<NOT:$<BOOL:${HAVE_UNISTD_H}>>:${PROJECT_SOURCE_DIR}/Win32>)
 target_link_libraries(varispeed-play
   PRIVATE
     samplerate
