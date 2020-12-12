@@ -4,9 +4,9 @@ DISTCHECK_CONFIGURE_FLAGS = --enable-werror
 
 AM_CPPFLAGS = -I$(top_srcdir)/include
 
-EXTRA_DIST = autogen.sh libsamplerate.spec.in samplerate.pc.in Make.bat Win32 \
+EXTRA_DIST = README.md autogen.sh libsamplerate.spec.in samplerate.pc.in  \
     Octave/generate_filter.m Octave/make_filter.m Octave/measure_filter.m \
-    Octave/Readme.md
+    Octave/Readme.md Win32/libsamplerate-0.def
 
 pkgconfig_DATA = samplerate.pc
 
@@ -21,7 +21,10 @@ test:
 lib_LTLIBRARIES = src/libsamplerate.la
 include_HEADERS = include/samplerate.h
 
-EXTRA_DIST += src/config.h.in src/Version_script.in src/check_asm.sh
+EXTRA_DIST += cmake CMakeLists.txt config.h.cmake docs/CMakeLists.txt   \
+	examples/CMakeLists.txt src/CMakeLists.txt tests/CMakeLists.txt \
+	src/config.h.in src/Version_script.in src/check_asm.sh \
+	tests/streaming_test.c
 CLEANFILES = src/src_sinc.s
 
 # MinGW requires -no-undefined if a DLL is to be built.
@@ -53,7 +56,7 @@ AUTOHEADER=echo
 
 dist_doc_DATA = docs/SRC.png docs/SRC.css docs/index.md docs/license.md docs/history.md \
 	docs/download.md docs/lists.md docs/quality.md docs/win32.md docs/faq.md docs/api.md \
-	docs/api_simple.md docs/api_callback.md docs/api_full.md docs/api_misc.md
+	docs/api_simple.md docs/api_callback.md docs/api_full.md docs/api_misc.md docs/bugs.md
 
 #############
 # examples/ #

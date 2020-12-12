@@ -6,10 +6,6 @@
 ** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #define	ABS(a)			(((a) < 0) ? - (a) : (a))
 
 #ifndef MAX
@@ -42,15 +38,4 @@ const char * get_cpu_name (void) ;
 	{	printf ("Condition failed on Line %d : %s\n\n", __LINE__, #condition) ; \
 		exit (1) ; \
 	    } ;
-
-#if OS_IS_WIN32
-/*
-**	Extra Win32 hacks.
-**
-**	Despite Microsoft claim of windows being POSIX compatibile it has '_sleep'
-**	instead of 'sleep'.
-*/
-
-#define sleep _sleep
-#endif
 

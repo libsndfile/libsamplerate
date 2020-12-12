@@ -6,19 +6,23 @@
 ** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-
-#ifdef _WIN32
-#define WIN32_LEAN_AN_MEAN
-#include <windows.h>
-#include <mmsystem.h>
 #endif
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
+#ifdef _WIN32
+#ifndef WIN32_LEAN_AN_MEAN
+#define WIN32_LEAN_AN_MEAN
+#endif
+#include <windows.h>
+#include <mmsystem.h>
 #endif
 
 #include "audio_out.h"

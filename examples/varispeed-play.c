@@ -6,15 +6,17 @@
 ** file at : https://github.com/libsndfile/libsamplerate/blob/master/COPYING
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-#include <math.h>
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#include <stdio.h>
+#include <stdlib.h>
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#include <string.h>
+#include <math.h>
 
 #if (HAVE_SNDFILE)
 
@@ -242,4 +244,3 @@ main (void)
 } /* main */
 
 #endif
-

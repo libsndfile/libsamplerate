@@ -14,8 +14,6 @@ install(
     lists.md
     quality.md
     win32.md
-    foo_dsp_src9.png
-    paypal.png
     SRC.png
   DESTINATION
     ${CMAKE_INSTALL_DOCDIR})
