@@ -4,6 +4,8 @@ option(LIBSAMPLERATE_ENABLE_SINC_FAST_CONVERTER "Enable Fastest Sinc Interpolato
 option(LIBSAMPLERATE_ENABLE_SINC_MEDIUM_CONVERTER "Enable Medium Sinc Interpolator converter" ON)
 option(LIBSAMPLERATE_ENABLE_SINC_BEST_CONVERTER "Enable Best Sinc Interpolator converter" ON)
 
+option(LIBSAMPLERATE_INSTALL_PKGCONFIG_MODULE "Install samplerate.pc PkgConfig module." ON)
+
 set(ENABLE_SINC_FAST_CONVERTER ${LIBSAMPLERATE_ENABLE_SINC_FAST_CONVERTER} PARENT_SCOPE)
 set(ENABLE_SINC_MEDIUM_CONVERTER ${LIBSAMPLERATE_ENABLE_SINC_MEDIUM_CONVERTER} PARENT_SCOPE)
 set(ENABLE_SINC_BEST_CONVERTER ${LIBSAMPLERATE_ENABLE_SINC_BEST_CONVERTER} PARENT_SCOPE)
@@ -100,16 +102,18 @@ if(LIBSAMPLERATE_INSTALL)
 
   # pkg-config module
 
-  set(prefix ${CMAKE_INSTALL_PREFIX})
-  set(exec_prefix "\${prefix}")
-  set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
-  set(libdir "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
-  set(VERSION "${PROJECT_VERSION}")
-  if(LIBM_REQUIRED)
-    set(LIBS "-lm")
+  if(LIBSAMPLERATE_INSTALL_PKGCONFIG_MODULE)
+    set(prefix ${CMAKE_INSTALL_PREFIX})
+    set(exec_prefix "\${prefix}")
+    set(includedir "\${prefix}/${CMAKE_INSTALL_INCLUDEDIR}")
+    set(libdir "\${exec_prefix}/${CMAKE_INSTALL_LIBDIR}")
+    set(VERSION "${PROJECT_VERSION}")
+    if(LIBM_REQUIRED)
+      set(LIBS "-lm")
+    endif()
+    configure_file(../samplerate.pc.in samplerate.pc @ONLY)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/samplerate.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
   endif()
-  configure_file(../samplerate.pc.in samplerate.pc @ONLY)
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/samplerate.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
   if(WIN32 AND (NOT MINGW) AND (NOT CYGWIN))
     set(CMAKE_INSTALL_PACKAGEDIR cmake) 
