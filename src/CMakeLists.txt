@@ -115,11 +115,7 @@ if(LIBSAMPLERATE_INSTALL)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/samplerate.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
   endif()
 
-  if(WIN32 AND (NOT MINGW) AND (NOT CYGWIN))
-    set(CMAKE_INSTALL_PACKAGEDIR cmake) 
-  else()
-    set(CMAKE_INSTALL_PACKAGEDIR ${CMAKE_INSTALL_LIBDIR}/cmake/SampleRate)
-  endif()
+  set(CMAKE_INSTALL_PACKAGEDIR "${CMAKE_INSTALL_LIBDIR}/cmake/SampleRate")
 
   configure_package_config_file(../cmake/SampleRateConfig.cmake.in SampleRateConfig.cmake
     INSTALL_DESTINATION ${CMAKE_INSTALL_PACKAGEDIR})
