@@ -32,3 +32,4 @@ layout: default
 - Version 0.1.7 (Feb 14 2009) Fix a segfault bug. Fix compilation under MSVC.
 - Version 0.1.8 (Aug 15 2011) Minor bug fixes and updates.
 - Version 0.1.9 (Sep 19 2016) Fix for a segfault. Relicense under BSD license.
+- Version 0.2.0 (Jan 21 2021) Cleaned up build system.
