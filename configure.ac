@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2017 Erik de Castro Lopo (erikd AT mega-nerd DOT com).
+# Copyright (C) 2002-2021 Erik de Castro Lopo (erikd AT mega-nerd DOT com).
 
 dnl Require autoconf version >= 2.69)
 AC_PREREQ([2.69])
@@ -27,7 +27,7 @@ AC_CANONICAL_HOST
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([src/config.h])
 
-AM_INIT_AUTOMAKE([1.14 foreign dist-bzip2 no-dist-gzip subdir-objects])
+AM_INIT_AUTOMAKE([1.14 foreign dist-bzip2 no-dist-gzip subdir-objects serial-tests])
 AM_SILENT_RULES([yes])
 
 dnl ====================================================================================

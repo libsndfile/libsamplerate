@@ -78,31 +78,26 @@ endif
 # tests/ #
 ##########
 
-check_PROGRAMS = tests/misc_test tests/termination_test tests/simple_test tests/callback_test \
-	tests/reset_test tests/multi_channel_test tests/snr_bw_test tests/float_short_test \
-	tests/varispeed_test tests/callback_hang_test tests/src-evaluate tests/throughput_test \
-	tests/multichan_throughput_test tests/downsample_test tests/clone_test tests/nullptr_test
-
-check: $(check_PROGRAMS)
-	date
-	uname -a
-	tests/misc_test
-	tests/termination_test
-	tests/callback_hang_test
-	tests/downsample_test
-	tests/simple_test
-	tests/callback_test
-	tests/reset_test
-	tests/clone_test
-	tests/nullptr_test
-	tests/multi_channel_test
+TESTS = \
+	tests/callback_hang_test \
+	tests/callback_test \
+	tests/clone_test \
+	tests/downsample_test \
+	tests/float_short_test \
+	tests/misc_test \
+	tests/multi_channel_test \
+	tests/nullptr_test \
+	tests/reset_test \
+	tests/simple_test \
+	tests/snr_bw_test \
+	tests/termination_test \
+	tests/throughput_test \
 	tests/varispeed_test
-	tests/float_short_test
-	tests/snr_bw_test
-	tests/throughput_test
-	@echo "-----------------------------------------------------------------"
-	@echo "  ${PACKAGE}-${VERSION} passed all tests."
-	@echo "-----------------------------------------------------------------"
+
+check_PROGRAMS = \
+	$(TESTS) \
+	tests/multichan_throughput_test \
+	tests/src-evaluate
 
 #===============================================================================
 
