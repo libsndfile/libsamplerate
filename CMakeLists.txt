@@ -17,7 +17,7 @@ if(POLICY CMP0091)
   endif()
 endif()
 
-project(libsamplerate VERSION 0.2.0 LANGUAGES C)
+project(libsamplerate VERSION 0.2.1 LANGUAGES C)
 
 # Configuration
 
