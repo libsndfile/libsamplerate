@@ -73,10 +73,21 @@ dnl      age.
 dnl   6. If any interfaces have been removed since the last public release, then set age
 dnl      to 0.
 
-CLEAN_VERSION=`echo $PACKAGE_VERSION | $SED "s/p.*//"`
-VERSION_MINOR=`echo $CLEAN_VERSION | $SED "s/.*\.//"`
 
-SHARED_VERSION_INFO="1:$VERSION_MINOR:1"
+dnl https://autotools.io/libtool/version.html#idm46482193960416 (2021-01-22)
+dnl For Linux, for instance, while the last two values map directly from the
+dnl command-line, the first is calculated by subtracting age from current.
+dnl On the other hand, on modern FreeBSD, only one component is used in the
+dnl library version, which corresponds to current.
+
+dnl if PACKAGE_VERSION follows [Semantic Versioning](https://semver.org/)
+dnl of the library, we can use this:
+CLEAN_VERSION=$(echo $PACKAGE_VERSION | $SED "s/p.*//")
+VERSION_MAJOR=$(echo $CLEAN_VERSION   | cut -f1 -d.)
+VERSION_MINOR=$(echo $CLEAN_VERSION   | cut -f2 -d.)
+VERSION_BUGFIX=$(echo $CLEAN_VERSION  | cut -f3 -d.)
+
+SHARED_VERSION_INFO="$((VERSION_MAJOR+VERSION_MINOR)):${VERSION_BUGFIX}:${VERSION_MINOR}"
 
 dnl ====================================================================================
 
