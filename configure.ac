@@ -72,11 +72,7 @@ dnl   5. If any interfaces have been added since the last public release, then i
 dnl      age.
 dnl   6. If any interfaces have been removed since the last public release, then set age
 dnl      to 0.
-
-CLEAN_VERSION=`echo $PACKAGE_VERSION | $SED "s/p.*//"`
-VERSION_MINOR=`echo $CLEAN_VERSION | $SED "s/.*\.//"`
-
-SHARED_VERSION_INFO="1:$VERSION_MINOR:1"
+SHARED_VERSION_INFO="2:1:2"
 
 dnl ====================================================================================
 
