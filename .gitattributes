@@ -1,3 +1,4 @@
+# enforce correct file-extensions
 *.ac text eol=lf
 *.am text eol=lf
 *.m4 text eol=lf
@@ -8,3 +9,7 @@
 *.bat text eol=crlf
 *.def text eol=crlf
 *.msvc text eol=crlf
+
+# repository configuration excluded from the archive
+.git*      	export-ignore
+.travis.yml	export-ignore
