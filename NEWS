@@ -1,4 +1,6 @@
-Unreleased
+Version 0.2.1 (2021-01-23)
+  * Fix incorrect passing of -version-info to libtool, causing a
+    regression on versioned file name of the shared library (#140).
 
 Version 0.2.0 (2021-01-21)
   * API:
