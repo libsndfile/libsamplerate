@@ -1,6 +1,7 @@
 Version 0.2.1 (2021-01-23)
   * Fix incorrect passing of -version-info to libtool, causing a
     regression on versioned file name of the shared library (#140).
+  * Fix time resolution on GNU/Hurd for throughput_test
   * Update AUTHORS and release manager details
 
 Version 0.2.0 (2021-01-21)
