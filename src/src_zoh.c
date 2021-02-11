@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (c) 2002-2021, Erik de Castro Lopo <erikd@mega-nerd.com>
 ** All rights reserved.
 **
 ** This code is released under 2-clause BSD license. Please see the
@@ -144,7 +144,7 @@ zoh_vari_process (SRC_STATE *state, SRC_DATA *data)
 /*------------------------------------------------------------------------------
 */
 
-const char*
+LIBSAMPLERATE_DLL_PRIVATE const char*
 zoh_get_name (int src_enum)
 {
 	if (src_enum == SRC_ZERO_ORDER_HOLD)
@@ -153,7 +153,7 @@ zoh_get_name (int src_enum)
 	return NULL ;
 } /* zoh_get_name */
 
-const char*
+LIBSAMPLERATE_DLL_PRIVATE const char*
 zoh_get_description (int src_enum)
 {
 	if (src_enum == SRC_ZERO_ORDER_HOLD)
@@ -182,7 +182,7 @@ zoh_data_new (int channels)
 	return priv ;
 }
 
-SRC_STATE *
+LIBSAMPLERATE_DLL_PRIVATE SRC_STATE *
 zoh_state_new (int channels, SRC_ERROR *error)
 {
 	assert (channels > 0) ;

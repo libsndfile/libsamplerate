@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2002-2016, Erik de Castro Lopo <erikd@mega-nerd.com>
+** Copyright (c) 2002-2021, Erik de Castro Lopo <erikd@mega-nerd.com>
 ** All rights reserved.
 **
 ** This code is released under 2-clause BSD license. Please see the
@@ -164,7 +164,7 @@ int_div_ceil (int divident, int divisor) /* == (int) ceil ((float) divident / di
 /*----------------------------------------------------------------------------------------
 */
 
-const char*
+LIBSAMPLERATE_DLL_PRIVATE const char*
 sinc_get_name (int src_enum)
 {
 	switch (src_enum)
@@ -183,7 +183,7 @@ sinc_get_name (int src_enum)
 	return NULL ;
 } /* sinc_get_descrition */
 
-const char*
+LIBSAMPLERATE_DLL_PRIVATE const char*
 sinc_get_description (int src_enum)
 {
 	switch (src_enum)
@@ -257,7 +257,7 @@ sinc_filter_new (int converter_type, int channels)
 	return priv ;
 }
 
-SRC_STATE *
+LIBSAMPLERATE_DLL_PRIVATE SRC_STATE *
 sinc_state_new (int converter_type, int channels, SRC_ERROR *error)
 {
 	assert (converter_type == SRC_SINC_FASTEST ||
