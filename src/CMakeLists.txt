@@ -65,6 +65,10 @@ if(BUILD_SHARED_LIBS)
     SOVERSION ${libsamplerate_VERSION_MAJOR})
 
     # Use Version_script to export ABI set
+    if(APPLE)
+      set_property(TARGET samplerate APPEND_STRING PROPERTY
+        LINK_FLAGS "-Wl,-exported_symbols_list,${PROJECT_SOURCE_DIR}/src/libsamplerate.exports")
+    endif()
     if(UNIX AND (NOT APPLE))
       if((CMAKE_C_COMPILER_ID STREQUAL "GNU") OR
          (CMAKE_C_COMPILER_ID STREQUAL "Clang") OR

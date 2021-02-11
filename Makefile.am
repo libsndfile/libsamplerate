@@ -23,8 +23,8 @@ include_HEADERS = include/samplerate.h
 
 EXTRA_DIST += cmake CMakeLists.txt config.h.cmake docs/CMakeLists.txt   \
 	examples/CMakeLists.txt src/CMakeLists.txt tests/CMakeLists.txt \
-	src/config.h.in src/Version_script.in src/check_asm.sh \
-	tests/streaming_test.c
+	src/config.h.in src/Version_script.in src/libsamplerate.exports \
+	src/check_asm.sh tests/streaming_test.c
 CLEANFILES = src/src_sinc.s
 
 # MinGW requires -no-undefined if a DLL is to be built.

@@ -1,0 +1,22 @@
+# Exports for libsamplerate.dylib
+_src_new
+_src_delete
+_src_get_name
+_src_get_description
+_src_get_version
+_src_process
+_src_reset
+_src_set_ratio
+_src_clone
+_src_error
+_src_strerror
+_src_simple
+_src_is_valid_ratio
+_src_callback_new
+_src_callback_read
+_src_short_to_float_array
+_src_float_to_short_array
+_src_int_to_float_array
+_src_float_to_int_array
+_src_get_channels
+
