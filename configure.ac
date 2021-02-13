@@ -260,14 +260,13 @@ AS_IF([test "x$enable_werror" = "xyes"], [
 AX_APPEND_COMPILE_FLAGS([-W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith], [CFLAGS])
 
 dnl ====================================================================================
-dnl  GCC stuff.
+dnl  Exported symbols control.
 
-AS_IF([test "x$ax_cv_c_compiler_vendor" = "xgnu"], [
-		# OS specific tweaks.
+AS_IF([test "x$lt_cv_prog_gnu_ld" = "xyes"], [
 		AS_CASE([${host_os}],
 			[mingw*|cygwin*], [
 				SHLIB_VERSION_ARG="-export-symbols \$(top_srcdir)/Win32/libsamplerate-0.def"],
-			[linux*|kfreebsd*-gnu*|gnu*], [
+			[*], [
 				SHLIB_VERSION_ARG="-Wl,--version-script=\$(top_builddir)/src/Version_script"
 			])
 	])
