@@ -54,7 +54,7 @@ if(MSVC)
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 endif()
 
-if(NOT WIN32)
+if(NOT (WIN32 OR APPLE OR CYGWIN OR HAIKU OR BEOS))
   find_library(MATH_LIBRARY m)
   if(MATH_LIBRARY)
     set(LIBM_REQUIRED 1)
