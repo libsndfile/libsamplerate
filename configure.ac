@@ -141,8 +141,14 @@ dnl  Check for functions.
 
 AC_CHECK_FUNCS([malloc calloc free memcpy memmove alarm signal])
 
-AC_SEARCH_LIBS([floor], [m], [], [
-		AC_MSG_ERROR([unable to find the floor() function!])
+AS_CASE([${host_os}],
+	dnl These system don't have libm, or don't need it
+	dnl The list is from LT_LIB_M of libtool-2.4.6 with mingw added to it.
+	[darwin*|mingw*|cygwin*|haiku*|beos*|cegcc*|pw32*],[],
+	[*], [
+		AC_SEARCH_LIBS([floor], [m], [], [
+			AC_MSG_ERROR([unable to find the floor() function!])
+		])
 	])
 AC_CHECK_FUNCS([floor ceil fmod lrint lrintf])
 
