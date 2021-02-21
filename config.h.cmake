@@ -54,6 +54,10 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H
 
+/* Define to 1 or 0, depending whether the compiler supports simple visibility
+   declarations. */
+#cmakedefine01 HAVE_VISIBILITY
+
 /* define fast samplerate convertor */
 #cmakedefine ENABLE_SINC_FAST_CONVERTER
 

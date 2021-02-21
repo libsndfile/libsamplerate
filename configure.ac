@@ -268,6 +268,8 @@ AX_APPEND_COMPILE_FLAGS([-W -Wstrict-prototypes -Wmissing-prototypes -Wall -Wagg
 dnl ====================================================================================
 dnl  Exported symbols control.
 
+gl_VISIBILITY
+
 AS_IF([test "x$lt_cv_prog_gnu_ld" = "xyes"], [
 		AS_CASE([${host_os}],
 			[mingw*|cygwin*], [

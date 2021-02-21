@@ -16,16 +16,12 @@
 
 #include <math.h>
 
-#if defined (_WIN32) || defined (__CYGWIN__) || defined (__MORPHOS__)
-  #define LIBSAMPLERATE_DLL_PRIVATE
+#if HAVE_VISIBILITY
+  #define LIBSAMPLERATE_DLL_PRIVATE __attribute__ ((visibility ("hidden")))
+#elif defined (__APPLE__)
+  #define LIBSAMPLERATE_DLL_PRIVATE __private_extern__
 #else
-  #if __GNUC__ >= 4 /* also works for Clang */
-    #define LIBSAMPLERATE_DLL_PRIVATE __attribute__ ((visibility ("hidden")))
-  #elif defined (__APPLE__)
-    #define LIBSAMPLERATE_DLL_PRIVATE __private_extern__
-  #else
-    #define LIBSAMPLERATE_DLL_PRIVATE
-  #endif
+  #define LIBSAMPLERATE_DLL_PRIVATE
 #endif
 
 #define	SRC_MAX_RATIO			256

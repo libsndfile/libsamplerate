@@ -10,11 +10,20 @@ set(ENABLE_SINC_FAST_CONVERTER ${LIBSAMPLERATE_ENABLE_SINC_FAST_CONVERTER} PAREN
 set(ENABLE_SINC_MEDIUM_CONVERTER ${LIBSAMPLERATE_ENABLE_SINC_MEDIUM_CONVERTER} PARENT_SCOPE)
 set(ENABLE_SINC_BEST_CONVERTER ${LIBSAMPLERATE_ENABLE_SINC_BEST_CONVERTER} PARENT_SCOPE)
 
+include(CMakePushCheckState)
+include(CheckCSourceCompiles)
 include(ClipMode)
 include(CMakePackageConfigHelpers)
 
 # This will set CPU_CLIPS_NEGATIVE and CPU_CLIPS_POSITIVE
 clip_mode()
+
+# check for symbol visibility attributes support
+cmake_push_check_state()
+set(CMAKE_REQUIRED_FLAGS "-fvisibility=hidden -Werror")
+check_c_source_compiles("int foo(void) __attribute__((visibility(\"default\")));
+                         int main(void) {return 0;}" HAVE_VISIBILITY)
+cmake_pop_check_state()
 
 add_library(samplerate
   common.h
