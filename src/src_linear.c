@@ -252,7 +252,7 @@ linear_copy (SRC_STATE *state)
 		return NULL ;
 
 	SRC_STATE *to = (SRC_STATE *) calloc (1, sizeof (SRC_STATE)) ;
-	if (!state)
+	if (!to)
 		return NULL ;
 	memcpy (to, state, sizeof (SRC_STATE)) ;
 
