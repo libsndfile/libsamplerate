@@ -112,8 +112,8 @@ clone_test (int converter)
 			} ;
 		} ;
 
-	src_state = src_delete (src_state) ;
-	src_state_cloned = src_delete (src_state_cloned) ;
+	src_delete (src_state) ;
+	src_delete (src_state_cloned) ;
 
 	puts ("ok") ;
 } /* clone_test */

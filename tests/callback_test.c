@@ -132,7 +132,7 @@ callback_test (int converter, double src_ratio)
 		exit (1) ;
 		} ;
 
-	src_state = src_delete (src_state) ;
+	src_delete (src_state) ;
 
 	if (fabs (read_total / src_ratio - ARRAY_LEN (test_callback_data.data)) > 2.0)
 	{	printf ("\n\nLine %d : input / output length mismatch.\n\n", __LINE__) ;
@@ -227,7 +227,7 @@ end_of_stream_test (int converter)
 		exit (1) ;
 		} ;
 
-	src_state = src_delete (src_state) ;
+	src_delete (src_state) ;
 
 	if (test_callback_data.end_of_data == 0)
 	{	printf ("\n\nLine %d : test_callback_data.end_of_data should not be 0."
