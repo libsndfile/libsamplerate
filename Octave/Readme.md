@@ -1,4 +1,4 @@
-# Gneerating Filter Coefficients
+# Generating Filter Coefficients
 
 The scripts below are used in [GNU Octave][GNU Octave] which should be available
 on most platforms including Linux, Mac and Windows.
