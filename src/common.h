@@ -16,6 +16,10 @@
 
 #include <math.h>
 
+#ifdef _WIN32
+#undef HAVE_VISIBILITY
+#endif
+
 #if HAVE_VISIBILITY
   #define LIBSAMPLERATE_DLL_PRIVATE __attribute__ ((visibility ("hidden")))
 #elif defined (__APPLE__)
