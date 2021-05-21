@@ -1,4 +1,5 @@
 Unreleased
+  * Fix CMake overlinking for examples (#146)
   * Switch to GCC's visibility for hiding more implementation details
   * Check GNU ld instead of gcc for exported symbols control logic in
     configure.ac

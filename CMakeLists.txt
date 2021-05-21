@@ -94,8 +94,18 @@ check_include_file(unistd.h HAVE_UNISTD_H)
 
 # For examples and tests
 
+find_package(PkgConfig)
+
 if(LIBSAMPLERATE_EXAMPLES OR BUILD_TESTING)
-  find_package(SndFile)
+  if((NOT VCPKG_TOOLCHAIN) AND PKG_CONFIG_FOUND AND (NOT CMAKE_VERSION VERSION_LESS 3.6))
+    pkg_check_modules(SndFile sndfile IMPORTED_TARGET)
+    if(SndFile_FOUND)
+      add_library(SndFile::sndfile ALIAS PkgConfig::SndFile)
+    endif()
+  else()
+    find_package(SndFile)
+  endif()
+
   set(HAVE_SNDFILE ${SndFile_FOUND})
 endif()
 

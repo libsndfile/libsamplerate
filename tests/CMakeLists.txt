@@ -5,7 +5,15 @@ check_function_exists(signal HAVE_SIGNAL)
 
 check_symbol_exists(SIGALRM signal.h HAVE_SIGALRM)
 
-find_package(FFTW3)
+if((NOT VCPKG_TOOLCHAIN) AND PKG_CONFIG_FOUND AND (NOT CMAKE_VERSION VERSION_LESS 3.6))
+  pkg_check_modules(FFTW3 fftw3 IMPORTED_TARGET)
+  if(FFTW3_FOUND)
+    add_library(FFTW3::fftw3 ALIAS PkgConfig::FFTW3)
+  endif()
+else()
+  find_package(FFTW3)
+endif()
+
 set(HAVE_FFTW3 ${FFTW3_FOUND} PARENT_SCOPE)
 
 add_executable(misc_test misc_test.c util.c util.h)
