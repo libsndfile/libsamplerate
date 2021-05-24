@@ -54,7 +54,7 @@ dnl Catch ancient versions of pkg-config below 0.27
 AX_REQUIRE_DEFINED([PKG_INSTALLDIR])
 PKG_INSTALLDIR
 
-LT_INIT
+LT_INIT([disable-static])
 LT_PROG_RC
 
 dnl ====================================================================================
