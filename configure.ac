@@ -270,16 +270,25 @@ AS_IF([test "x$enable_flags_setting" = "xyes"], [
 		AX_APPEND_LINK_FLAGS([${ldflags_test}], [LDFLAGS])
 	])
 
-AS_IF([test "x$enable_werror" = "xyes"], [
-		AX_APPEND_COMPILE_FLAGS([-Werror], [CFLAGS])
-	])
-
-AX_APPEND_COMPILE_FLAGS([-W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith], [CFLAGS])
-
 dnl ====================================================================================
 dnl  Exported symbols control.
 
-gl_VISIBILITY
+saved_CFLAGS="$CFLAGS"
+CFLAGS="$CFLAGS -fvisibility=hidden -Werror"
+AC_MSG_CHECKING([if compiler supports visibility attributes])
+AC_LANG_PUSH([C])
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+		__attribute__((visibility("default"))) int foo(void);
+		__attribute__((visibility("hidden")))  int bar(void);
+		int foo(void) { return 0; }
+		int bar(void) { return 1; }]], [])],
+	[have_visibility=yes],[have_visibility=no])
+AC_LANG_POP([C])
+AC_MSG_RESULT([$have_visibility])
+CFLAGS="$saved_CFLAGS"
+AS_IF([test "x$have_visibility" = "xyes"], [
+		AC_DEFINE([HAVE_VISIBILITY], [1], [Define to 1 if the compiler supports simple visibility declarations.])
+	])
 
 AS_IF([test "x$lt_cv_prog_gnu_ld" = "xyes"], [
 		AS_CASE([${host_os}],
@@ -289,6 +298,15 @@ AS_IF([test "x$lt_cv_prog_gnu_ld" = "xyes"], [
 				SHLIB_VERSION_ARG="-Wl,--version-script=\$(top_builddir)/src/Version_script"
 			])
 	])
+
+dnl ====================================================================================
+dnl  Warning flags.
+
+AS_IF([test "x$enable_werror" = "xyes"], [
+		AX_APPEND_COMPILE_FLAGS([-Werror], [CFLAGS])
+	])
+
+AX_APPEND_COMPILE_FLAGS([-W -Wstrict-prototypes -Wmissing-prototypes -Wall -Waggregate-return -Wcast-align -Wcast-qual -Wnested-externs -Wshadow -Wpointer-arith], [CFLAGS])
 
 dnl ====================================================================================
 dnl  Set OS-specific audio-out flags.
