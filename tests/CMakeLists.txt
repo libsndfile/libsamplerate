@@ -90,5 +90,5 @@ target_link_libraries(src-evaluate
   PRIVATE
     samplerate
     $<$<BOOL:${FFTW3_FOUND}>:FFTW3::fftw3>
-    $<$<BOOL:${SndFile_FOUND}>:SndFile::sndfile>
+    $<$<BOOL:${SndFile_FOUND}>:${SNDFILE_TARGET}>
    )

@@ -15,13 +15,13 @@ add_executable(timewarp-file timewarp-file.c)
 target_link_libraries(timewarp-file
   PRIVATE
     samplerate
-    $<$<BOOL:${SndFile_FOUND}>:SndFile::sndfile>)
+    $<$<BOOL:${SndFile_FOUND}>:${SNDFILE_TARGET}>)
 
 add_executable(varispeed-play varispeed-play.c audio_out.c audio_out.h)
 target_link_libraries(varispeed-play
   PRIVATE
     samplerate
-    $<$<BOOL:${SndFile_FOUND}>:SndFile::sndfile>)
+    $<$<BOOL:${SndFile_FOUND}>:${SNDFILE_TARGET}>)
 if(WIN32)
   target_link_libraries(varispeed-play PRIVATE winmm)
 elseif(APPLE)
