@@ -21,7 +21,10 @@ clip_mode()
 # check for symbol visibility attributes support
 cmake_push_check_state()
 set(CMAKE_REQUIRED_FLAGS "-fvisibility=hidden -Werror")
-check_c_source_compiles("int foo(void) __attribute__((visibility(\"default\")));
+check_c_source_compiles("__attribute__((visibility(\"default\"))) int foo(void);
+                         __attribute__((visibility(\"hidden\")))  int bar(void);
+                         int foo (void) {return 0;}
+                         int bar (void) {return 1;}
                          int main(void) {return 0;}" HAVE_VISIBILITY)
 cmake_pop_check_state()
 
