@@ -45,7 +45,7 @@ will limit the comparison ot Secret Rabbit Code to the following:
 It should be noted that the first three converters above are based on the
 algorithm by [Julius O. Smith](http://www-ccrma.stanford.edu/~jos/resample/)
 which emulates the conversion of the digital signal to an analogue one and then
-sampling the analogue signal at the new sample rate.
+samples the analogue signal at the new sample rate.
 
 ## Methodology
 
