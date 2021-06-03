@@ -169,7 +169,7 @@ For the long answer, lets do come calculations. Firstly, the `src_ratio` field
 is double precision floating point number which has [53 bits of precision](http://en.wikipedia.org/wiki/Double_precision).
 
 That means that the maximum error in your ratio converted to a double is one bit
-in 2^53 which means the the double float value would be wrong by one sample
+in 2^53 which means the double float value would be wrong by one sample
 after 9007199254740992 samples have passed or wrong by more than half a sample
 wrong after half that many (4503599627370496 samples) have passed.
 
