@@ -22,7 +22,7 @@ factors to consider:
 - **Speed** - the faster the better **:-)**.
 
 There are a number of sample rate converters available for downloading but I
-will limit the comparison ot Secret Rabbit Code to the following:
+will limit the comparison of Secret Rabbit Code to the following:
 
 - [sndfile-resample](http://libsndfile.github.io/libsamplerate/download.html)
   which is a program (which uses libsamplerate) from the **examples/** directory
@@ -58,7 +58,7 @@ The bandwidth of a sample rate converter is a little more difficult to measure.
 Currently this is done by generating two short files containing a windowed sine
 wave. The frequencies of the sine waves are 0.35 and 0.495 of the sample rate.
 These files are then upsampled by a factor of 2 using the converter under test.
-If the attenutaion of the lower frquency is less than 3dB and higher frequency
+If the attenuation of the lower frequency is less than 3dB and higher frequency
 is more than 3dB, it is then possible to iteratively increase the lower
 frequency and decrease the upper frequency keeping the -3dB point bracketed.
 When the distance between the upper and lower frequency is sufficiently small,
@@ -69,7 +69,7 @@ conversion on a large file or a number of smaller files and time the conversion
 process.
 
 The above measurement techniques are built into a test program which is
-delivered with the Secret Rabbit Code source code distibution. This program is
+delivered with the Secret Rabbit Code source code distribution. This program is
 able to test the first four of the above converters.
 
 ## SoX
