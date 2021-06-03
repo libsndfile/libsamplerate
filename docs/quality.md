@@ -49,7 +49,7 @@ samples the analogue signal at the new sample rate.
 
 ## Methodology
 
-Measuring the SNR of a converter is relatively straight forward. Generate an
+Measuring the SNR of a converter is relatively straightforward. Generate an
 input signal consisting of a windowed sine wave, sample rate convert it and
 measure the signal-to-noise ratio of the output signal. A typical length for the
 original file is 30000 samples.
