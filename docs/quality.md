@@ -57,7 +57,7 @@ original file is 30000 samples.
 The bandwidth of a sample rate converter is a little more difficult to measure.
 Currently this is done by generating two short files containing a windowed sine
 wave. The frequencies of the sine waves are 0.35 and 0.495 of the sample rate.
-These file are then upsampled by a factor of 2 using the converter under test.
+These files are then upsampled by a factor of 2 using the converter under test.
 If the attenutaion of the lower frquency is less than 3dB and higher frequency
 is more than 3dB, it is then possible to iteratively increase the lower
 frequency and decrease the upper frequency keeping the -3dB point bracketed.
