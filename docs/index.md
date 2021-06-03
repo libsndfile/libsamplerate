@@ -18,7 +18,7 @@ Product : [Maven3D](http://maven3d.com)
 converting audio from the CD sample rate of 44.1kHz to the 48kHz sample rate
 used by DAT players.
 
-**SRC** is capable of arbitrary and time varying conversions; from downsampling
+**SRC** is capable of arbitrary and time varying conversions, from downsampling
 by a factor of 256 to upsampling by the same factor. Arbitrary in this case
 means that the ratio of input and output sample rates can be an irrational
 number. The conversion ratio can also vary with time for speeding up and slowing
