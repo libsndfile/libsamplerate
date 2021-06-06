@@ -35,7 +35,7 @@ Preliminaries
        http://www.fftw.org/
 
    If FFTW3 is not available, libsamplerate should still compile and
-   install without problems but the test suite will not be as
+   install without problems, but the test suite will not be as
    comprehensive as it normally is.
 
 Building
