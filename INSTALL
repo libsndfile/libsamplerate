@@ -96,7 +96,7 @@ Building and verifying libsamplerate is a four or five step process.
        make install
 
    This command will by default install the library in the directory
-   /usr/local/lib. It can in installed in other location by using the
+   /usr/local/lib. It can in installed in other locations by using the
    --prefix option in step 1).
 
 5) On linux, one more step is required, the registering of the library
