@@ -7,7 +7,7 @@ see http://libsndfile.github.io/libsamplerate/win32.html).
 
 Preliminaries
 -------------
-1) Included with libsamplerate are example programs which use libnsdile:
+1) Included with libsamplerate are example programs which use libnsdfile:
 
         http://libsndfile.github.io/libsndfile/
 
