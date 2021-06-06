@@ -99,7 +99,7 @@ Building and verifying libsamplerate is a four or five step process.
    /usr/local/lib. It can in installed in other locations by using the
    --prefix option in step 1).
 
-5) On linux, one more step is required, the registering of the library
+5) On Linux, one more step is required, the registering of the library
    with the system. This is done by running the following command
    (also as the root user):
 
