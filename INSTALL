@@ -2,24 +2,24 @@ Install Instructions for libsamplerate
 ======================================
 
 The following instructions explain how to install libsamplerate under
-Linux and other Unix like systems including Mac OSX. (For windows,
+Linux and other Unix-like systems, including macOS. (For Windows,
 see http://libsndfile.github.io/libsamplerate/win32.html).
 
 Preliminaries
 -------------
-1) Included with libsamplerate are example programs which use libnsdile:
+1) Included with libsamplerate are example programs which use libsndfile:
 
         http://libsndfile.github.io/libsndfile/
 
-   for file I/O. If you want to build them you need to
+   for file I/O. If you want to build them, you need to
    ensure that libsndfile is correctly installed first. If it is, the
    command "pkg-config --cflags --libs sndfile" should print out
    something like this:
 
      -lsndfile
 
-   If pkg-config doesn't exist you will need need to install it. If
-   pkg-config cannot find libsndfile you may need install it. If you
+   If pkg-config doesn't exist, you will need need to install it. If
+   pkg-config cannot find libsndfile, you may need to install it. If you
    install from from a Linux distribution package, make sure you also
    install the libsndfile-devel package which contains the header files.
 
@@ -35,7 +35,7 @@ Preliminaries
        http://www.fftw.org/
 
    If FFTW3 is not available, libsamplerate should still compile and
-   install without problems but the test suite will not be as
+   install without problems, but the test suite will not be as
    comprehensive as it normally is.
 
 Building
@@ -96,12 +96,11 @@ Building and verifying libsamplerate is a four or five step process.
        make install
 
    This command will by default install the library in the directory
-   /usr/local/lib. It can in installed in other location by using the
+   /usr/local/lib. It can be installed in other locations by using the
    --prefix option in step 1).
 
-5) On linux, one more step is required, the registering of the library
+5) On Linux, one more step is required, the registering of the library
    with the system. This is done by running the following command
    (also as the root user):
 
         ldconfig -v
-
