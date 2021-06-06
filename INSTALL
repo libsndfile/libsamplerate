@@ -19,7 +19,7 @@ Preliminaries
      -lsndfile
 
    If pkg-config doesn't exist you will need need to install it. If
-   pkg-config cannot find libsndfile you may need install it. If you
+   pkg-config cannot find libsndfile you may need to install it. If you
    install from from a Linux distribution package, make sure you also
    install the libsndfile-devel package which contains the header files.
 
