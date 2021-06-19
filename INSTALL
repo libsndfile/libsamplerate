@@ -2,7 +2,7 @@ Install Instructions for libsamplerate
 ======================================
 
 The following instructions explain how to install libsamplerate under
-Linux and other Unix-like systems, including Mac OS X. (For Windows,
+Linux and other Unix-like systems, including macOS. (For Windows,
 see http://libsndfile.github.io/libsamplerate/win32.html).
 
 Preliminaries
@@ -104,4 +104,3 @@ Building and verifying libsamplerate is a four or five step process.
    (also as the root user):
 
         ldconfig -v
-
