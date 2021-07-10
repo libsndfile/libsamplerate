@@ -427,9 +427,8 @@ src_simple (SRC_DATA *src_data, int converter, int channels)
 void
 src_short_to_float_array (const short *in, float *out, int len)
 {
-	while (len)
-	{	len -- ;
-		out [len] = (float) (in [len] / (1.0 * 0x8000)) ;
+	for (int i = 0 ; i < len ; i++)
+	{	out [i] = (float) (in [i] / (1.0 * 0x8000)) ;
 		} ;
 
 	return ;
@@ -438,25 +437,23 @@ src_short_to_float_array (const short *in, float *out, int len)
 void
 src_float_to_short_array (const float *in, short *out, int len)
 {
-	while (len)
+	for (int i = 0 ; i < len ; i++)
 	{	float scaled_value ;
-		len -- ;
-		scaled_value = in [len] * 32768.f ;
+		scaled_value = in [i] * 32768.f ;
 		if (scaled_value >= 32767.f)
-			out [len] = 32767 ;
+			out [i] = 32767 ;
 		else if (scaled_value <= -32768.f)
-			out [len] = -32768 ;
+			out [i] = -32768 ;
 		else
-			out [len] = (short) (lrintf (scaled_value)) ;
+			out [i] = (short) (lrintf (scaled_value)) ;
 	}
 } /* src_float_to_short_array */
 
 void
 src_int_to_float_array (const int *in, float *out, int len)
 {
-	while (len)
-	{	len -- ;
-		out [len] = (float) (in [len] / (8.0 * 0x10000000)) ;
+	for (int i = 0 ; i < len ; i++)
+	{	out [i] = (float) (in [i] / (8.0 * 0x10000000)) ;
 		} ;
 
 	return ;
@@ -466,23 +463,21 @@ void
 src_float_to_int_array (const float *in, int *out, int len)
 {	double scaled_value ;
 
-	while (len)
-	{	len -- ;
-
-		scaled_value = in [len] * (8.0 * 0x10000000) ;
+	for (int i = 0 ; i < len ; i++)
+	{	scaled_value = in [i] * (8.0 * 0x10000000) ;
 #if CPU_CLIPS_POSITIVE == 0
 		if (scaled_value >= (1.0 * 0x7FFFFFFF))
-		{	out [len] = 0x7fffffff ;
+		{	out [i] = 0x7fffffff ;
 			continue ;
 			} ;
 #endif
 #if CPU_CLIPS_NEGATIVE == 0
 		if (scaled_value <= (-8.0 * 0x10000000))
-		{	out [len] = -1 - 0x7fffffff ;
+		{	out [i] = -1 - 0x7fffffff ;
 			continue ;
 			} ;
 #endif
-		out [len] = (int) lrint (scaled_value) ;
+		out [i] = (int) lrint (scaled_value) ;
 		} ;
 
 } /* src_float_to_int_array */
