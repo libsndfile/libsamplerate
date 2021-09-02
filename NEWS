@@ -5,6 +5,11 @@ Unreleased
     configure.ac
   * Disable static builds using Autotools by default. If you want static
     libraries, pass --enable-static to ./configure
+  * ABI version incompatibility between Autotools and CMake build on Apple
+    platforms.
+  * Fixes and improvements for CMake build system.
+  * Fixes and improvements for Autotools build system.
+  * Minor bug fixes and upates.
 
 Version 0.2.1 (2021-01-23)
   * Fix incorrect passing of -version-info to libtool, causing a
