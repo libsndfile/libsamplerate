@@ -26,7 +26,7 @@ Octave/make_src_filter
 Win32/Makefile.mingw
 aclocal.m4
 autom4te.cache
-libsamplerate-*.tar.bz2
+libsamplerate-*.tar.xz
 compile
 config.*
 !/config.h.in

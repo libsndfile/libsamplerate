@@ -27,7 +27,7 @@ AC_CANONICAL_HOST
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS([src/config.h])
 
-AM_INIT_AUTOMAKE([1.14 foreign dist-bzip2 no-dist-gzip subdir-objects serial-tests])
+AM_INIT_AUTOMAKE([1.14 foreign dist-xz no-dist-gzip subdir-objects serial-tests])
 AM_SILENT_RULES([yes])
 
 dnl ====================================================================================
