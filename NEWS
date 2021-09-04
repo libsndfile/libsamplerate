@@ -9,6 +9,7 @@ Unreleased
     platforms.
   * Fixes and improvements for CMake build system.
   * Fixes and improvements for Autotools build system.
+  * Switch to .xz over .bz2 for release tarballs.
   * Minor bug fixes and updates.
 
 Version 0.2.1 (2021-01-23)
