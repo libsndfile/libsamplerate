@@ -1,4 +1,4 @@
-Unreleased
+Version 0.2.2 (2021-09-05)
   * Fix CMake overlinking for examples (#146)
   * Switch to GCC's visibility for hiding more implementation details
   * Check GNU ld instead of gcc for exported symbols control logic in
