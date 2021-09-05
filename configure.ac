@@ -3,7 +3,7 @@
 dnl Require autoconf version >= 2.69)
 AC_PREREQ([2.69])
 
-AC_INIT([libsamplerate],[0.2.1],[erikd@mega-nerd.com],
+AC_INIT([libsamplerate],[0.2.2],[erikd@mega-nerd.com],
 		[libsamplerate],[https://github.com/libsndfile/libsamplerate/])
 
 dnl Check whether we want to set defaults for CFLAGS, CPPFLAGS and LDFLAGS
@@ -76,7 +76,7 @@ dnl      to 0.
 dnl   This is libtool version of library, we add it to `--version-info` property.
 
 m4_define([lt_current], [2])
-m4_define([lt_revision], [1])
+m4_define([lt_revision], [2])
 m4_define([lt_age], [2])
 
 dnl This is ABI version for linker scripts, CMake uses the same format for
