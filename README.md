@@ -8,7 +8,7 @@ libsamplerate (also known as Secret Rabbit Code) is a library for performing sam
 * The [`docs/`](https://github.com/libsndfile/libsamplerate/tree/master/docs) directory contains the libsamplerate documentation.
 * The [`examples/`](https://github.com/libsndfile/libsamplerate/tree/master/examples) directory contains examples of how to write code using libsamplerate.
 * The [`tests/`](https://github.com/libsndfile/libsamplerate/tree/master/tests) directory contains programs which link against libsamplerate and test its functionality.
-* The [`Win32/`](https://github.com/libsndfile/libsamplerate/tree/master/Win32) directory contains files and documentation to allow libsamplerate to compile under Win32 with the Microsoft Visual C++ compiler.
+* The [`Win32/`](https://github.com/libsndfile/libsamplerate/tree/master/Win32) directory contains files to allow libsamplerate to compile under Win32 with the Microsoft Visual C++ compiler.
 
 Additional references:
 
