@@ -42,11 +42,12 @@ include(CheckLibraryExists)
 include(CheckSymbolExists)
 include(GNUInstallDirs)
 
+include(CTest)
+
 if(DEFINED LIBSAMPLERATE_TESTS)
   message(DEPRECATION "LIBSAMPLERATE_TESTS option deprecated, use BUILD_TESTING option instead.")
   set(BUILD_TESTING ${LIBSAMPLERATE_TESTS})
 endif()
-include(CTest)
 
 add_definitions(-DHAVE_CONFIG_H)
 include_directories(${PROJECT_BINARY_DIR})
