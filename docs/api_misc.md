@@ -54,9 +54,11 @@ The details of these converters are as follows:
   SNR of 97dB and a bandwidth of 80%.
 - **SRC_ZERO_ORDER_HOLD** - A Zero Order Hold converter (interpolated value is
   equal to the last value). The quality is poor but the conversion speed is
-  blindlingly fast.
+  blindlingly fast. Be aware that this interpolator is not bandlimited, and the 
+  user is responsible for adding anti-aliasing filtering. 
 - **SRC_LINEAR** - A linear converter. Again the quality is poor, but the
-  conversion speed is blindingly fast.
+  conversion speed is blindingly fast. This interpolator is also not bandlimited, 
+  and the user is responsible for adding anti-aliasing filtering.
 
 There are two functions that give either a (text string) name or description for
 each converter:
