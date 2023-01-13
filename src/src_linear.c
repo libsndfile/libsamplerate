@@ -102,7 +102,7 @@ linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 		} ;
 
 	rem = fmod_one (input_index) ;
-	priv->in_used += state->channels * lrint (input_index - rem) ;
+	priv->in_used += state->channels * psf_lrint (input_index - rem) ;
 	input_index = rem ;
 
 	/* Main processing loop. */
@@ -128,7 +128,7 @@ linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 		input_index += 1.0 / src_ratio ;
 		rem = fmod_one (input_index) ;
 
-		priv->in_used += state->channels * lrint (input_index - rem) ;
+		priv->in_used += state->channels * psf_lrint (input_index - rem) ;
 		input_index = rem ;
 		} ;
 
