@@ -197,7 +197,7 @@ end_of_stream_test (int converter)
 	SRC_STATE	*src_state ;
 
 	double	src_ratio = 0.3 ;
-	long	read_count, read_total ;
+	long	read_count ;
 	int 	error ;
 
 	printf ("\t%-30s        ........... ", src_get_name (converter)) ;
@@ -213,12 +213,10 @@ end_of_stream_test (int converter)
 		exit (1) ;
 		} ;
 
-	read_total = 0 ;
 	do
 	{	/* We will be throwing away output data, so just grab as much as possible. */
 		read_count = ARRAY_LEN (output) / test_callback_data.channels ;
 		read_count = src_callback_read (src_state, src_ratio, read_count, output) ;
-		read_total += read_count ;
 		}
 	while (read_count > 0) ;
 
