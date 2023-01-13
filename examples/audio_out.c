@@ -438,7 +438,11 @@ opensoundsys_close (AUDIO_OUT *audio_out)
 
 #if (defined (__MACH__) && defined (__APPLE__)) /* MacOSX */
 
+#include <AvailabilityMacros.h>
 #include <CoreAudio/AudioHardware.h>
+#ifndef MAC_OS_VERSION_12_0
+#define kAudioObjectPropertyElementMain kAudioObjectPropertyElementMaster
+#endif
 
 #define	MACOSX_MAGIC	MAKE_MAGIC ('M', 'a', 'c', ' ', 'O', 'S', ' ', 'X')
 
@@ -493,7 +497,7 @@ macosx_open (int channels, int samplerate)
 	/*  get the default output device for the HAL */
 	propertyAddress.mSelector = kAudioHardwarePropertyDefaultOutputDevice;
 	propertyAddress.mScope = kAudioDevicePropertyScopeOutput;
-	propertyAddress.mElement = kAudioObjectPropertyElementMaster;
+	propertyAddress.mElement = kAudioObjectPropertyElementMain;
 
 	count = sizeof (AudioDeviceID) ;
 	if ((err = AudioObjectGetPropertyData(kAudioObjectSystemObject, &propertyAddress, 0, NULL,
