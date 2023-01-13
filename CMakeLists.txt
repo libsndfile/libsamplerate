@@ -88,6 +88,7 @@ endif()
 
 check_include_file(stdbool.h HAVE_STDBOOL_H)
 check_include_file(unistd.h HAVE_UNISTD_H)
+check_include_file (immintrin.h HAVE_IMMINTRIN_H)
 
 # For examples and tests
 

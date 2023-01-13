@@ -14,6 +14,10 @@
 #include <stdbool.h>
 #endif
 
+#if HAVE_IMMINTRIN_H
+#include <immintrin.h>
+#endif
+
 #include <math.h>
 
 #ifdef HAVE_VISIBILITY
@@ -163,6 +167,28 @@ const char* zoh_get_description (int src_enum) ;
 SRC_STATE *zoh_state_new (int channels, SRC_ERROR *error) ;
 
 /*----------------------------------------------------------
+** SIMD optimized math functions.
+*/
+
+static inline int psf_lrintf (float x)
+{
+	#ifdef HAVE_IMMINTRIN_H
+		return _mm_cvtss_si32 (_mm_load_ss (&x)) ;
+	#else
+		return lrintf (x) ;
+	#endif
+} /* psf_lrintf */
+
+static inline int psf_lrint (double x)
+{
+	#ifdef HAVE_IMMINTRIN_H
+		return _mm_cvtsd_si32 (_mm_load_sd (&x)) ;
+	#else
+		return lrint (x) ;
+	#endif
+} /* psf_lrint */
+
+/*----------------------------------------------------------
 **	Common static inline functions.
 */
 
@@ -170,7 +196,7 @@ static inline double
 fmod_one (double x)
 {	double res ;
 
-	res = x - lrint (x) ;
+	res = x - psf_lrint (x) ;
 	if (res < 0.0)
 		return res + 1.0 ;
 

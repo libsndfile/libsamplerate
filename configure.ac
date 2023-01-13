@@ -89,7 +89,7 @@ m4_define([abi_version_patch], [lt_revision])
 
 dnl ====================================================================================
 
-AC_CHECK_HEADERS([stdbool.h stdint.h sys/times.h unistd.h])
+AC_CHECK_HEADERS([stdbool.h stdint.h sys/times.h unistd.h immintrin.h])
 
 dnl ====================================================================================
 dnl  Couple of initializations here. Fill in real values later.
