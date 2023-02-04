@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #endif
 
-#if HAVE_IMMINTRIN_H
+#if defined(_WIN32) && (defined(_M_X64) || defined(__x86_64__))
 #include <immintrin.h>
 #endif
 
@@ -172,7 +172,7 @@ SRC_STATE *zoh_state_new (int channels, SRC_ERROR *error) ;
 
 static inline int psf_lrintf (float x)
 {
-	#ifdef HAVE_IMMINTRIN_H
+	#if defined(_WIN32) && (defined(_M_X64) || defined(__x86_64__))
 		return _mm_cvtss_si32 (_mm_load_ss (&x)) ;
 	#else
 		return lrintf (x) ;
@@ -181,7 +181,7 @@ static inline int psf_lrintf (float x)
 
 static inline int psf_lrint (double x)
 {
-	#ifdef HAVE_IMMINTRIN_H
+	#if defined(_WIN32) && (defined(_M_X64) || defined(__x86_64__))
 		return _mm_cvtsd_si32 (_mm_load_sd (&x)) ;
 	#else
 		return lrint (x) ;
