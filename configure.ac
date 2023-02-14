@@ -89,7 +89,7 @@ m4_define([abi_version_patch], [lt_revision])
 
 dnl ====================================================================================
 
-AC_CHECK_HEADERS([stdbool.h stdint.h sys/times.h unistd.h])
+AC_CHECK_HEADERS([stdbool.h stdint.h sys/times.h unistd.h immintrin.h])
 
 dnl ====================================================================================
 dnl  Couple of initializations here. Fill in real values later.
@@ -104,6 +104,9 @@ AC_ARG_ENABLE([werror],
 
 AC_ARG_ENABLE([cpu-clip],
 	[AS_HELP_STRING([--disable-cpu-clip], [disable tricky cpu specific clipper])])
+
+AC_ARG_ENABLE([sse2-lrint],
+	[AS_HELP_STRING([--enable-sse2-lrint], [implement lrintf using SSE2 on x86 CPUs if possible])])
 
 AC_ARG_ENABLE([sndfile],
 	[AS_HELP_STRING([--disable-sndfile], [disable support for sndfile (default=autodetect)])], [], [enable_sndfile=auto])
@@ -178,6 +181,13 @@ AS_IF([test "x$enable_cpu_clip" != "xno"], [
 
 AC_DEFINE_UNQUOTED([CPU_CLIPS_POSITIVE], [${ac_cv_c_clip_positive}], [Host processor clips on positive float to int conversion.])
 AC_DEFINE_UNQUOTED([CPU_CLIPS_NEGATIVE], [${ac_cv_c_clip_negative}], [Host processor clips on negative float to int conversion.])
+
+dnl ====================================================================================
+dnl  Determine if the user enabled lrint implementations using SSE2.
+
+AS_IF([test "x$enable_sse2_lrint" = "xyes"], [
+		CFLAGS="$CFLAGS -DENABLE_SSE2_LRINT"
+	])
 
 dnl ====================================================================================
 dnl  Check for libsndfile which is required for the test and example programs.
