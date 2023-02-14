@@ -33,6 +33,9 @@
 /* Define if you have C99's lrintf function. */
 #cmakedefine01 HAVE_LRINTF
 
+/* Define to 1 if you have the <immintrin.h> header file. */
+#cmakedefine HAVE_IMMINTRIN_H
+
 /* Define if you have signal SIGALRM. */
 #cmakedefine01 HAVE_SIGALRM
 

@@ -14,9 +14,35 @@
 #include <stdbool.h>
 #endif
 
-#if defined(_WIN32) && (defined(_M_X64) || defined(__x86_64__))
-#include <immintrin.h>
+#if defined(__x86_64__) || defined(_M_X64)
+#   define HAVE_SSE2_INTRINSICS
+#elif defined(ENABLE_SSE2_LRINT) && (defined(_M_IX86) || defined(__i386__))
+#   if defined(_MSC_VER)
+#       define HAVE_SSE2_INTRINSICS
+#   elif defined(__clang__)
+#       ifdef __SSE2__
+#           define HAVE_SSE2_INTRINSICS
+#       elif (__has_attribute(target))
+#           define HAVE_SSE2_INTRINSICS
+#           define USE_TARGET_ATTRIBUTE
+#       endif
+#   elif defined(__GNUC__)
+#       ifdef __SSE2__
+#           define HAVE_SSE2_INTRINSICS
+#       elif (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 9))
+#           define HAVE_SSE2_INTRINSICS
+#           define USE_TARGET_ATTRIBUTE
+#       endif
+#   endif
 #endif
+
+#ifdef HAVE_SSE2_INTRINSICS
+#ifdef HAVE_IMMINTRIN_H
+#include <immintrin.h>
+#else
+#include <emmintrin.h>
+#endif
+#endif /* HAVE_SSE2_INTRINSICS */
 
 #include <math.h>
 
@@ -170,23 +196,36 @@ SRC_STATE *zoh_state_new (int channels, SRC_ERROR *error) ;
 ** SIMD optimized math functions.
 */
 
+#ifdef HAVE_SSE2_INTRINSICS
+static inline int
+#ifdef USE_TARGET_ATTRIBUTE
+__attribute__((target("sse2")))
+#endif
+psf_lrintf (float x)
+{
+	return _mm_cvtss_si32 (_mm_load_ss (&x)) ;
+}
+static inline int
+#ifdef USE_TARGET_ATTRIBUTE
+__attribute__((target("sse2")))
+#endif
+psf_lrint (double x)
+{
+	return _mm_cvtsd_si32 (_mm_load_sd (&x)) ;
+}
+
+#else
+
 static inline int psf_lrintf (float x)
 {
-	#if defined(_WIN32) && (defined(_M_X64) || defined(__x86_64__))
-		return _mm_cvtss_si32 (_mm_load_ss (&x)) ;
-	#else
-		return lrintf (x) ;
-	#endif
+	return lrintf (x) ;
 } /* psf_lrintf */
 
 static inline int psf_lrint (double x)
 {
-	#if defined(_WIN32) && (defined(_M_X64) || defined(__x86_64__))
-		return _mm_cvtsd_si32 (_mm_load_sd (&x)) ;
-	#else
-		return lrint (x) ;
-	#endif
+	return lrint (x) ;
 } /* psf_lrint */
+#endif
 
 /*----------------------------------------------------------
 **	Common static inline functions.
