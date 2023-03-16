@@ -1026,7 +1026,7 @@
     Added links to Win32 compiling information.
 
     * configure.ac tests/Makefile.am
-    Detect libefence and link it to all the test programs if configued
+    Detect libefence and link it to all the test programs if configured
     with --enable-debug.
 
     * tests/utils.[ch]
