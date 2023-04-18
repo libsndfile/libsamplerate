@@ -749,7 +749,7 @@
 
     * src/common.h
     Add fields saved_frames and saved_data to SF_PRIVATE struct for storing
-    data between sucessive calls to src_callback_read().
+    data between successive calls to src_callback_read().
     Also rearange the fields of SF_PRIVATE.
 
 2004-03-20  Erik de Castro Lopo  <erikd AT mega-nerd DOT com>

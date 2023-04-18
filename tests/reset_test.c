@@ -99,7 +99,7 @@ process_reset_test (int converter)
 		exit (1) ;
 		} ;
 
-	/* Finally make sure that the output data is zero ie reset was sucessful. */
+	/* Finally make sure that the output data is zero ie reset was successful. */
 	for (k = 0 ; k < BUFFER_LEN / 2 ; k++)
 		if (output [k] != 0.0)
 		{	printf ("\n\nLine %d : output [%d] should be 0.0, is %f.\n", __LINE__, k, output [k]) ;
@@ -216,7 +216,7 @@ callback_reset_test (int converter)
 		exit (1) ;
 		} ;
 
-	/* Finally make sure that the output data is zero ie reset was sucessful. */
+	/* Finally make sure that the output data is zero ie reset was successful. */
 	for (k = 0 ; k < BUFFER_LEN / 2 ; k++)
 		if (output [k] != 0.0)
 		{	printf ("\n\nLine %d : output [%d] should be 0.0, is %f.\n\n", __LINE__, k, output [k]) ;
