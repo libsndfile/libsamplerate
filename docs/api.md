@@ -15,7 +15,7 @@ libsamplerate, you need to add
 to the top of any function that call any of the following functions. You will
 also need to link you binary with the libsamplerate library.
 
-The API allows three methods for accessing the capabilies of the library:
+The API allows three methods for accessing the capabilities of the library:
 
 - A [simple interface](api_simple.md) which can sample rate convert a single
   block of samples (one or more channels) in one go. The simple API is less
@@ -39,7 +39,7 @@ The parts of the API which are common to all three interfaces are:
 - The [SRC_DATA](api_misc.md#src_data) struct.
 
 All three versions of the API are restricted to operating on buffers of ISO C
-Standard **float** data. However, there are two [auxillary functions](api_misc.md#auxillary-functions)
+Standard **float** data. However, there are two [auxiliary functions](api_misc.md#auxiliary-functions)
 for converting arrays of float data to and from short data.
 
 **Note:** The **tests/** and **examples/** directories of the source code

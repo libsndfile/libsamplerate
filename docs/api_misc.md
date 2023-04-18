@@ -127,9 +127,9 @@ converter to inform the caller of the number of frames consumed from the
 **data_in** array and the number of frames generated in the **data_out** array
 respectively. These values are for the current call to **src_process** only.
 
-## Auxillary Functions
+## Auxiliary Functions
 
-There are four auxillary functions for converting arrays of float data to and
+There are four auxiliary functions for converting arrays of float data to and
 from short or int data. These functions are defined as:
 
 ```c
