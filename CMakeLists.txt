@@ -72,10 +72,10 @@ endif()
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   option(LIBSAMPLERATE_ENABLE_SANITIZERS "Enable ASAN and UBSAN" OFF)
 
-  #if (BUILD_MULTI_THREADING)
+  if (BUILD_MULTI_THREADING)
     set(MULTI_THREADING 1)
     add_definitions(-DMULTI_THREADING)
-  #endif()
+  endif()
 
   if(LIBSAMPLERATE_ENABLE_SANITIZERS)
     # Use ASAN and UBSAN, make it fail on any error, improve stack traces
