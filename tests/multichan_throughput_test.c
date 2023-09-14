@@ -41,7 +41,11 @@ static float output [BUFFER_LEN] ;
 static void
 throughput_test (int converter, int channels, long *best_throughput)
 {	SRC_DATA src_data ;
+#ifdef MULTI_THREADING
+	struct timespec start_gettime, finish_gettime;
+#else
 	clock_t start_time, clock_time ;
+#endif
 	double duration ;
 	long total_frames = 0, throughput ;
 	int error ;
@@ -63,7 +67,11 @@ throughput_test (int converter, int channels, long *best_throughput)
 	sleep (2) ;
 #endif
 
+#ifdef MULTI_THREADING
+	clock_gettime(CLOCK_MONOTONIC, &start_gettime);
+#else
 	start_time = clock () ;
+#endif
 
 	do
 	{
@@ -74,8 +82,15 @@ throughput_test (int converter, int channels, long *best_throughput)
 
 		total_frames += src_data.output_frames_gen ;
 
+#ifdef MULTI_THREADING
+		clock_gettime(CLOCK_MONOTONIC, &finish_gettime);
+
+		duration = (finish_gettime.tv_sec - start_gettime.tv_sec);
+		duration += (finish_gettime.tv_nsec - start_gettime.tv_nsec) / 1000000000.0;
+#else
 		clock_time = clock () - start_time ;
 		duration = (1.0 * clock_time) / CLOCKS_PER_SEC ;
+#endif
 	}
 	while (duration < 5.0) ;
 

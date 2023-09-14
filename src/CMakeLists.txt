@@ -72,6 +72,11 @@ if(LIBM_REQUIRED)
     target_link_libraries(samplerate PRIVATE m)
 endif()
 
+if(MULTI_THREADING)
+  target_link_libraries(samplerate PRIVATE omp)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS_RELEASE} -fopenmp")
+endif()
+
 # Set public header
 set_property(TARGET samplerate PROPERTY PUBLIC_HEADER ${PROJECT_SOURCE_DIR}/include/samplerate.h)
 
