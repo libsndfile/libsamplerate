@@ -224,7 +224,7 @@ sinc_get_description (int src_enum)
 #define MULTI_THREADING_THRESHOLD (256)
 
 __attribute__((always_inline)) static void
-calc_output_multi_mt_core(const int num_of_threads, const int child_no, 
+calc_output_multi_mt_core(const int skip_fraction, const int num_of_threads, const int child_no, 
 	const SINC_FILTER *const filter, const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, double *const output)
 {
 	assert(num_of_threads == 1 || num_of_threads % 2 == 0);
@@ -264,7 +264,7 @@ calc_output_multi_mt_core(const int num_of_threads, const int child_no,
 				const double fraction = fp_to_double(filter_index1);
 				const int indx = fp_to_int(filter_index1);
 				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
-				const double icoeff = filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
+				const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
 				assert(data_index1 >= 0 && data_index1 + channels - 1 < filter->b_len);
 				assert(data_index1 + channels - 1 < filter->b_end);
 				for (int ch = 0; ch < channels; ch++)
@@ -289,7 +289,7 @@ calc_output_multi_mt_core(const int num_of_threads, const int child_no,
 				const double fraction = fp_to_double(filter_index2);
 				const int indx = fp_to_int(filter_index2);
 				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
-				const double icoeff = filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
+				const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
 				assert(data_index2 >= 0 && data_index2 + channels - 1 < filter->b_len);
 				assert(data_index2 + channels - 1 < filter->b_end);
 				for (int ch = 0; ch < channels; ch++)
@@ -307,7 +307,7 @@ calc_output_multi_mt_core(const int num_of_threads, const int child_no,
 				const double fraction = fp_to_double(filter_index2);
 				const int indx = fp_to_int(filter_index2);
 				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
-				const double icoeff = filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
+				const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
 				assert(data_index2 >= 0 && data_index2 + channels - 1 < filter->b_len);
 				assert(data_index2 + channels - 1 < filter->b_end);
 				for (int ch = 0; ch < channels; ch++)
@@ -323,12 +323,28 @@ calc_output_multi_mt_core(const int num_of_threads, const int child_no,
 } /* calc_output_stereo */
 
 __attribute__((always_inline)) static void
-calc_output_multi_mt_2(const int num_of_threads, const int child_no, 
+calc_output_multi_mt_3(const int num_of_threads, const int child_no,
 	const SINC_FILTER *const filter, const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, double *const output)
 {
-#define OPTIMIZE_LINE(x)                                                                                                  \
-	case (x):                                                                                                             \
-			calc_output_multi_mt_core(num_of_threads, child_no, filter, increment, start_filter_index, x, scale, output); \
+
+	const int skip_fraction = increment == ((increment >> SHIFT_BITS) << SHIFT_BITS) && start_filter_index == ((start_filter_index >> SHIFT_BITS) << SHIFT_BITS) ? 1 : 0;
+
+	if (skip_fraction)
+	{
+			calc_output_multi_mt_core(1, num_of_threads, child_no, filter, increment, start_filter_index, channels, scale, output);
+	}
+	else
+	{
+			calc_output_multi_mt_core(0, num_of_threads, child_no, filter, increment, start_filter_index, channels, scale, output);
+	}
+}
+
+__attribute__((always_inline)) static void
+calc_output_multi_mt_2(const int num_of_threads, const int child_no, const SINC_FILTER *const filter, const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, double *const output)
+{
+#define OPTIMIZE_LINE(x)                                                                                               \
+	case (x):                                                                                                          \
+			calc_output_multi_mt_3(num_of_threads, child_no, filter, increment, start_filter_index, x, scale, output); \
 			break;
 
 	switch (channels) // to kick the compile-time optimizer, channel numbers up to 16 are extracted as constants here.
@@ -350,7 +366,7 @@ calc_output_multi_mt_2(const int num_of_threads, const int child_no,
 			OPTIMIZE_LINE(15);
 			OPTIMIZE_LINE(16);
 	default:
-			calc_output_multi_mt_core(num_of_threads, child_no, filter, increment, start_filter_index, channels, scale, output);
+			calc_output_multi_mt_3(num_of_threads, child_no, filter, increment, start_filter_index, channels, scale, output);
 			break;
 	}
 #undef OPTIMIZE_LINE
@@ -387,13 +403,10 @@ static SRC_ERROR
 _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no, double *const per_thread_data_out,
 	SRC_STATE *const state, SRC_DATA *const data)
 {
-	SINC_FILTER *filter = (SINC_FILTER *)state->private_data;
-	double input_index, src_ratio, count, float_increment, terminate, rem;
-	increment_t increment, start_filter_index;
-	int half_filter_chan_len, samples_in_hand;
-
 	if (state->private_data == NULL)
 			return SRC_ERR_NO_PRIVATE;
+
+	SINC_FILTER *filter = (SINC_FILTER *)state->private_data;
 
 	/* If there is not a problem, this will be optimised out. */
 	if (sizeof(filter->buffer[0]) != sizeof(data->data_in[0]))
@@ -404,35 +417,41 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no, do
 	filter->out_count = data->output_frames * channels;
 	filter->in_used = filter->out_gen = 0;
 
-	src_ratio = state->last_ratio;
+	double src_ratio = state->last_ratio;
 
 	if (is_bad_src_ratio(src_ratio))
 			return SRC_ERR_BAD_INTERNAL_STATE;
 
 	/* Check the sample rate ratio wrt the buffer len. */
-	count = (filter->coeff_half_len + 2.0) / filter->index_inc;
+	double count = (filter->coeff_half_len + 2.0) / filter->index_inc;
 	if (MIN(state->last_ratio, data->src_ratio) < 1.0)
 			count /= MIN(state->last_ratio, data->src_ratio);
 
 	/* Maximum coefficientson either side of center point. */
-	half_filter_chan_len = state->channels * (int)(psf_lrint(count) + 1);
+	const int half_filter_chan_len = state->channels * (int)(psf_lrint(count) + 1);
 
-	input_index = state->last_position;
+	double input_index = state->last_position;
 
-	rem = fmod_one(input_index);
+	double rem = fmod_one(input_index);
 	filter->b_current = (filter->b_current + channels * psf_lrint(input_index - rem)) % filter->b_len;
 	input_index = rem;
 
-	terminate = 1.0 / src_ratio + 1e-20;
+	const double terminate = 1.0 / src_ratio + 1e-20;
 
 	const long out_count = filter->out_count;
 	const int index_inc = filter->index_inc;
+
+    const int is_constant_ratio = (state->last_ratio == data->src_ratio) ? 1 : 0;
+    const double constant_input_index_inc = 1.0 / src_ratio;
+    const double constant_float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
+    const increment_t constant_increment = double_to_fp(constant_float_increment);
+    const double constant_scale = constant_float_increment / index_inc;
 
 	/* Main processing loop. */
 	while (filter->out_gen < out_count)
 	{
 			/* Need to reload buffer? */
-			samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len;
+			int samples_in_hand = (filter->b_end - filter->b_current + filter->b_len) % filter->b_len;
 
 			if (samples_in_hand <= half_filter_chan_len)
 			{
@@ -451,19 +470,29 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no, do
 					break;
 			};
 
-			if (out_count > 0 && fabs(state->last_ratio - data->src_ratio) > 1e-10)
-				src_ratio = state->last_ratio + filter->out_gen * (data->src_ratio - state->last_ratio) / out_count;
+            double scale, float_increment;
+            increment_t increment;
+            if ( !is_constant_ratio ){
+                if (out_count > 0 && fabs(state->last_ratio - data->src_ratio) > 1e-10)
+                    src_ratio = state->last_ratio + filter->out_gen * (data->src_ratio - state->last_ratio) / out_count;
 
-			float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
-			increment = double_to_fp(float_increment);
+                float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
+                increment = double_to_fp(float_increment);
+                scale = float_increment / index_inc;
+            }
+            else{
+                float_increment = constant_float_increment;
+                increment = constant_increment;
+                scale = constant_scale;
+            }
 
-			start_filter_index = double_to_fp(input_index * float_increment);
+			increment_t start_filter_index = double_to_fp(input_index * float_increment);
 
-			calc_output_multi_mt(num_of_threads, child_no, filter, increment, start_filter_index, channels, float_increment / index_inc, per_thread_data_out + filter->out_gen);
+			calc_output_multi_mt(num_of_threads, child_no, filter, increment, start_filter_index, channels, scale, per_thread_data_out + filter->out_gen);
 			filter->out_gen += channels;
 
 			/* Figure out the next index. */
-			input_index += 1.0 / src_ratio;
+			input_index += (is_constant_ratio) ? constant_input_index_inc : 1.0 / src_ratio;
 			rem = fmod_one(input_index);
 
 			filter->b_current = (filter->b_current + channels * psf_lrint(input_index - rem)) % filter->b_len;
