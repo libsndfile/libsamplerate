@@ -441,11 +441,11 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no, do
 	const long out_count = filter->out_count;
 	const int index_inc = filter->index_inc;
 
-    const int is_constant_ratio = (state->last_ratio == data->src_ratio) ? 1 : 0;
-    const double constant_input_index_inc = 1.0 / src_ratio;
-    const double constant_float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
-    const increment_t constant_increment = double_to_fp(constant_float_increment);
-    const double constant_scale = constant_float_increment / index_inc;
+	const int is_constant_ratio = (state->last_ratio == data->src_ratio) ? 1 : 0;
+	const double constant_input_index_inc = 1.0 / src_ratio;
+	const double constant_float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
+	const increment_t constant_increment = double_to_fp(constant_float_increment);
+	const double constant_scale = constant_float_increment / index_inc;
 
 	/* Main processing loop. */
 	while (filter->out_gen < out_count)
@@ -470,21 +470,23 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no, do
 					break;
 			};
 
-            double scale, float_increment;
-            increment_t increment;
-            if ( !is_constant_ratio ){
-                if (out_count > 0 && fabs(state->last_ratio - data->src_ratio) > 1e-10)
-                    src_ratio = state->last_ratio + filter->out_gen * (data->src_ratio - state->last_ratio) / out_count;
+			double scale, float_increment;
+			increment_t increment;
+			if (!is_constant_ratio)
+			{
+				if (out_count > 0 && fabs(state->last_ratio - data->src_ratio) > 1e-10)
+					src_ratio = state->last_ratio + filter->out_gen * (data->src_ratio - state->last_ratio) / out_count;
 
-                float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
-                increment = double_to_fp(float_increment);
-                scale = float_increment / index_inc;
-            }
-            else{
-                float_increment = constant_float_increment;
-                increment = constant_increment;
-                scale = constant_scale;
-            }
+				float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
+				increment = double_to_fp(float_increment);
+				scale = float_increment / index_inc;
+			}
+			else
+			{
+				float_increment = constant_float_increment;
+				increment = constant_increment;
+				scale = constant_scale;
+			}
 
 			increment_t start_filter_index = double_to_fp(input_index * float_increment);
 
@@ -530,7 +532,7 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 	SRC_DATA *per_thread_data = (SRC_DATA *)malloc(num_of_threads * sizeof(SRC_DATA));
 	SINC_FILTER *per_thread_filter = (SINC_FILTER *)malloc(num_of_threads * sizeof(SINC_FILTER));
 	SRC_ERROR *per_thread_retval = (SRC_ERROR *)malloc(num_of_threads * sizeof(SRC_ERROR));
-	
+
 	float **per_thread_buffer = (float **)calloc(num_of_threads, sizeof(float *));
 	double **per_thread_data_out = (double **)calloc(num_of_threads, sizeof(double *));
 
@@ -542,10 +544,11 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 			goto cleanup_and_return;
 	}
 
-	if (num_of_threads == 1)		// w/o OpenMP
+	if (num_of_threads == 1) // w/o OpenMP
 	{
 			per_thread_data_out[0] = (double *)malloc(out_count * sizeof(double));
-			if ( !per_thread_data_out[0] ) goto cleanup_and_return;
+			if (!per_thread_data_out[0])
+				goto cleanup_and_return;
 
 			per_thread_retval[0] = _sinc_multichan_vari_process_mt(1, 0, per_thread_data_out[0], state, data);
 
@@ -568,7 +571,8 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 			per_thread_buffer[child_no] = (float *)malloc(filter_buffer_len * sizeof(float));
 			per_thread_data_out[child_no] = (double *)malloc(out_count * sizeof(double));
 
-			if ( !per_thread_buffer[child_no] || !per_thread_data_out[child_no] ){
+			if (!per_thread_buffer[child_no] || !per_thread_data_out[child_no])
+			{
 
 				per_thread_retval[child_no] = SRC_ERR_MALLOC_FAILED;
 
@@ -585,16 +589,18 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 			per_thread_filter[child_no].buffer = per_thread_buffer[child_no];
 
 			per_thread_retval[child_no] = _sinc_multichan_vari_process_mt(
-                num_of_threads, child_no, per_thread_data_out[child_no],
+				num_of_threads, child_no, per_thread_data_out[child_no],
 				&per_thread_state[child_no], &per_thread_data[child_no]);
 	}
 
 	// error checking for each worker
-	for (int child_no = 0; child_no < num_of_threads; child_no++){
-		if ( per_thread_retval[child_no] != SRC_ERR_NO_ERROR ){
-			retval = per_thread_retval[child_no];
-			goto cleanup_and_return;
-		}
+	for (int child_no = 0; child_no < num_of_threads; child_no++)
+	{
+			if (per_thread_retval[child_no] != SRC_ERR_NO_ERROR)
+			{
+				retval = per_thread_retval[child_no];
+				goto cleanup_and_return;
+			}
 	}
 
 	// update filter status
@@ -610,7 +616,7 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 	memcpy(data, &per_thread_data[0], sizeof(SRC_DATA));
 
 #pragma omp parallel for
-	for (int count = 0; count < filter->out_gen; count++)   // sum up every worker's result
+	for (int count = 0; count < filter->out_gen; count++) // sum up every worker's result
 	{
 			double sum = 0.0;
 			for (int child_no = 0; child_no < num_of_threads; child_no++)
@@ -632,7 +638,7 @@ cleanup_and_return:
 
 	if (per_thread_filter)
 			free(per_thread_filter);
-	
+
 	if (per_thread_retval)
 			free(per_thread_retval);
 
@@ -647,8 +653,10 @@ cleanup_and_return:
 			free(per_thread_buffer);
 	}
 
-	if (per_thread_data_out) {
-			for (int child_no = 0; child_no < num_of_threads; child_no++) {
+	if (per_thread_data_out)
+	{
+			for (int child_no = 0; child_no < num_of_threads; child_no++)
+			{
 				if (per_thread_data_out[child_no])
 					free(per_thread_data_out[child_no]);
 			}
