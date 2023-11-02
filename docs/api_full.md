@@ -133,7 +133,7 @@ int src_set_ratio (SRC_STATE *state, double new_ratio) ;
 ```
 
 When using the **src_process** or **src_callback_process** APIs and updating the
-**src_ratio** field of the **SRC_STATE** struct, the library will try to
+**src_ratio** field of the **SRC_DATA** struct, the library will try to
 smoothly transition between the conversion ratio of the last call and the
 conversion ratio of the current call.
 
