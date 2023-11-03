@@ -39,7 +39,7 @@ Building on macOS should be the same as building it on any other Unix platform.
 
 To compile libsamplerate on platforms which have a Bourne compatible shell, an ANSI C compiler and a make utility should require no more that the following three commands:
 ```bash
-autoreconf -i
+autoreconf -vif
 ./configure
 make
 make install
