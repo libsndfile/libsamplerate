@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.1..3.18)
 
+if (BUILD_MULTI_THREADING)
+  set(MULTI_THREADING 1)
+  add_definitions(-DMULTI_THREADING)
+endif()
+
 # Policies
 
 # Include file check macros honor CMAKE_REQUIRED_LIBRARIES, CMake >= 3.12
@@ -71,11 +76,6 @@ endif()
 
 if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
   option(LIBSAMPLERATE_ENABLE_SANITIZERS "Enable ASAN and UBSAN" OFF)
-
-  if (BUILD_MULTI_THREADING)
-    set(MULTI_THREADING 1)
-    add_definitions(-DMULTI_THREADING)
-  endif()
 
   if(LIBSAMPLERATE_ENABLE_SANITIZERS)
     # Use ASAN and UBSAN, make it fail on any error, improve stack traces
