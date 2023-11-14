@@ -221,10 +221,10 @@ sinc_get_description (int src_enum)
 
 #ifdef _WIN32
 	#define ALWAYS_INLINE __forceinline
-	#include <windows.h>
+	//#include <windows.h>
 #else
 	#define ALWAYS_INLINE __attribute__((always_inline)) static
-	#include <unistd.h>
+	//#include <unistd.h>
 #endif
 
 /* smaller frames are processed in single thread to avoid overheads */
@@ -551,13 +551,7 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 	SINC_FILTER *filter = (SINC_FILTER *)state->private_data;
 	const int filter_buffer_len = (filter->b_len + channels);
 
-#ifdef _WIN32
-	SYSTEM_INFO sysinfo;
-	GetSystemInfo(&sysinfo);
-	const int N_OF_CORES = sysinfo.dwNumberOfProcessors;
-#else
-	const int N_OF_CORES = sysconf(_SC_NPROCESSORS_ONLN);
-#endif
+	const int N_OF_CORES = omp_get_num_procs();
 
 	const int should_be_single_thread = (N_OF_CORES < 2 || in_count < MULTI_THREADING_THRESHOLD);
 	const int NUM_OF_THREADS = should_be_single_thread ? 1 : (N_OF_CORES / 2 * 2);
@@ -591,6 +585,12 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 			goto cleanup_and_return;
 	}
 
+	// OpenMP
+	omp_set_dynamic(0);
+	omp_set_num_threads(NUM_OF_THREADS);
+
+	assert( NUM_OF_THREADS == omp_get_num_threads() );
+
 	if (NUM_OF_THREADS == 1) // w/o OpenMP
 	{
 			per_thread_data_out[0] = (double *)malloc(out_count * sizeof(double));
@@ -608,9 +608,6 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 
 			goto cleanup_and_return;
 	}
-
-	// OpenMP
-	omp_set_num_threads(NUM_OF_THREADS);
 
 	int omp_child_no;
 
