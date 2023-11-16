@@ -229,7 +229,7 @@ sinc_get_description (int src_enum)
 	#define ALWAYS_INLINE __attribute__((always_inline)) static
 
 	#define mem_prefetch(ptr) __builtin_prefetch(ptr)
-	
+
 #else
 	#define ALWAYS_INLINE static
 
@@ -240,8 +240,8 @@ sinc_get_description (int src_enum)
 #define MULTI_THREADING_THRESHOLD (256)
 
 ALWAYS_INLINE void
-calc_output_multi_mt_core(const int enable_prefetch, const int skip_fraction, const SINC_FILTER * const filter, 
-	const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float * const output)
+calc_output_multi_mt_core(const int enable_prefetch, const int skip_fraction, const SINC_FILTER *const filter,
+						  const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
 {
 	double left[MAX_CHANNELS] = {0};
 	double right[MAX_CHANNELS] = {0};
@@ -252,76 +252,78 @@ calc_output_multi_mt_core(const int enable_prefetch, const int skip_fraction, co
 	const int prefetch_increment = 8;
 
 	{
-			/* First apply the left half of the filter. */
-			increment_t filter_index1 = start_filter_index;
-			const int coeff_count1 = (max_filter_index - filter_index1) / increment;
-			filter_index1 = filter_index1 + coeff_count1 * increment;
-			int data_index1 = filter->b_current - channels * coeff_count1;
+		/* First apply the left half of the filter. */
+		increment_t filter_index1 = start_filter_index;
+		const int coeff_count1 = (max_filter_index - filter_index1) / increment;
+		filter_index1 = filter_index1 + coeff_count1 * increment;
+		int data_index1 = filter->b_current - channels * coeff_count1;
 
-			if (data_index1 < 0) /* Avoid underflow access to filter->buffer. */
+		if (data_index1 < 0) /* Avoid underflow access to filter->buffer. */
+		{
+			int steps = int_div_ceil(-data_index1, channels);
+			/* If the assert triggers we would have to take care not to underflow/overflow */
+			assert(steps <= int_div_ceil(filter_index1, increment));
+			filter_index1 -= increment * steps;
+			data_index1 += steps * channels;
+		}
+
+		// left = 0.0;
+		while (filter_index1 >= MAKE_INCREMENT_T(0))
+		{
+			if (enable_prefetch && filter_index1 - increment * prefetch_increment >= MAKE_INCREMENT_T(0))
 			{
-				int steps = int_div_ceil(-data_index1, channels);
-				/* If the assert triggers we would have to take care not to underflow/overflow */
-				assert(steps <= int_div_ceil(filter_index1, increment));
-				filter_index1 -= increment * steps;
-				data_index1 += steps * channels;
+				const int indx = fp_to_int(filter_index1 - increment * prefetch_increment);
+				mem_prefetch(&filter->coeffs[indx]);
+				mem_prefetch(&filter->coeffs[indx + 1]);
 			}
 
-			// left = 0.0;
-			while (filter_index1 >= MAKE_INCREMENT_T(0))
-			{
-				if ( enable_prefetch && filter_index1 - increment * prefetch_increment >= MAKE_INCREMENT_T(0) ){
-					const int indx = fp_to_int(filter_index1 - increment * prefetch_increment);
-					mem_prefetch(&filter->coeffs[indx]);
-					mem_prefetch(&filter->coeffs[indx+1]);
-				}
+			const double fraction = fp_to_double(filter_index1);
+			const int indx = fp_to_int(filter_index1);
+			assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
+			const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
+			assert(data_index1 >= 0 && data_index1 + channels - 1 < filter->b_len);
+			assert(data_index1 + channels - 1 < filter->b_end);
+			for (int ch = 0; ch < channels; ch++)
+				left[ch] += icoeff * filter->buffer[data_index1 + ch];
 
-				const double fraction = fp_to_double(filter_index1);
-				const int indx = fp_to_int(filter_index1);
-				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
-				const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
-				assert(data_index1 >= 0 && data_index1 + channels - 1 < filter->b_len);
-				assert(data_index1 + channels - 1 < filter->b_end);
-				for (int ch = 0; ch < channels; ch++)
-					left[ch] += icoeff * filter->buffer[data_index1 + ch];
-
-				filter_index1 -= increment;
-				data_index1 = data_index1 + channels;
-			};
+			filter_index1 -= increment;
+			data_index1 = data_index1 + channels;
+		};
 	}
 
 	{
-			/* Now apply the right half of the filter. */
-			increment_t filter_index2 = increment - start_filter_index;
-			const int coeff_count2 = (max_filter_index - filter_index2) / increment;
-			filter_index2 = filter_index2 + coeff_count2 * increment;
-			int data_index2 = filter->b_current + channels * (1 + coeff_count2);
-			// right = 0.0;
+		/* Now apply the right half of the filter. */
+		increment_t filter_index2 = increment - start_filter_index;
+		const int coeff_count2 = (max_filter_index - filter_index2) / increment;
+		filter_index2 = filter_index2 + coeff_count2 * increment;
+		int data_index2 = filter->b_current + channels * (1 + coeff_count2);
+		// right = 0.0;
 
-			do {
-				if ( enable_prefetch && filter_index2 - increment * prefetch_increment > MAKE_INCREMENT_T(0) ){
-					const int indx = fp_to_int(filter_index2 - increment * prefetch_increment);
-					mem_prefetch(&filter->coeffs[indx]);
-					mem_prefetch(&filter->coeffs[indx+1]);
-				}
+		do
+		{
+			if (enable_prefetch && filter_index2 - increment * prefetch_increment > MAKE_INCREMENT_T(0))
+			{
+				const int indx = fp_to_int(filter_index2 - increment * prefetch_increment);
+				mem_prefetch(&filter->coeffs[indx]);
+				mem_prefetch(&filter->coeffs[indx + 1]);
+			}
 
-				const double fraction = fp_to_double(filter_index2);
-				const int indx = fp_to_int(filter_index2);
-				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
-				const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
-				assert(data_index2 >= 0 && data_index2 + channels - 1 < filter->b_len);
-				assert(data_index2 + channels - 1 < filter->b_end);
-				for (int ch = 0; ch < channels; ch++)
-					right[ch] += icoeff * filter->buffer[data_index2 + ch];
+			const double fraction = fp_to_double(filter_index2);
+			const int indx = fp_to_int(filter_index2);
+			assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
+			const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
+			assert(data_index2 >= 0 && data_index2 + channels - 1 < filter->b_len);
+			assert(data_index2 + channels - 1 < filter->b_end);
+			for (int ch = 0; ch < channels; ch++)
+				right[ch] += icoeff * filter->buffer[data_index2 + ch];
 
-				filter_index2 -= increment;
-				data_index2 = data_index2 - channels;
-			} while (filter_index2 > MAKE_INCREMENT_T(0));
-
+			filter_index2 -= increment;
+			data_index2 = data_index2 - channels;
+		} while (filter_index2 > MAKE_INCREMENT_T(0));
 	}
 
 	for (int ch = 0; ch < channels; ch++)
-			output[ch] = (float)(scale * (left[ch] + right[ch]));
+		output[ch] = (float)(scale * (left[ch] + right[ch]));
 } /* calc_output_multi_mt_core */
 
 ALWAYS_INLINE void
@@ -330,23 +332,27 @@ calc_output_multi_mt_2(
 {
 
 	const int skip_fraction = increment == ((increment >> SHIFT_BITS) << SHIFT_BITS) && start_filter_index == ((start_filter_index >> SHIFT_BITS) << SHIFT_BITS) ? 1 : 0;
-	const int enable_prefetch = (filter->coeff_half_len > ARRAY_LEN (slow_mid_qual_coeffs.coeffs));
+	const int enable_prefetch = (filter->coeff_half_len > ARRAY_LEN(slow_mid_qual_coeffs.coeffs));
 
 	if (skip_fraction)
 	{
-		if (enable_prefetch){
+		if (enable_prefetch)
+		{
 			calc_output_multi_mt_core(1, 1, filter, increment, start_filter_index, channels, scale, output);
 		}
-		else{
+		else
+		{
 			calc_output_multi_mt_core(0, 1, filter, increment, start_filter_index, channels, scale, output);
 		}
 	}
 	else
 	{
-		if (enable_prefetch){
+		if (enable_prefetch)
+		{
 			calc_output_multi_mt_core(1, 0, filter, increment, start_filter_index, channels, scale, output);
 		}
-		else{
+		else
+		{
 			calc_output_multi_mt_core(0, 0, filter, increment, start_filter_index, channels, scale, output);
 		}
 	}
@@ -355,49 +361,49 @@ calc_output_multi_mt_2(
 ALWAYS_INLINE void
 calc_output_multi_mt(const SINC_FILTER *const filter, const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
 {
-#define OPTIMIZE_LINE(x)                                                                                               \
-	case (x):                                                                                                          \
-			calc_output_multi_mt_2(filter, increment, start_filter_index, x, scale, output); \
-			break;
+#define OPTIMIZE_LINE(x)                                                                 \
+	case (x):                                                                            \
+		calc_output_multi_mt_2(filter, increment, start_filter_index, x, scale, output); \
+		break;
 
 	switch (channels) // to kick the compile-time optimizer, channel numbers up to 16 are extracted as constants here.
 	{
-			OPTIMIZE_LINE(1);
-			OPTIMIZE_LINE(2);
-			OPTIMIZE_LINE(3);
-			OPTIMIZE_LINE(4);
-			OPTIMIZE_LINE(5);
-			OPTIMIZE_LINE(6);
-			OPTIMIZE_LINE(7);
-			OPTIMIZE_LINE(8);
-			OPTIMIZE_LINE(9);
-			OPTIMIZE_LINE(10);
-			OPTIMIZE_LINE(11);
-			OPTIMIZE_LINE(12);
-			OPTIMIZE_LINE(13);
-			OPTIMIZE_LINE(14);
-			OPTIMIZE_LINE(15);
-			OPTIMIZE_LINE(16);
+		OPTIMIZE_LINE(1);
+		OPTIMIZE_LINE(2);
+		OPTIMIZE_LINE(3);
+		OPTIMIZE_LINE(4);
+		OPTIMIZE_LINE(5);
+		OPTIMIZE_LINE(6);
+		OPTIMIZE_LINE(7);
+		OPTIMIZE_LINE(8);
+		OPTIMIZE_LINE(9);
+		OPTIMIZE_LINE(10);
+		OPTIMIZE_LINE(11);
+		OPTIMIZE_LINE(12);
+		OPTIMIZE_LINE(13);
+		OPTIMIZE_LINE(14);
+		OPTIMIZE_LINE(15);
+		OPTIMIZE_LINE(16);
 	default:
-			calc_output_multi_mt_2(filter, increment, start_filter_index, channels, scale, output);
-			break;
+		calc_output_multi_mt_2(filter, increment, start_filter_index, channels, scale, output);
+		break;
 	}
 #undef OPTIMIZE_LINE
 }
 
 static SRC_ERROR
 _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
-	SRC_STATE * const state, SRC_DATA * const data, SRC_STATE *const main_state )
+								SRC_STATE *const state, SRC_DATA *const data, SRC_STATE *const main_state)
 {
 	if (state->private_data == NULL)
-			return SRC_ERR_NO_PRIVATE;
+		return SRC_ERR_NO_PRIVATE;
 
 	SINC_FILTER *filter = (SINC_FILTER *)state->private_data;
 	SINC_FILTER *main_filter = (SINC_FILTER *)main_state->private_data;
 
 	/* If there is not a problem, this will be optimised out. */
 	if (sizeof(filter->buffer[0]) != sizeof(data->data_in[0]))
-			return SRC_ERR_SIZE_INCOMPATIBILITY;
+		return SRC_ERR_SIZE_INCOMPATIBILITY;
 
 	const int channels = state->channels;
 	filter->in_count = data->input_frames * channels;
@@ -407,12 +413,12 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
 	double src_ratio = state->last_ratio;
 
 	if (is_bad_src_ratio(src_ratio))
-			return SRC_ERR_BAD_INTERNAL_STATE;
+		return SRC_ERR_BAD_INTERNAL_STATE;
 
 	/* Check the sample rate ratio wrt the buffer len. */
 	double count = (filter->coeff_half_len + 2.0) / filter->index_inc;
 	if (MIN(state->last_ratio, data->src_ratio) < 1.0)
-			count /= MIN(state->last_ratio, data->src_ratio);
+		count /= MIN(state->last_ratio, data->src_ratio);
 
 	/* Maximum coefficientson either side of center point. */
 	const int half_filter_chan_len = channels * (int)(psf_lrint(count) + 1);
@@ -436,80 +442,83 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
 
 	/* Main processing loop. */
 	int interleave_counter = 0;
-	float * const data_out = data->data_out;
-	
+	float *const data_out = data->data_out;
+
 	while (filter->out_gen < out_count)
 	{
-			/* Need to reload buffer? */
-			int samples_in_hand = ( filter->b_end < filter->b_current ) ? (filter->b_end - filter->b_current + filter->b_len) : (filter->b_end - filter->b_current);
+		/* Need to reload buffer? */
+		int samples_in_hand = (filter->b_end < filter->b_current) ? (filter->b_end - filter->b_current + filter->b_len) : (filter->b_end - filter->b_current);
 
-			if (samples_in_hand <= half_filter_chan_len)
+		if (samples_in_hand <= half_filter_chan_len)
+		{
+			// only one buffer is used (shared by all threads)
 			{
-				// only one buffer is used (shared by all threads)
+				#pragma omp barrier
+				#pragma omp single
 				{
-					#pragma omp barrier
-					#pragma omp single
-					{
-						state->error = prepare_data(filter, channels, data, half_filter_chan_len);
-						
-						*main_state = *state;
-						*main_filter = *filter;
-					}
-					#pragma omp barrier					
-					{
-						*state = *main_state;
-						*filter = *main_filter;
-					}
+					state->error = prepare_data(filter, channels, data, half_filter_chan_len);
+
+					*main_state = *state;
+					*main_filter = *filter;
 				}
-
-				if (state->error != 0)
-					return state->error;
-
-				samples_in_hand = ( filter->b_end < filter->b_current ) ? (filter->b_end - filter->b_current + filter->b_len) : (filter->b_end - filter->b_current);
-				if (samples_in_hand <= half_filter_chan_len)
-					break;
-			};
-
-			/* This is the termination condition. */
-			if (filter->b_real_end >= 0)
-			{
-				if (filter->b_current + input_index + terminate > filter->b_real_end)
-					break;
-			};
-
-			double scale, float_increment;
-			increment_t increment;
-			if (!is_constant_ratio)
-			{
-				if (out_count > 0 && fabs(state->last_ratio - data->src_ratio) > 1e-10)
-					src_ratio = state->last_ratio + filter->out_gen * (data->src_ratio - state->last_ratio) / out_count;
-
-				float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
-				increment = double_to_fp(float_increment);
-				scale = float_increment / index_inc;
-			}
-			else
-			{
-				float_increment = constant_float_increment;
-				increment = constant_increment;
-				scale = constant_scale;
+				#pragma omp barrier					
+				{
+					*state = *main_state;
+					*filter = *main_filter;
+				}
 			}
 
-			increment_t start_filter_index = double_to_fp(input_index * float_increment);
+			if (state->error != 0)
+				return state->error;
 
-			if ( child_no == interleave_counter ){
-				calc_output_multi_mt(filter, increment, start_filter_index, channels, scale, data_out + filter->out_gen);
-			}
-			if ( ++interleave_counter == num_of_threads ) interleave_counter = 0;
-			filter->out_gen += channels;
+			samples_in_hand = (filter->b_end < filter->b_current) ? (filter->b_end - filter->b_current + filter->b_len) : (filter->b_end - filter->b_current);
+			if (samples_in_hand <= half_filter_chan_len)
+				break;
+		};
 
-			/* Figure out the next index. */
-			input_index += (is_constant_ratio) ? constant_input_index_inc : 1.0 / src_ratio;
-			rem = fmod_one(input_index);
+		/* This is the termination condition. */
+		if (filter->b_real_end >= 0)
+		{
+			if (filter->b_current + input_index + terminate > filter->b_real_end)
+				break;
+		};
 
-			filter->b_current = (filter->b_current + channels * psf_lrint(input_index - rem));
-			if ( filter->b_current >= filter->b_len ) filter->b_current -= filter->b_len;
-			input_index = rem;
+		double scale, float_increment;
+		increment_t increment;
+		if (!is_constant_ratio)
+		{
+			if (out_count > 0 && fabs(state->last_ratio - data->src_ratio) > 1e-10)
+				src_ratio = state->last_ratio + filter->out_gen * (data->src_ratio - state->last_ratio) / out_count;
+
+			float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
+			increment = double_to_fp(float_increment);
+			scale = float_increment / index_inc;
+		}
+		else
+		{
+			float_increment = constant_float_increment;
+			increment = constant_increment;
+			scale = constant_scale;
+		}
+
+		increment_t start_filter_index = double_to_fp(input_index * float_increment);
+
+		if (child_no == interleave_counter)
+		{
+			calc_output_multi_mt(filter, increment, start_filter_index, channels, scale, data_out + filter->out_gen);
+		}
+		if (++interleave_counter == num_of_threads)
+			interleave_counter = 0;
+		filter->out_gen += channels;
+
+		/* Figure out the next index. */
+		input_index += (is_constant_ratio) ? constant_input_index_inc : 1.0 / src_ratio;
+		rem = fmod_one(input_index);
+
+		filter->b_current = (filter->b_current + channels * psf_lrint(input_index - rem));
+		if (filter->b_current >= filter->b_len)
+			filter->b_current -= filter->b_len;
+		input_index = rem;
 	};
 
 	state->last_position = input_index;
@@ -527,7 +536,7 @@ static SRC_ERROR
 sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 {
 	if (state->private_data == NULL)
-			return SRC_ERR_NO_PRIVATE;
+		return SRC_ERR_NO_PRIVATE;
 
 	const int channels = state->channels;
 
@@ -549,55 +558,54 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 
 	SRC_ERROR retval = SRC_ERR_MALLOC_FAILED;
 
-	if ( !per_thread_state || !per_thread_data || !per_thread_filter
-		 || !per_thread_retval )
+	if (!per_thread_state || !per_thread_data || !per_thread_filter || !per_thread_retval)
 	{
-			goto cleanup_and_return;
+		goto cleanup_and_return;
 	}
 
 	// OpenMP
 	omp_set_dynamic(0);
 	omp_set_num_threads(num_of_threads);
 
-	assert( num_of_threads == omp_get_num_threads() );
+	assert(num_of_threads == omp_get_num_threads());
 
 	if (num_of_threads == 1) // w/o OpenMP
 	{
-			per_thread_retval[0] = _sinc_multichan_vari_process_mt(1, 0, state, data, state);
+		per_thread_retval[0] = _sinc_multichan_vari_process_mt(1, 0, state, data, state);
 
-			retval = per_thread_retval[0];
+		retval = per_thread_retval[0];
 
-			goto cleanup_and_return;
+		goto cleanup_and_return;
 	}
 
 	int omp_child_no;
 
-#pragma omp parallel for
+	#pragma omp parallel for
 	for (omp_child_no = 0; omp_child_no < num_of_threads; omp_child_no++)
 	{
-			const int child_no = omp_child_no;
+		const int child_no = omp_child_no;
 
-			memcpy(&per_thread_data[child_no], data, sizeof(SRC_DATA));
-			memcpy(&per_thread_filter[child_no], filter, sizeof(SINC_FILTER));
+		memcpy(&per_thread_data[child_no], data, sizeof(SRC_DATA));
+		memcpy(&per_thread_filter[child_no], filter, sizeof(SINC_FILTER));
 
-			memcpy(&per_thread_state[child_no], state, sizeof(SRC_STATE));
-			per_thread_state[child_no].private_data = &per_thread_filter[child_no];
+		memcpy(&per_thread_state[child_no], state, sizeof(SRC_STATE));
+		per_thread_state[child_no].private_data = &per_thread_filter[child_no];
 
-			per_thread_filter[child_no].buffer = filter->buffer;
+		per_thread_filter[child_no].buffer = filter->buffer;
 
-			per_thread_retval[child_no] = _sinc_multichan_vari_process_mt(
-				num_of_threads, child_no, 
-				&per_thread_state[child_no], &per_thread_data[child_no], state);
+		per_thread_retval[child_no] = _sinc_multichan_vari_process_mt(
+			num_of_threads, child_no,
+			&per_thread_state[child_no], &per_thread_data[child_no], state);
 	}
 
 	// error checking for each worker
 	for (int child_no = 0; child_no < num_of_threads; child_no++)
 	{
-			if (per_thread_retval[child_no] != SRC_ERR_NO_ERROR)
-			{
-				retval = per_thread_retval[child_no];
-				goto cleanup_and_return;
-			}
+		if (per_thread_retval[child_no] != SRC_ERR_NO_ERROR)
+		{
+			retval = per_thread_retval[child_no];
+			goto cleanup_and_return;
+		}
 	}
 
 	// update filter status
@@ -607,7 +615,7 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 
 	memcpy(state, &per_thread_state[0], sizeof(SRC_STATE));
 	state->private_data = filter;
-	
+
 	memcpy(data, &per_thread_data[0], sizeof(SRC_DATA));
 
 	retval = SRC_ERR_NO_ERROR;
@@ -615,16 +623,16 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 cleanup_and_return:
 
 	if (per_thread_state)
-			free(per_thread_state);
+		free(per_thread_state);
 
 	if (per_thread_data)
-			free(per_thread_data);
+		free(per_thread_data);
 
 	if (per_thread_filter)
-			free(per_thread_filter);
+		free(per_thread_filter);
 
 	if (per_thread_retval)
-			free(per_thread_retval);
+		free(per_thread_retval);
 
 	return retval;
 }
