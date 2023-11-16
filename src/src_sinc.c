@@ -221,17 +221,26 @@ sinc_get_description (int src_enum)
 
 #ifdef _WIN32
 	#define ALWAYS_INLINE __forceinline
-	//#include <windows.h>
-#else
+	#include <xmmintrin.h>
+
+	#define mem_prefetch(ptr) _mm_prefetch((const char*)(ptr), _MM_HINT_T0)
+
+#elif defined(__GNUC__) || defined(clang)
 	#define ALWAYS_INLINE __attribute__((always_inline)) static
-	//#include <unistd.h>
+
+	#define mem_prefetch(ptr) __builtin_prefetch(ptr)
+	
+#else
+	#define ALWAYS_INLINE static
+
+	#define mem_prefetch(ptr) 
 #endif
 
 /* smaller frames are processed in single thread to avoid overheads */
 #define MULTI_THREADING_THRESHOLD (256)
 
 ALWAYS_INLINE void
-calc_output_multi_mt_core(const int skip_fraction, const SINC_FILTER * const filter, 
+calc_output_multi_mt_core(const int enable_prefetch, const int skip_fraction, const SINC_FILTER * const filter, 
 	const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float * const output)
 {
 	double left[MAX_CHANNELS] = {0};
@@ -239,6 +248,8 @@ calc_output_multi_mt_core(const int skip_fraction, const SINC_FILTER * const fil
 
 	/* Convert input parameters into fixed point. */
 	const increment_t max_filter_index = int_to_fp(filter->coeff_half_len);
+
+	const int prefetch_increment = 8;
 
 	{
 			/* First apply the left half of the filter. */
@@ -259,6 +270,12 @@ calc_output_multi_mt_core(const int skip_fraction, const SINC_FILTER * const fil
 			// left = 0.0;
 			while (filter_index1 >= MAKE_INCREMENT_T(0))
 			{
+				if ( enable_prefetch && filter_index1 - increment * prefetch_increment >= MAKE_INCREMENT_T(0) ){
+					const int indx = fp_to_int(filter_index1 - increment * prefetch_increment);
+					mem_prefetch(&filter->coeffs[indx]);
+					mem_prefetch(&filter->coeffs[indx+1]);
+				}
+
 				const double fraction = fp_to_double(filter_index1);
 				const int indx = fp_to_int(filter_index1);
 				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
@@ -281,22 +298,13 @@ calc_output_multi_mt_core(const int skip_fraction, const SINC_FILTER * const fil
 			int data_index2 = filter->b_current + channels * (1 + coeff_count2);
 			// right = 0.0;
 
-			{
-				const double fraction = fp_to_double(filter_index2);
-				const int indx = fp_to_int(filter_index2);
-				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
-				const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
-				assert(data_index2 >= 0 && data_index2 + channels - 1 < filter->b_len);
-				assert(data_index2 + channels - 1 < filter->b_end);
-				for (int ch = 0; ch < channels; ch++)
-					right[ch] += icoeff * filter->buffer[data_index2 + ch];
-			}
+			do {
+				if ( enable_prefetch && filter_index2 - increment * prefetch_increment > MAKE_INCREMENT_T(0) ){
+					const int indx = fp_to_int(filter_index2 - increment * prefetch_increment);
+					mem_prefetch(&filter->coeffs[indx]);
+					mem_prefetch(&filter->coeffs[indx+1]);
+				}
 
-			filter_index2 -= increment;
-			data_index2 = data_index2 - channels;
-
-			while (filter_index2 > MAKE_INCREMENT_T(0))
-			{
 				const double fraction = fp_to_double(filter_index2);
 				const int indx = fp_to_int(filter_index2);
 				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
@@ -308,7 +316,8 @@ calc_output_multi_mt_core(const int skip_fraction, const SINC_FILTER * const fil
 
 				filter_index2 -= increment;
 				data_index2 = data_index2 - channels;
-			}
+			} while (filter_index2 > MAKE_INCREMENT_T(0));
+
 	}
 
 	for (int ch = 0; ch < channels; ch++)
@@ -321,14 +330,25 @@ calc_output_multi_mt_2(
 {
 
 	const int skip_fraction = increment == ((increment >> SHIFT_BITS) << SHIFT_BITS) && start_filter_index == ((start_filter_index >> SHIFT_BITS) << SHIFT_BITS) ? 1 : 0;
+	const int enable_prefetch = (filter->coeff_half_len > ARRAY_LEN (slow_mid_qual_coeffs.coeffs));
 
 	if (skip_fraction)
 	{
-			calc_output_multi_mt_core(1, filter, increment, start_filter_index, channels, scale, output);
+		if (enable_prefetch){
+			calc_output_multi_mt_core(1, 1, filter, increment, start_filter_index, channels, scale, output);
+		}
+		else{
+			calc_output_multi_mt_core(0, 1, filter, increment, start_filter_index, channels, scale, output);
+		}
 	}
 	else
 	{
-			calc_output_multi_mt_core(0, filter, increment, start_filter_index, channels, scale, output);
+		if (enable_prefetch){
+			calc_output_multi_mt_core(1, 0, filter, increment, start_filter_index, channels, scale, output);
+		}
+		else{
+			calc_output_multi_mt_core(0, 0, filter, increment, start_filter_index, channels, scale, output);
+		}
 	}
 }
 
@@ -520,7 +540,7 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 	const int N_OF_CORES = omp_get_num_procs();
 
 	const int should_be_single_thread = (N_OF_CORES < 2 || in_count < MULTI_THREADING_THRESHOLD);
-	const int num_of_threads = should_be_single_thread ? 1 : (N_OF_CORES / 2 * 2);
+	const int num_of_threads = should_be_single_thread ? 1 : N_OF_CORES;
 
 	SRC_STATE *per_thread_state = (SRC_STATE *)malloc(num_of_threads * sizeof(SRC_STATE));
 	SRC_DATA *per_thread_data = (SRC_DATA *)malloc(num_of_threads * sizeof(SRC_DATA));
