@@ -567,9 +567,9 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 	omp_set_dynamic(0);
 	omp_set_num_threads(num_of_threads);
 
-	assert(num_of_threads == omp_get_num_threads());
+	//assert(num_of_threads == omp_get_max_threads());
 
-	if (num_of_threads == 1) // w/o OpenMP
+	if (num_of_threads == 1 || omp_get_max_threads() == 1 ) // w/o OpenMP
 	{
 		per_thread_retval[0] = _sinc_multichan_vari_process_mt(1, 0, state, data, state);
 
