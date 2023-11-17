@@ -243,7 +243,7 @@ sinc_get_description (int src_enum)
 
 enum MT_CACHE_MODE
 {
-	MT_CACHE_NONE,
+	MT_CACHE_NONE = 0,
 	MT_CACHE_READ,
 	MT_CACHE_WRITE
 };
@@ -407,7 +407,7 @@ calc_output_multi_mt_core(const enum MT_CACHE_MODE use_cache, mt_cache_t *const 
 } /* calc_output_multi_mt_core */
 
 ALWAYS_INLINE void
-calc_output_multi_mt_3(const int use_cache, mt_cache_t *const cache, const int cache_len, const SINC_FILTER *const filter,
+calc_output_multi_mt_3(const enum MT_CACHE_MODE use_cache, mt_cache_t *const cache, const int cache_len, const SINC_FILTER *const filter,
 					   const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
 {
 
