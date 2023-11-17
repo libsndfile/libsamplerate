@@ -44,7 +44,7 @@ add_library(samplerate
 add_library(SampleRate::samplerate ALIAS samplerate)
 
 if(MULTI_THREADING)
-  if(WIN32)
+  if(MSVC)
     target_link_libraries(samplerate PRIVATE libomp)
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /openmp:llvm")
   else()
