@@ -229,7 +229,7 @@ sinc_get_description (int src_enum)
 	#define ALWAYS_INLINE __attribute__((always_inline)) static
 
 	#define mem_prefetch(ptr) __builtin_prefetch(ptr)
-
+	
 #else
 	#define ALWAYS_INLINE static
 
@@ -239,8 +239,32 @@ sinc_get_description (int src_enum)
 /* smaller frames are processed in single thread to avoid overheads */
 #define MULTI_THREADING_THRESHOLD (256)
 
+#define MT_COEFFS_CACHING 1
+
+enum MT_CACHE_MODE
+{
+	MT_CACHE_NONE,
+	MT_CACHE_READ,
+	MT_CACHE_WRITE
+};
+
+typedef struct mt_cache_t
+{
+	enum MT_CACHE_MODE cache_state;
+	increment_t start_filter_index;
+	double *coeffs;
+} mt_cache_t;
+
+typedef struct mt_cache_array_t
+{
+	int len;
+	int len2;
+	mt_cache_t *caches;
+} mt_cache_array_t;
+
 ALWAYS_INLINE void
-calc_output_multi_mt_core(const int enable_prefetch, const int skip_fraction, const SINC_FILTER *const filter,
+calc_output_multi_mt_core(const enum MT_CACHE_MODE use_cache, mt_cache_t *const cache, const int cache_len,
+						  const int enable_prefetch, const int skip_fraction, const SINC_FILTER *const filter,
 						  const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
 {
 	double left[MAX_CHANNELS] = {0};
@@ -250,6 +274,8 @@ calc_output_multi_mt_core(const int enable_prefetch, const int skip_fraction, co
 	const increment_t max_filter_index = int_to_fp(filter->coeff_half_len);
 
 	const int prefetch_increment = 8;
+
+	int cache_idx = 0;
 
 	{
 		/* First apply the left half of the filter. */
@@ -270,19 +296,42 @@ calc_output_multi_mt_core(const int enable_prefetch, const int skip_fraction, co
 		// left = 0.0;
 		while (filter_index1 >= MAKE_INCREMENT_T(0))
 		{
-			if (enable_prefetch && filter_index1 - increment * prefetch_increment >= MAKE_INCREMENT_T(0))
+			double coeff;
+
+			if (use_cache == MT_CACHE_READ)
 			{
-				const int indx = fp_to_int(filter_index1 - increment * prefetch_increment);
-				mem_prefetch(&filter->coeffs[indx]);
-				mem_prefetch(&filter->coeffs[indx + 1]);
+				coeff = cache->coeffs[cache_idx++];
+
+				assert(cache_idx <= cache_len);
+			}
+			else
+			{
+				if (enable_prefetch && filter_index1 - increment * prefetch_increment >= MAKE_INCREMENT_T(0))
+				{
+					const int indx = fp_to_int(filter_index1 - increment * prefetch_increment);
+					mem_prefetch(&filter->coeffs[indx]);
+					mem_prefetch(&filter->coeffs[indx + 1]);
+				}
+
+				const double fraction = fp_to_double(filter_index1);
+				const int indx = fp_to_int(filter_index1);
+				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
+				const coeff_t coeff_val = filter->coeffs[indx];
+				const coeff_t coeff_fraction = filter->coeffs[indx + 1] - filter->coeffs[indx];
+				coeff = skip_fraction ? coeff_val : coeff_val + fraction * coeff_fraction;
+				assert(data_index1 >= 0 && data_index1 + channels - 1 < filter->b_len);
+				assert(data_index1 + channels - 1 < filter->b_end);
+
+				if (use_cache == MT_CACHE_WRITE)
+				{
+					coeff = cache->coeffs[cache_idx++] = coeff;
+
+					assert(cache_idx <= cache_len);
+				}
 			}
 
-			const double fraction = fp_to_double(filter_index1);
-			const int indx = fp_to_int(filter_index1);
-			assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
-			const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
-			assert(data_index1 >= 0 && data_index1 + channels - 1 < filter->b_len);
-			assert(data_index1 + channels - 1 < filter->b_end);
+			const double icoeff = coeff;
+
 			for (int ch = 0; ch < channels; ch++)
 				left[ch] += icoeff * filter->buffer[data_index1 + ch];
 
@@ -301,25 +350,56 @@ calc_output_multi_mt_core(const int enable_prefetch, const int skip_fraction, co
 
 		do
 		{
-			if (enable_prefetch && filter_index2 - increment * prefetch_increment > MAKE_INCREMENT_T(0))
+			double coeff;
+
+			if (use_cache == MT_CACHE_READ)
 			{
-				const int indx = fp_to_int(filter_index2 - increment * prefetch_increment);
-				mem_prefetch(&filter->coeffs[indx]);
-				mem_prefetch(&filter->coeffs[indx + 1]);
+				coeff = cache->coeffs[cache_idx++];
+
+				assert(cache_idx <= cache_len);
+			}
+			else
+			{
+				if (enable_prefetch && filter_index2 - increment * prefetch_increment > MAKE_INCREMENT_T(0))
+				{
+					const int indx = fp_to_int(filter_index2 - increment * prefetch_increment);
+					mem_prefetch(&filter->coeffs[indx]);
+					mem_prefetch(&filter->coeffs[indx + 1]);
+				}
+
+				const double fraction = fp_to_double(filter_index2);
+				const int indx = fp_to_int(filter_index2);
+				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
+				const coeff_t coeff_val = filter->coeffs[indx];
+				const coeff_t coeff_fraction = (float)filter->coeffs[indx + 1] - (float)filter->coeffs[indx];
+				coeff = skip_fraction ? coeff_val : coeff_val + fraction * coeff_fraction;
+				assert(data_index2 >= 0 && data_index2 + channels - 1 < filter->b_len);
+				assert(data_index2 + channels - 1 < filter->b_end);
+
+				if (use_cache == MT_CACHE_WRITE)
+				{
+					coeff = cache->coeffs[cache_idx++] = coeff;
+
+					assert(cache_idx <= cache_len);
+				}
 			}
 
-			const double fraction = fp_to_double(filter_index2);
-			const int indx = fp_to_int(filter_index2);
-			assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
-			const double icoeff = skip_fraction ? filter->coeffs[indx] : filter->coeffs[indx] + fraction * (filter->coeffs[indx + 1] - filter->coeffs[indx]);
-			assert(data_index2 >= 0 && data_index2 + channels - 1 < filter->b_len);
-			assert(data_index2 + channels - 1 < filter->b_end);
+			const double icoeff = coeff;
+
 			for (int ch = 0; ch < channels; ch++)
 				right[ch] += icoeff * filter->buffer[data_index2 + ch];
 
+			const double c_coeff = coeff;
 			filter_index2 -= increment;
 			data_index2 = data_index2 - channels;
+
 		} while (filter_index2 > MAKE_INCREMENT_T(0));
+	}
+
+	if (use_cache == MT_CACHE_WRITE)
+	{
+		cache->start_filter_index = start_filter_index;
+		cache->cache_state = MT_CACHE_READ;
 	}
 
 	for (int ch = 0; ch < channels; ch++)
@@ -327,8 +407,8 @@ calc_output_multi_mt_core(const int enable_prefetch, const int skip_fraction, co
 } /* calc_output_multi_mt_core */
 
 ALWAYS_INLINE void
-calc_output_multi_mt_2(
-	const SINC_FILTER *const filter, const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
+calc_output_multi_mt_3(const int use_cache, mt_cache_t *const cache, const int cache_len, const SINC_FILTER *const filter,
+					   const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
 {
 
 	const int skip_fraction = increment == ((increment >> SHIFT_BITS) << SHIFT_BITS) && start_filter_index == ((start_filter_index >> SHIFT_BITS) << SHIFT_BITS) ? 1 : 0;
@@ -338,32 +418,81 @@ calc_output_multi_mt_2(
 	{
 		if (enable_prefetch)
 		{
-			calc_output_multi_mt_core(1, 1, filter, increment, start_filter_index, channels, scale, output);
+			calc_output_multi_mt_core(use_cache, cache, cache_len, 1, 1, filter, increment, start_filter_index, channels, scale, output);
 		}
 		else
 		{
-			calc_output_multi_mt_core(0, 1, filter, increment, start_filter_index, channels, scale, output);
+			calc_output_multi_mt_core(use_cache, cache, cache_len, 0, 1, filter, increment, start_filter_index, channels, scale, output);
 		}
 	}
 	else
 	{
 		if (enable_prefetch)
 		{
-			calc_output_multi_mt_core(1, 0, filter, increment, start_filter_index, channels, scale, output);
+			calc_output_multi_mt_core(use_cache, cache, cache_len, 1, 0, filter, increment, start_filter_index, channels, scale, output);
 		}
 		else
 		{
-			calc_output_multi_mt_core(0, 0, filter, increment, start_filter_index, channels, scale, output);
+			calc_output_multi_mt_core(use_cache, cache, cache_len, 0, 0, filter, increment, start_filter_index, channels, scale, output);
 		}
 	}
 }
 
 ALWAYS_INLINE void
-calc_output_multi_mt(const SINC_FILTER *const filter, const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
+calc_output_multi_mt_2(mt_cache_array_t *cache_array, const SINC_FILTER *const filter,
+					   const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
 {
-#define OPTIMIZE_LINE(x)                                                                 \
-	case (x):                                                                            \
-		calc_output_multi_mt_2(filter, increment, start_filter_index, x, scale, output); \
+	const int cache_len = cache_array->len2;
+	const int idx = cache_array->len ? (int)(start_filter_index / (increment / (cache_array->len - 1))) : 0;
+
+	mt_cache_t *cache = (cache_array->len && idx < cache_array->len) ? &cache_array->caches[idx] : NULL;
+
+	enum MT_CACHE_MODE use_cache = MT_CACHE_NONE;
+
+	if (cache)
+	{
+		enum MT_CACHE_MODE cache_state = cache->cache_state;
+
+		if (cache_state == MT_CACHE_READ)
+		{
+			if (start_filter_index == cache->start_filter_index)
+			{
+				use_cache = MT_CACHE_READ;
+			}
+			// else {
+			//	assert(0);	// not expected to come here, but not harmful, so commenting out
+			//	exit(0);
+			// }
+		}
+		else if (cache_state == MT_CACHE_NONE)
+		{
+			cache->cache_state = MT_CACHE_WRITE;
+			use_cache = MT_CACHE_WRITE;
+		}
+	}
+
+	if (use_cache == MT_CACHE_READ)
+	{
+		// skip to core, since skip_fraction/enable_prefetch will not affect
+		calc_output_multi_mt_core(MT_CACHE_READ, cache, cache_len, 0, 0, filter, increment, start_filter_index, channels, scale, output);
+	}
+	else if (use_cache == MT_CACHE_WRITE)
+	{
+		calc_output_multi_mt_3(MT_CACHE_WRITE, cache, cache_len, filter, increment, start_filter_index, channels, scale, output);
+	}
+	else
+	{
+		calc_output_multi_mt_3(MT_CACHE_NONE, cache, cache_len, filter, increment, start_filter_index, channels, scale, output);
+	}
+}
+
+ALWAYS_INLINE void
+calc_output_multi_mt(mt_cache_array_t *cache_array,
+					 const SINC_FILTER *const filter, const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
+{
+#define OPTIMIZE_LINE(x)                                                                              \
+	case (x):                                                                                         \
+		calc_output_multi_mt_2(cache_array, filter, increment, start_filter_index, x, scale, output); \
 		break;
 
 	switch (channels) // to kick the compile-time optimizer, channel numbers up to 16 are extracted as constants here.
@@ -385,7 +514,7 @@ calc_output_multi_mt(const SINC_FILTER *const filter, const increment_t incremen
 		OPTIMIZE_LINE(15);
 		OPTIMIZE_LINE(16);
 	default:
-		calc_output_multi_mt_2(filter, increment, start_filter_index, channels, scale, output);
+		calc_output_multi_mt_2(cache_array, filter, increment, start_filter_index, channels, scale, output);
 		break;
 	}
 #undef OPTIMIZE_LINE
@@ -444,6 +573,56 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
 	int interleave_counter = 0;
 	float *const data_out = data->data_out;
 
+	mt_cache_array_t _cache_array = {0};
+	mt_cache_array_t *const cache_array = &_cache_array;
+
+#if MT_COEFFS_CACHING
+	// Caching once-calculated (interpolated) coeffs in memory is reasonable if the src_ratio is an integer
+	// because only limited number of coeffs are cyclically used in those cases.
+	// Drawback is that the processing speed can fluctuate if the condition (src_ratio) changes.
+
+	if (is_constant_ratio && src_ratio == (int)src_ratio)
+	{
+
+		do
+		{
+			int len = (int)src_ratio + 1;
+			int len2 = 0;
+			cache_array->caches = (mt_cache_t *)calloc(len, sizeof(mt_cache_t));
+			if (!cache_array->caches)
+			{
+				break;
+			}
+
+			for (int i = 0; i < len; i++)
+			{
+				len2 = ((filter->coeff_half_len + 2) / filter->index_inc + filter->index_inc);
+				cache_array->caches[i].coeffs = (double *)calloc(len2, sizeof(double));
+				if (!cache_array->caches[i].coeffs)
+				{
+					for (int j = 0; j < i; j++)
+					{
+						free(cache_array->caches[j].coeffs);
+						cache_array->caches[j].coeffs = NULL;
+					}
+					free(cache_array->caches);
+					cache_array->caches = NULL;
+					break;
+				}
+			}
+
+			if (cache_array->caches)
+			{
+				cache_array->len = len;
+				cache_array->len2 = len2;
+			}
+
+		} while (0);
+	}
+#endif
+
+	int rtn = SRC_ERR_NO_ERROR;
+
 	while (filter->out_gen < out_count)
 	{
 		/* Need to reload buffer? */
@@ -469,7 +648,10 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
 			}
 
 			if (state->error != 0)
-				return state->error;
+			{
+				rtn = state->error;
+				break;
+			}
 
 			samples_in_hand = (filter->b_end < filter->b_current) ? (filter->b_end - filter->b_current + filter->b_len) : (filter->b_end - filter->b_current);
 			if (samples_in_hand <= half_filter_chan_len)
@@ -505,7 +687,7 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
 
 		if (child_no == interleave_counter)
 		{
-			calc_output_multi_mt(filter, increment, start_filter_index, channels, scale, data_out + filter->out_gen);
+			calc_output_multi_mt(cache_array, filter, increment, start_filter_index, channels, scale, data_out + filter->out_gen);
 		}
 		if (++interleave_counter == num_of_threads)
 			interleave_counter = 0;
@@ -520,6 +702,25 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
 			filter->b_current -= filter->b_len;
 		input_index = rem;
 	};
+
+#if MT_COEFFS_CACHING
+	{
+		if (cache_array->len)
+		{
+			for (int i = 0; i < cache_array->len; i++)
+			{
+				free(cache_array->caches[i].coeffs);
+				cache_array->caches[i].coeffs = NULL;
+			}
+			free(cache_array->caches);
+			cache_array->caches = NULL;
+			cache_array->len = 0;
+		}
+	}
+#endif
+
+	if (rtn)
+		return rtn;
 
 	state->last_position = input_index;
 
@@ -567,9 +768,9 @@ sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
 	omp_set_dynamic(0);
 	omp_set_num_threads(num_of_threads);
 
-	//assert(num_of_threads == omp_get_max_threads());
+	// assert(num_of_threads == omp_get_max_threads());
 
-	if (num_of_threads == 1 || omp_get_max_threads() == 1 ) // w/o OpenMP
+	if (num_of_threads == 1 || omp_get_max_threads() == 1) // w/o OpenMP
 	{
 		per_thread_retval[0] = _sinc_multichan_vari_process_mt(1, 0, state, data, state);
 

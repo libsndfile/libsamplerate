@@ -36,10 +36,10 @@ static float input [BUFFER_LEN] ;
 
 #if (defined(ENABLE_SINC_FAST_CONVERTER) || defined(ENABLE_SINC_MEDIUM_CONVERTER) || \
 	defined(ENABLE_SINC_BEST_CONVERTER))
-static float output [BUFFER_LEN] ;
+static float output [BUFFER_LEN*2] ;
 
 static void
-throughput_test (int converter, int channels, long *best_throughput)
+throughput_test (int converter, int channels, long *best_throughput, double src_ratio)
 {	SRC_DATA src_data ;
 #if !defined(_WIN32) && defined(MULTI_THREADING)
 	struct timespec start_gettime, finish_gettime;
@@ -50,7 +50,7 @@ throughput_test (int converter, int channels, long *best_throughput)
 	long total_frames = 0, throughput ;
 	int error ;
 
-	printf ("    %-30s     %2d         ", src_get_name (converter), channels) ;
+	printf ("    %-30s   %2d     ", src_get_name (converter), channels) ;
 	fflush (stdout) ;
 
 	src_data.data_in = input ;
@@ -59,7 +59,7 @@ throughput_test (int converter, int channels, long *best_throughput)
 	src_data.data_out = output ;
 	src_data.output_frames = ARRAY_LEN (output) / channels ;
 
-	src_data.src_ratio = 0.99 ;
+	src_data.src_ratio = src_ratio ;
 
 #ifdef _WIN32
 	Sleep (2000) ;
@@ -94,23 +94,25 @@ throughput_test (int converter, int channels, long *best_throughput)
 	}
 	while (duration < 5.0) ;
 
-	if (src_data.input_frames_used != src_data.input_frames)
-	{	printf ("\n\nLine %d : input frames used %ld should be %ld\n", __LINE__, src_data.input_frames_used, src_data.input_frames) ;
-		exit (1) ;
-		} ;
-
-	if (fabs (src_data.src_ratio * src_data.input_frames_used - src_data.output_frames_gen) > 2)
-	{	printf ("\n\nLine %d : input / output length mismatch.\n\n", __LINE__) ;
-		printf ("    input len  : %d\n", ARRAY_LEN (input) / channels) ;
-		printf ("    output len : %ld (should be %g +/- 2)\n\n", src_data.output_frames_gen,
-				floor (0.5 + src_data.src_ratio * src_data.input_frames_used)) ;
-		exit (1) ;
-		} ;
+	if ( src_ratio <= 1.0 ){
+		if (src_data.input_frames_used != src_data.input_frames)
+		{	printf ("\n\nLine %d : input frames used %ld should be %ld\n", __LINE__, src_data.input_frames_used, src_data.input_frames) ;
+			exit (1) ;
+			} ;
+	
+		if (fabs (src_data.src_ratio * src_data.input_frames_used - src_data.output_frames_gen) > 2)
+		{	printf ("\n\nLine %d : input / output length mismatch.\n\n", __LINE__) ;
+			printf ("    input len  : %d\n", ARRAY_LEN (input) / channels) ;
+			printf ("    output len : %ld (should be %g +/- 2)\n\n", src_data.output_frames_gen,
+					floor (0.5 + src_data.src_ratio * src_data.input_frames_used)) ;
+			exit (1) ;
+			} ;
+	}
 
 	throughput = lrint (floor (total_frames / duration)) ;
 
 	if (!best_throughput)
-	{	printf ("%5.2f      %10ld\n", duration, throughput) ;
+	{	printf ("%5.2f      %10ld (x%7.2f)\n", duration, throughput, (throughput/src_ratio/44100)) ;
 		}
 	else
 	{	*best_throughput = MAX (throughput, *best_throughput) ;
@@ -131,31 +133,38 @@ single_run (void)
 
 	printf ("\n    CPU name : %s\n", get_cpu_name ()) ;
 
+	double src_ratio[] = {0.99, 2.0, 7.0, 0.25};
+
+for( int i=0 ; i<sizeof(src_ratio)/sizeof(double) ; i++ ){
+	printf ("\n    SRC_RATIO : %.2lf\n", src_ratio[i]) ;
+	
 	puts (
 		"\n"
-		"    Converter                        Channels    Duration      Throughput\n"
-		"    ---------------------------------------------------------------------"
+		"    Converter                        Ch    Duration  Throughput (times faster than realtime if 44.1k in)\n"
+		"    -------------------------------------------------------------------------"
 		) ;
 
 #ifdef ENABLE_SINC_FAST_CONVERTER
 	for (k = 1 ; k <= max_channels / 2 ; k++)
-		throughput_test (SRC_SINC_FASTEST, k, 0) ;
+		throughput_test (SRC_SINC_FASTEST, k, 0, src_ratio[i]) ;
 
 	puts ("") ;
 #endif
 
 #ifdef ENABLE_SINC_MEDIUM_CONVERTER
 	for (k = 1 ; k <= max_channels / 2 ; k++)
-		throughput_test (SRC_SINC_MEDIUM_QUALITY, k, 0) ;
+		throughput_test (SRC_SINC_MEDIUM_QUALITY, k, 0, src_ratio[i]) ;
 
 	puts ("") ;
 #endif
 
 #ifdef ENABLE_SINC_BEST_CONVERTER
 	for (k = 1 ; k <= max_channels ; k++)
-		throughput_test (SRC_SINC_BEST_QUALITY, k, 0) ;
+		throughput_test (SRC_SINC_BEST_QUALITY, k, 0, src_ratio[i]) ;
 	puts ("") ;
 #endif
+
+}
 	return ;
 } /* single_run */
 
@@ -167,7 +176,7 @@ multi_run (int run_count)
 
 	puts (
 		"\n"
-		"    Converter                        Channels    Duration      Throughput    Best Throughput\n"
+		"    Converter                        Ch    Duration      Throughput    Best Throughput\n"
 		"    ----------------------------------------------------------------------------------------"
 		) ;
 
@@ -187,13 +196,13 @@ multi_run (int run_count)
 		for (int k = 0 ; k < run_count ; k++)
 		{
 #ifdef ENABLE_SINC_FAST_CONVERTER
-			throughput_test (SRC_SINC_FASTEST, ch, &sinc_fastest) ;
+			throughput_test (SRC_SINC_FASTEST, ch, &sinc_fastest, 0.99) ;
 #endif
 #ifdef ENABLE_SINC_MEDIUM_CONVERTER
-			throughput_test (SRC_SINC_MEDIUM_QUALITY, ch, &sinc_medium) ;
+			throughput_test (SRC_SINC_MEDIUM_QUALITY, ch, &sinc_medium, 0.99) ;
 #endif
 #ifdef ENABLE_SINC_BEST_CONVERTER
-			throughput_test (SRC_SINC_BEST_QUALITY, ch, &sinc_best) ;
+			throughput_test (SRC_SINC_BEST_QUALITY, ch, &sinc_best, 0.99) ;
 #endif
 
 			puts ("") ;
