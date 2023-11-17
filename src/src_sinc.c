@@ -371,7 +371,7 @@ calc_output_multi_mt_core(const enum MT_CACHE_MODE use_cache, mt_cache_t *const 
 				const int indx = fp_to_int(filter_index2);
 				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
 				const coeff_t coeff_val = filter->coeffs[indx];
-				const coeff_t coeff_fraction = (float)filter->coeffs[indx + 1] - (float)filter->coeffs[indx];
+				const coeff_t coeff_fraction = filter->coeffs[indx + 1] - filter->coeffs[indx];
 				coeff = skip_fraction ? coeff_val : coeff_val + fraction * coeff_fraction;
 				assert(data_index2 >= 0 && data_index2 + channels - 1 < filter->b_len);
 				assert(data_index2 + channels - 1 < filter->b_end);
