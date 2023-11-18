@@ -219,7 +219,7 @@ sinc_get_description (int src_enum)
 
 #include <omp.h>
 
-#ifdef _WIN32
+#ifdef _MSC_VER
 	#define ALWAYS_INLINE __forceinline
 	#include <xmmintrin.h>
 
