@@ -661,8 +661,22 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
 		/* This is the termination condition. */
 		if (filter->b_real_end >= 0)
 		{
-			if (filter->b_current + input_index + terminate > filter->b_real_end)
+			#if 1 // perhaps this is the intended termination condition.
+			if (filter->b_current + input_index + terminate + channels - 1 > filter->b_real_end)
 				break;
+
+			#else // this one matches to the current (0.22) single-thread implementation, but it is seemingly a bug.
+			if (channels == 1)
+			{
+				if (filter->b_current + input_index + terminate > filter->b_real_end)
+					break;
+			}
+			else
+			{
+				if (filter->b_current + input_index + terminate >= filter->b_real_end)
+					break;
+			}
+			#endif
 		};
 
 		double scale, float_increment;
