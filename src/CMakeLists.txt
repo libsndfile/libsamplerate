@@ -43,6 +43,16 @@ add_library(samplerate
 # ALIAS to use if libsamplerate is included from other project with add_subdirectory()
 add_library(SampleRate::samplerate ALIAS samplerate)
 
+if(MULTI_THREADING)
+  if(MSVC)
+    target_link_libraries(samplerate PRIVATE libomp)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /openmp:llvm")
+  else()
+    target_link_libraries(samplerate PRIVATE omp)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+  endif()
+endif()
+
 # CMake generates wrong DLL names for MinGW and Cygwin, fix it
 if(BUILD_SHARED_LIBS AND WIN32)
   if(LIBSAMPLERATE_COMPATIBLE_NAME)
