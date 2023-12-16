@@ -661,11 +661,9 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
 		/* This is the termination condition. */
 		if (filter->b_real_end >= 0)
 		{
-			#if 1 // perhaps this is the intended termination condition.
-			if (filter->b_current + input_index + terminate + channels - 1 > filter->b_real_end)
-				break;
-
-			#else // this one matches to the current (0.22) single-thread implementation, but it is seemingly a bug.
+			// This switching is necessary to match the outputs to the current (0.22) single-thread implementation.
+			// However, the (single-thread) implementation may have some underlying bug because the number of output frames is seemingly 
+			// inconsistent depending on the combinations of src_ratio, input frames, and number of channels.
 			if (channels == 1)
 			{
 				if (filter->b_current + input_index + terminate > filter->b_real_end)
@@ -676,7 +674,6 @@ _sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
 				if (filter->b_current + input_index + terminate >= filter->b_real_end)
 					break;
 			}
-			#endif
 		};
 
 		double scale, float_increment;
