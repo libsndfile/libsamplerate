@@ -82,7 +82,7 @@ main (int argc, char *argv [])
 		{	"sox",
 			"sox -h 2>&1",
 			"sox",
-			"sox source.wav -r %d destination.wav resample 0.835",
+			"sox source.wav -r %d destination.wav",
 			SF_FORMAT_WAV | SF_FORMAT_PCM_32
 			},
 		{	"ResampAudio",
