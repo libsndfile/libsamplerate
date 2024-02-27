@@ -74,9 +74,9 @@ int
 main (int argc, char *argv [])
 {	static RESAMPLE_PROG resample_progs [] =
 	{	{	"sndfile-resample",
-			"examples/sndfile-resample --version",
+			"sndfile-resample --version",
 			"libsamplerate",
-			"examples/sndfile-resample --max-speed -c 0 -to %d source.wav destination.wav",
+			"sndfile-resample --max-speed -c 0 -to %d source.wav destination.wav",
 			SF_FORMAT_WAV | SF_FORMAT_PCM_32
 			},
 		{	"sox",
