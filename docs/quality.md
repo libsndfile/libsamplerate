@@ -31,7 +31,7 @@ will limit the comparison of Secret Rabbit Code to the following:
 - [ResampAudio](http://www.tsp.ece.mcgill.ca/MMSP/Documents/Software/AFsp/ResampAudio.html)
   which is part of [Audio File Programs and Routines](http://www.tsp.ece.mcgill.ca/MMSP/Documents/Software/AFsp/AFsp.html)
   by Peter Kabal.
-- [SoX](http://home.sprynet.com/~cbagwell/sox.html) which is maintained by Chris
+- [SoX](https://sourceforge.net/projects/sox/) which is maintained by Chris
   Bagwell. SoX is also able to perform some low quality sample rate conversions
   but these will not be investigated.
 - [Shibatch](http://shibatch.sourceforge.net/) which seems to be a frequency
