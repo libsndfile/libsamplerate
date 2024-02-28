@@ -354,7 +354,7 @@ measure_snr (const RESAMPLE_PROG *prog, int *output_samples, int verbose)
 		if ((retval = system (command)) != 0)
 			printf ("system returned %d\n", retval) ;
 
-		snr = measure_destination_wav ("destination.wav", &sample_count, snr_test->pass_band_peaks) ;
+		snr = measure_destination_wav ("destination.wav", &sample_count, snr_test [k].pass_band_peaks) ;
 
 		*output_samples += sample_count ;
 
