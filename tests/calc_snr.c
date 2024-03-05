@@ -169,7 +169,7 @@ find_snr (const double *magnitude, int len, int expected_peaks)
 	qsort (peaks, peak_count, sizeof (PEAK_DATA), peak_compare) ;
 
 	snr = peaks [0].peak ;
-	for (k = 1 ; k < peak_count ; k++)
+	for (k = expected_peaks ; k < peak_count ; k++)
 		if (fabs (snr - peaks [k].peak) > 10.0)
 			return fabs (peaks [k].peak) ;
 
