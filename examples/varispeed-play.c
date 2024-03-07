@@ -206,7 +206,7 @@ varispeed_get_data (SRC_CB_DATA *data, float *samples, int out_frames)
 		} ;
 
 	for (out_frame_count = 0 ; out_frame_count < out_frames ; out_frame_count += VARISPEED_BLOCK_LEN)
-	{	double	src_ratio = 1.0 - 0.5 * sin (data->freq_point * 2 * M_PI / 20000) ;
+	{	fp_t	src_ratio = 1.0 - 0.5 * sin (data->freq_point * 2 * M_PI / 20000) ;
 
 		data->freq_point ++ ;
 

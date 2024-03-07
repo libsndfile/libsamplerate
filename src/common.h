@@ -156,7 +156,7 @@ struct SRC_STATE_tag
 {
 	SRC_STATE_VT *vt ;
 
-	double	last_ratio, last_position ;
+	fp_t	last_ratio, last_position ;
 
 	SRC_ERROR	error ;
 	int		channels ;
@@ -209,7 +209,7 @@ static inline int
 #ifdef USE_TARGET_ATTRIBUTE
 __attribute__((target("sse2")))
 #endif
-psf_lrint (double x)
+psf_lrint (fp_t x)
 {
 	return _mm_cvtsd_si32 (_mm_load_sd (&x)) ;
 }
@@ -221,7 +221,7 @@ static inline int psf_lrintf (float x)
 	return lrintf (x) ;
 } /* psf_lrintf */
 
-static inline int psf_lrint (double x)
+static inline int psf_lrint (fp_t x)
 {
 	return lrint (x) ;
 } /* psf_lrint */
@@ -231,9 +231,9 @@ static inline int psf_lrint (double x)
 **	Common static inline functions.
 */
 
-static inline double
-fmod_one (double x)
-{	double res ;
+static inline fp_t
+fmod_one (fp_t x)
+{	fp_t res ;
 
 	res = x - psf_lrint (x) ;
 	if (res < 0.0)
@@ -243,7 +243,7 @@ fmod_one (double x)
 } /* fmod_one */
 
 static inline int
-is_bad_src_ratio (double ratio)
+is_bad_src_ratio (fp_t ratio)
 {	return (ratio < (1.0 / SRC_MAX_RATIO) || ratio > (1.0 * SRC_MAX_RATIO)) ;
 } /* is_bad_src_ratio */
 

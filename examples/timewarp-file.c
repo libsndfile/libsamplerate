@@ -32,7 +32,7 @@
 
 typedef struct
 {	sf_count_t	index ;
-	double		ratio ;
+	fp_t		ratio ;
 } TIMEWARP_FACTOR ;
 
 static void usage_exit (const char *progname) ;

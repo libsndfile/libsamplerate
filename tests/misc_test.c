@@ -77,7 +77,7 @@ name_test (void)
 */
 
 typedef struct
-{	double	ratio ;
+{	fp_t	ratio ;
 	int		should_pass ;
 } RATIO_TEST ;
 

@@ -22,12 +22,12 @@
 #define	BUFFER_LEN		10000
 #define CB_READ_LEN		256
 
-static void callback_test (int converter, double ratio) ;
+static void callback_test (int converter, fp_t ratio) ;
 static void end_of_stream_test (int converter) ;
 
 int
 main (void)
-{	static double src_ratios [] =
+{	static fp_t src_ratios [] =
 	{	1.0, 0.099, 0.1, 0.33333333, 0.789, 1.0001, 1.9, 3.1, 9.9
 	} ;
 
@@ -96,7 +96,7 @@ test_callback_func (void *cb_data, float **data)
 
 
 static void
-callback_test (int converter, double src_ratio)
+callback_test (int converter, fp_t src_ratio)
 {	static TEST_CB_DATA test_callback_data ;
 	static float output [BUFFER_LEN] ;
 
@@ -196,7 +196,7 @@ end_of_stream_test (int converter)
 
 	SRC_STATE	*src_state ;
 
-	double	src_ratio = 0.3 ;
+	fp_t	src_ratio = 0.3 ;
 	long	read_count ;
 	int 	error ;
 

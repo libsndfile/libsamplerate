@@ -24,7 +24,7 @@ macro(CLIP_MODE)
       "
       #include <math.h>
       int main (void)
-      {   double  fval ;
+      {   fp_t  fval ;
           int k, ival ;
 
           fval = 1.0 * 0x7FFFFFFF ;
@@ -45,7 +45,7 @@ macro(CLIP_MODE)
         "
         #include <math.h>
         int main (void)
-        {   double  fval ;
+        {   fp_t  fval ;
             int k, ival ;
 
             fval = -8.0 * 0x10000000 ;
