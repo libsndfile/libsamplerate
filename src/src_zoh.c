@@ -51,7 +51,7 @@ static SRC_STATE_VT zoh_state_vt =
 static SRC_ERROR
 zoh_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	ZOH_DATA 	*priv ;
-	double		src_ratio, input_index, rem ;
+	fp_t		src_ratio, input_index, rem ;
 	int			ch ;
 
 	if (data->input_frames <= 0)

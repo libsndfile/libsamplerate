@@ -26,7 +26,7 @@ static void
 clone_test (int converter)
 {	static float input_serial [BUFFER_LEN * NUM_CHANNELS], input_interleaved [BUFFER_LEN * NUM_CHANNELS] ;
 	static float output [BUFFER_LEN * NUM_CHANNELS], output_cloned [BUFFER_LEN * NUM_CHANNELS] ;
-	double sine_freq ;
+	fp_t sine_freq ;
 
 	SRC_STATE* src_state ;
 	SRC_STATE* src_state_cloned ;
