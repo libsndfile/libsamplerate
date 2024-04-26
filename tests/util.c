@@ -175,7 +175,7 @@ get_cpu_name (void)
 	file = popen ("/usr/sbin/system_profiler -detailLevel full SPHardwareDataType", "r") ;
 	search = "Processor Name" ;
 	is_pipe = 1 ;
-#elif defined (__FreeBSD__)
+#elif defined (__FreeBSD__) || defined (__OpenBSD__)
 	file = popen ("sysctl -a", "r") ;
 	search = "hw.model" ;
 	is_pipe = 1 ;
@@ -188,7 +188,7 @@ get_cpu_name (void)
 	return name;
 #endif
 
-#if defined (__linux__) || defined (__APPLE__) || defined (__FreeBSD__)
+#if defined (__linux__) || defined (__APPLE__) || defined (__FreeBSD__) || defined (__OpenBSD__)
 	if (search == NULL)
 	{	printf ("Error : search is NULL in function %s.\n", __func__) ;
 		return name ;
