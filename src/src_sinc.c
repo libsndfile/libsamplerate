@@ -130,6 +130,18 @@ static SRC_STATE_VT sinc_mono_state_vt =
 	sinc_close
 } ;
 
+#ifdef MULTI_THREADING
+static SRC_ERROR sinc_multithread_vari_process (SRC_STATE *state, SRC_DATA *data) ;
+static SRC_STATE_VT sinc_multithread_state_vt =
+{
+	sinc_multithread_vari_process,
+	sinc_multithread_vari_process,
+	sinc_reset,
+	sinc_copy,
+	sinc_close
+} ;
+#endif
+
 static inline increment_t
 double_to_fp (double x)
 {	return (increment_t) (psf_lrint ((x) * FP_ONE)) ;
@@ -202,6 +214,642 @@ sinc_get_description (int src_enum)
 
 	return NULL ;
 } /* sinc_get_descrition */
+
+#ifdef MULTI_THREADING
+
+#include <omp.h>
+
+#ifdef _MSC_VER
+	#define ALWAYS_INLINE __forceinline
+	#include <xmmintrin.h>
+
+	#define mem_prefetch(ptr) _mm_prefetch((const char*)(ptr), _MM_HINT_T0)
+
+#elif defined(__GNUC__) || defined(clang)
+	#define ALWAYS_INLINE __attribute__((always_inline)) static
+
+	#define mem_prefetch(ptr) __builtin_prefetch(ptr)
+	
+#else
+	#define ALWAYS_INLINE static
+
+	#define mem_prefetch(ptr) 
+#endif
+
+/* smaller frames are processed in single thread to avoid overheads */
+#define MULTI_THREADING_THRESHOLD (256)
+
+#define MT_COEFFS_CACHING 1
+
+enum MT_CACHE_MODE
+{
+	MT_CACHE_NONE = 0,
+	MT_CACHE_READ,
+	MT_CACHE_WRITE
+};
+
+typedef struct mt_cache_t
+{
+	enum MT_CACHE_MODE cache_state;
+	increment_t start_filter_index;
+	double *coeffs;
+} mt_cache_t;
+
+typedef struct mt_cache_array_t
+{
+	int len;
+	int len2;
+	mt_cache_t *caches;
+} mt_cache_array_t;
+
+ALWAYS_INLINE void
+calc_output_multi_mt_core(const enum MT_CACHE_MODE use_cache, mt_cache_t *const cache, const int cache_len,
+						  const int enable_prefetch, const int skip_fraction, const SINC_FILTER *const filter,
+						  const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
+{
+	double left[MAX_CHANNELS] = {0};
+	double right[MAX_CHANNELS] = {0};
+
+	/* Convert input parameters into fixed point. */
+	const increment_t max_filter_index = int_to_fp(filter->coeff_half_len);
+
+	const int prefetch_increment = 8;
+
+	int cache_idx = 0;
+
+	{
+		/* First apply the left half of the filter. */
+		increment_t filter_index1 = start_filter_index;
+		const int coeff_count1 = (max_filter_index - filter_index1) / increment;
+		filter_index1 = filter_index1 + coeff_count1 * increment;
+		int data_index1 = filter->b_current - channels * coeff_count1;
+
+		if (data_index1 < 0) /* Avoid underflow access to filter->buffer. */
+		{
+			int steps = int_div_ceil(-data_index1, channels);
+			/* If the assert triggers we would have to take care not to underflow/overflow */
+			assert(steps <= int_div_ceil(filter_index1, increment));
+			filter_index1 -= increment * steps;
+			data_index1 += steps * channels;
+		}
+
+		// left = 0.0;
+		while (filter_index1 >= MAKE_INCREMENT_T(0))
+		{
+			double coeff;
+
+			if (use_cache == MT_CACHE_READ)
+			{
+				coeff = cache->coeffs[cache_idx++];
+
+				assert(cache_idx <= cache_len);
+			}
+			else
+			{
+				if (enable_prefetch && filter_index1 - increment * prefetch_increment >= MAKE_INCREMENT_T(0))
+				{
+					const int indx = fp_to_int(filter_index1 - increment * prefetch_increment);
+					mem_prefetch(&filter->coeffs[indx]);
+					mem_prefetch(&filter->coeffs[indx + 1]);
+				}
+
+				const double fraction = fp_to_double(filter_index1);
+				const int indx = fp_to_int(filter_index1);
+				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
+				const coeff_t coeff_val = filter->coeffs[indx];
+				const coeff_t coeff_fraction = filter->coeffs[indx + 1] - filter->coeffs[indx];
+				coeff = skip_fraction ? coeff_val : coeff_val + fraction * coeff_fraction;
+				assert(data_index1 >= 0 && data_index1 + channels - 1 < filter->b_len);
+				assert(data_index1 + channels - 1 < filter->b_end);
+
+				if (use_cache == MT_CACHE_WRITE)
+				{
+					coeff = cache->coeffs[cache_idx++] = coeff;
+
+					assert(cache_idx <= cache_len);
+				}
+			}
+
+			const double icoeff = coeff;
+
+			for (int ch = 0; ch < channels; ch++)
+				left[ch] += icoeff * filter->buffer[data_index1 + ch];
+
+			filter_index1 -= increment;
+			data_index1 = data_index1 + channels;
+		};
+	}
+
+	{
+		/* Now apply the right half of the filter. */
+		increment_t filter_index2 = increment - start_filter_index;
+		const int coeff_count2 = (max_filter_index - filter_index2) / increment;
+		filter_index2 = filter_index2 + coeff_count2 * increment;
+		int data_index2 = filter->b_current + channels * (1 + coeff_count2);
+		// right = 0.0;
+
+		do
+		{
+			double coeff;
+
+			if (use_cache == MT_CACHE_READ)
+			{
+				coeff = cache->coeffs[cache_idx++];
+
+				assert(cache_idx <= cache_len);
+			}
+			else
+			{
+				if (enable_prefetch && filter_index2 - increment * prefetch_increment > MAKE_INCREMENT_T(0))
+				{
+					const int indx = fp_to_int(filter_index2 - increment * prefetch_increment);
+					mem_prefetch(&filter->coeffs[indx]);
+					mem_prefetch(&filter->coeffs[indx + 1]);
+				}
+
+				const double fraction = fp_to_double(filter_index2);
+				const int indx = fp_to_int(filter_index2);
+				assert(indx >= 0 && indx + 1 < filter->coeff_half_len + 2);
+				const coeff_t coeff_val = filter->coeffs[indx];
+				const coeff_t coeff_fraction = filter->coeffs[indx + 1] - filter->coeffs[indx];
+				coeff = skip_fraction ? coeff_val : coeff_val + fraction * coeff_fraction;
+				assert(data_index2 >= 0 && data_index2 + channels - 1 < filter->b_len);
+				assert(data_index2 + channels - 1 < filter->b_end);
+
+				if (use_cache == MT_CACHE_WRITE)
+				{
+					coeff = cache->coeffs[cache_idx++] = coeff;
+
+					assert(cache_idx <= cache_len);
+				}
+			}
+
+			const double icoeff = coeff;
+
+			for (int ch = 0; ch < channels; ch++)
+				right[ch] += icoeff * filter->buffer[data_index2 + ch];
+
+			const double c_coeff = coeff;
+			filter_index2 -= increment;
+			data_index2 = data_index2 - channels;
+
+		} while (filter_index2 > MAKE_INCREMENT_T(0));
+	}
+
+	if (use_cache == MT_CACHE_WRITE)
+	{
+		cache->start_filter_index = start_filter_index;
+		cache->cache_state = MT_CACHE_READ;
+	}
+
+	for (int ch = 0; ch < channels; ch++)
+		output[ch] = (float)(scale * (left[ch] + right[ch]));
+} /* calc_output_multi_mt_core */
+
+ALWAYS_INLINE void
+calc_output_multi_mt_3(const enum MT_CACHE_MODE use_cache, mt_cache_t *const cache, const int cache_len, const SINC_FILTER *const filter,
+					   const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
+{
+
+	const int skip_fraction = increment == ((increment >> SHIFT_BITS) << SHIFT_BITS) && start_filter_index == ((start_filter_index >> SHIFT_BITS) << SHIFT_BITS) ? 1 : 0;
+	const int enable_prefetch = (filter->coeff_half_len > ARRAY_LEN(slow_mid_qual_coeffs.coeffs));
+
+	if (skip_fraction)
+	{
+		if (enable_prefetch)
+		{
+			calc_output_multi_mt_core(use_cache, cache, cache_len, 1, 1, filter, increment, start_filter_index, channels, scale, output);
+		}
+		else
+		{
+			calc_output_multi_mt_core(use_cache, cache, cache_len, 0, 1, filter, increment, start_filter_index, channels, scale, output);
+		}
+	}
+	else
+	{
+		if (enable_prefetch)
+		{
+			calc_output_multi_mt_core(use_cache, cache, cache_len, 1, 0, filter, increment, start_filter_index, channels, scale, output);
+		}
+		else
+		{
+			calc_output_multi_mt_core(use_cache, cache, cache_len, 0, 0, filter, increment, start_filter_index, channels, scale, output);
+		}
+	}
+}
+
+ALWAYS_INLINE void
+calc_output_multi_mt_2(mt_cache_array_t *cache_array, const SINC_FILTER *const filter,
+					   const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
+{
+	const int cache_len = cache_array->len2;
+	const int idx = cache_array->len ? (int)(start_filter_index / (increment / (cache_array->len - 1))) : 0;
+
+	mt_cache_t *cache = (cache_array->len && idx < cache_array->len) ? &cache_array->caches[idx] : NULL;
+
+	enum MT_CACHE_MODE use_cache = MT_CACHE_NONE;
+
+	if (cache)
+	{
+		enum MT_CACHE_MODE cache_state = cache->cache_state;
+
+		if (cache_state == MT_CACHE_READ)
+		{
+			if (start_filter_index == cache->start_filter_index)
+			{
+				use_cache = MT_CACHE_READ;
+			}
+			// else {
+			//	assert(0);	// not expected to come here, but not harmful, so commenting out
+			//	exit(0);
+			// }
+		}
+		else if (cache_state == MT_CACHE_NONE)
+		{
+			cache->cache_state = MT_CACHE_WRITE;
+			use_cache = MT_CACHE_WRITE;
+		}
+	}
+
+	if (use_cache == MT_CACHE_READ)
+	{
+		// skip to core, since skip_fraction/enable_prefetch will not affect
+		calc_output_multi_mt_core(MT_CACHE_READ, cache, cache_len, 0, 0, filter, increment, start_filter_index, channels, scale, output);
+	}
+	else if (use_cache == MT_CACHE_WRITE)
+	{
+		calc_output_multi_mt_3(MT_CACHE_WRITE, cache, cache_len, filter, increment, start_filter_index, channels, scale, output);
+	}
+	else
+	{
+		calc_output_multi_mt_3(MT_CACHE_NONE, cache, cache_len, filter, increment, start_filter_index, channels, scale, output);
+	}
+}
+
+ALWAYS_INLINE void
+calc_output_multi_mt(mt_cache_array_t *cache_array,
+					 const SINC_FILTER *const filter, const increment_t increment, const increment_t start_filter_index, const int channels, const double scale, float *const output)
+{
+#define OPTIMIZE_LINE(x)                                                                              \
+	case (x):                                                                                         \
+		calc_output_multi_mt_2(cache_array, filter, increment, start_filter_index, x, scale, output); \
+		break;
+
+	switch (channels) // to kick the compile-time optimizer, channel numbers up to 16 are extracted as constants here.
+	{
+		OPTIMIZE_LINE(1);
+		OPTIMIZE_LINE(2);
+		OPTIMIZE_LINE(3);
+		OPTIMIZE_LINE(4);
+		OPTIMIZE_LINE(5);
+		OPTIMIZE_LINE(6);
+		OPTIMIZE_LINE(7);
+		OPTIMIZE_LINE(8);
+		OPTIMIZE_LINE(9);
+		OPTIMIZE_LINE(10);
+		OPTIMIZE_LINE(11);
+		OPTIMIZE_LINE(12);
+		OPTIMIZE_LINE(13);
+		OPTIMIZE_LINE(14);
+		OPTIMIZE_LINE(15);
+		OPTIMIZE_LINE(16);
+	default:
+		calc_output_multi_mt_2(cache_array, filter, increment, start_filter_index, channels, scale, output);
+		break;
+	}
+#undef OPTIMIZE_LINE
+}
+
+static SRC_ERROR
+_sinc_multichan_vari_process_mt(const int num_of_threads, const int child_no,
+								SRC_STATE *const state, SRC_DATA *const data, SRC_STATE *const main_state)
+{
+	if (state->private_data == NULL)
+		return SRC_ERR_NO_PRIVATE;
+
+	SINC_FILTER *filter = (SINC_FILTER *)state->private_data;
+	SINC_FILTER *main_filter = (SINC_FILTER *)main_state->private_data;
+
+	/* If there is not a problem, this will be optimised out. */
+	if (sizeof(filter->buffer[0]) != sizeof(data->data_in[0]))
+		return SRC_ERR_SIZE_INCOMPATIBILITY;
+
+	const int channels = state->channels;
+	filter->in_count = data->input_frames * channels;
+	filter->out_count = data->output_frames * channels;
+	filter->in_used = filter->out_gen = 0;
+
+	double src_ratio = state->last_ratio;
+
+	if (is_bad_src_ratio(src_ratio))
+		return SRC_ERR_BAD_INTERNAL_STATE;
+
+	/* Check the sample rate ratio wrt the buffer len. */
+	double count = (filter->coeff_half_len + 2.0) / filter->index_inc;
+	if (MIN(state->last_ratio, data->src_ratio) < 1.0)
+		count /= MIN(state->last_ratio, data->src_ratio);
+
+	/* Maximum coefficientson either side of center point. */
+	const int half_filter_chan_len = channels * (int)(psf_lrint(count) + 1);
+
+	double input_index = state->last_position;
+
+	double rem = fmod_one(input_index);
+	filter->b_current = (filter->b_current + channels * psf_lrint(input_index - rem)) % filter->b_len;
+	input_index = rem;
+
+	const double terminate = 1.0 / src_ratio + 1e-20;
+
+	const long out_count = filter->out_count;
+	const int index_inc = filter->index_inc;
+
+	const int is_constant_ratio = (state->last_ratio == data->src_ratio) ? 1 : 0;
+	const double constant_input_index_inc = 1.0 / src_ratio;
+	const double constant_float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
+	const increment_t constant_increment = double_to_fp(constant_float_increment);
+	const double constant_scale = constant_float_increment / index_inc;
+
+	/* Main processing loop. */
+	int interleave_counter = 0;
+	float *const data_out = data->data_out;
+
+	mt_cache_array_t _cache_array = {0};
+	mt_cache_array_t *const cache_array = &_cache_array;
+
+#if MT_COEFFS_CACHING
+	// Caching once-calculated (interpolated) coeffs in memory is reasonable if the src_ratio is an integer
+	// because only limited number of coeffs are cyclically used in those cases.
+	// Drawback is that the processing speed can fluctuate if the condition (src_ratio) changes.
+
+	if (is_constant_ratio && src_ratio == (int)src_ratio)
+	{
+
+		do
+		{
+			int len = (int)src_ratio + 1;
+			int len2 = 0;
+			cache_array->caches = (mt_cache_t *)calloc(len, sizeof(mt_cache_t));
+			if (!cache_array->caches)
+			{
+				break;
+			}
+
+			for (int i = 0; i < len; i++)
+			{
+				len2 = ((filter->coeff_half_len + 2) / filter->index_inc + filter->index_inc);
+				cache_array->caches[i].coeffs = (double *)calloc(len2, sizeof(double));
+				if (!cache_array->caches[i].coeffs)
+				{
+					for (int j = 0; j < i; j++)
+					{
+						free(cache_array->caches[j].coeffs);
+						cache_array->caches[j].coeffs = NULL;
+					}
+					free(cache_array->caches);
+					cache_array->caches = NULL;
+					break;
+				}
+			}
+
+			if (cache_array->caches)
+			{
+				cache_array->len = len;
+				cache_array->len2 = len2;
+			}
+
+		} while (0);
+	}
+#endif
+
+	int rtn = SRC_ERR_NO_ERROR;
+
+	while (filter->out_gen < out_count)
+	{
+		/* Need to reload buffer? */
+		int samples_in_hand = (filter->b_end < filter->b_current) ? (filter->b_end - filter->b_current + filter->b_len) : (filter->b_end - filter->b_current);
+
+		if (samples_in_hand <= half_filter_chan_len)
+		{
+			// only one buffer is used (shared by all threads)
+			{
+				#pragma omp barrier
+				#pragma omp single
+				{
+					state->error = prepare_data(filter, channels, data, half_filter_chan_len);
+
+					*main_state = *state;
+					*main_filter = *filter;
+				}
+				#pragma omp barrier					
+				{
+					*state = *main_state;
+					*filter = *main_filter;
+				}
+			}
+
+			if (state->error != 0)
+			{
+				rtn = state->error;
+				break;
+			}
+
+			samples_in_hand = (filter->b_end < filter->b_current) ? (filter->b_end - filter->b_current + filter->b_len) : (filter->b_end - filter->b_current);
+			if (samples_in_hand <= half_filter_chan_len)
+				break;
+		};
+
+		/* This is the termination condition. */
+		if (filter->b_real_end >= 0)
+		{
+			// This switching is necessary to match the outputs to the current (0.22) single-thread implementation.
+			// However, the (single-thread) implementation may have some underlying bug because the number of output frames is seemingly 
+			// inconsistent depending on the combinations of src_ratio, input frames, and number of channels.
+			if (channels == 1)
+			{
+				if (filter->b_current + input_index + terminate > filter->b_real_end)
+					break;
+			}
+			else
+			{
+				if (filter->b_current + input_index + terminate >= filter->b_real_end)
+					break;
+			}
+		};
+
+		double scale, float_increment;
+		increment_t increment;
+		if (!is_constant_ratio)
+		{
+			if (out_count > 0 && fabs(state->last_ratio - data->src_ratio) > 1e-10)
+				src_ratio = state->last_ratio + filter->out_gen * (data->src_ratio - state->last_ratio) / out_count;
+
+			float_increment = index_inc * (src_ratio < 1.0 ? src_ratio : 1.0);
+			increment = double_to_fp(float_increment);
+			scale = float_increment / index_inc;
+		}
+		else
+		{
+			float_increment = constant_float_increment;
+			increment = constant_increment;
+			scale = constant_scale;
+		}
+
+		increment_t start_filter_index = double_to_fp(input_index * float_increment);
+
+		if (child_no == interleave_counter)
+		{
+			calc_output_multi_mt(cache_array, filter, increment, start_filter_index, channels, scale, data_out + filter->out_gen);
+		}
+		if (++interleave_counter == num_of_threads)
+			interleave_counter = 0;
+		filter->out_gen += channels;
+
+		/* Figure out the next index. */
+		input_index += (is_constant_ratio) ? constant_input_index_inc : 1.0 / src_ratio;
+		rem = fmod_one(input_index);
+
+		filter->b_current = (filter->b_current + channels * psf_lrint(input_index - rem));
+		if (filter->b_current >= filter->b_len)
+			filter->b_current -= filter->b_len;
+		input_index = rem;
+	};
+
+#if MT_COEFFS_CACHING
+	{
+		if (cache_array->len)
+		{
+			for (int i = 0; i < cache_array->len; i++)
+			{
+				free(cache_array->caches[i].coeffs);
+				cache_array->caches[i].coeffs = NULL;
+			}
+			free(cache_array->caches);
+			cache_array->caches = NULL;
+			cache_array->len = 0;
+		}
+	}
+#endif
+
+	if (rtn)
+		return rtn;
+
+	state->last_position = input_index;
+
+	/* Save current ratio rather then target ratio. */
+	state->last_ratio = src_ratio;
+
+	data->input_frames_used = filter->in_used / channels;
+	data->output_frames_gen = filter->out_gen / channels;
+
+	return SRC_ERR_NO_ERROR;
+}
+
+static SRC_ERROR
+sinc_multithread_vari_process(SRC_STATE *state, SRC_DATA *data)
+{
+	if (state->private_data == NULL)
+		return SRC_ERR_NO_PRIVATE;
+
+	const int channels = state->channels;
+
+	const long in_count = data->input_frames * channels;
+	const long out_count = data->output_frames * channels;
+
+	SINC_FILTER *filter = (SINC_FILTER *)state->private_data;
+	const int filter_buffer_len = (filter->b_len + channels);
+
+	const int N_OF_CORES = omp_get_num_procs();
+
+	const int should_be_single_thread = (N_OF_CORES < 2 || in_count < MULTI_THREADING_THRESHOLD);
+	const int num_of_threads = should_be_single_thread ? 1 : N_OF_CORES;
+
+	SRC_STATE *per_thread_state = (SRC_STATE *)malloc(num_of_threads * sizeof(SRC_STATE));
+	SRC_DATA *per_thread_data = (SRC_DATA *)malloc(num_of_threads * sizeof(SRC_DATA));
+	SINC_FILTER *per_thread_filter = (SINC_FILTER *)malloc(num_of_threads * sizeof(SINC_FILTER));
+	SRC_ERROR *per_thread_retval = (SRC_ERROR *)malloc(num_of_threads * sizeof(SRC_ERROR));
+
+	SRC_ERROR retval = SRC_ERR_MALLOC_FAILED;
+
+	if (!per_thread_state || !per_thread_data || !per_thread_filter || !per_thread_retval)
+	{
+		goto cleanup_and_return;
+	}
+
+	// OpenMP
+	omp_set_dynamic(0);
+	omp_set_num_threads(num_of_threads);
+
+	// assert(num_of_threads == omp_get_max_threads());
+
+	if (num_of_threads == 1 || omp_get_max_threads() == 1) // w/o OpenMP
+	{
+		per_thread_retval[0] = _sinc_multichan_vari_process_mt(1, 0, state, data, state);
+
+		retval = per_thread_retval[0];
+
+		goto cleanup_and_return;
+	}
+
+	int omp_child_no;
+
+	#pragma omp parallel for
+	for (omp_child_no = 0; omp_child_no < num_of_threads; omp_child_no++)
+	{
+		const int child_no = omp_child_no;
+
+		memcpy(&per_thread_data[child_no], data, sizeof(SRC_DATA));
+		memcpy(&per_thread_filter[child_no], filter, sizeof(SINC_FILTER));
+
+		memcpy(&per_thread_state[child_no], state, sizeof(SRC_STATE));
+		per_thread_state[child_no].private_data = &per_thread_filter[child_no];
+
+		per_thread_filter[child_no].buffer = filter->buffer;
+
+		per_thread_retval[child_no] = _sinc_multichan_vari_process_mt(
+			num_of_threads, child_no,
+			&per_thread_state[child_no], &per_thread_data[child_no], state);
+	}
+
+	// error checking for each worker
+	for (int child_no = 0; child_no < num_of_threads; child_no++)
+	{
+		if (per_thread_retval[child_no] != SRC_ERR_NO_ERROR)
+		{
+			retval = per_thread_retval[child_no];
+			goto cleanup_and_return;
+		}
+	}
+
+	// update filter status
+	float *buf = filter->buffer;
+	memcpy(filter, &per_thread_filter[0], sizeof(SINC_FILTER));
+	filter->buffer = buf;
+
+	memcpy(state, &per_thread_state[0], sizeof(SRC_STATE));
+	state->private_data = filter;
+
+	memcpy(data, &per_thread_data[0], sizeof(SRC_DATA));
+
+	retval = SRC_ERR_NO_ERROR;
+
+cleanup_and_return:
+
+	if (per_thread_state)
+		free(per_thread_state);
+
+	if (per_thread_data)
+		free(per_thread_data);
+
+	if (per_thread_filter)
+		free(per_thread_filter);
+
+	if (per_thread_retval)
+		free(per_thread_retval);
+
+	return retval;
+}
+
+#endif /* MULTI_THREADING*/
 
 static SINC_FILTER *
 sinc_filter_new (int converter_type, int channels)
@@ -282,6 +930,9 @@ sinc_state_new (int converter_type, int channels, SRC_ERROR *error)
 	state->channels = channels ;
 	state->mode = SRC_MODE_PROCESS ;
 
+	#ifdef MULTI_THREADING
+		state->vt = &sinc_multithread_state_vt ;
+	#else
 	if (state->channels == 1)
 		state->vt = &sinc_mono_state_vt ;
 	else if (state->channels == 2)
@@ -292,6 +943,7 @@ sinc_state_new (int converter_type, int channels, SRC_ERROR *error)
 		state->vt = &sinc_hex_state_vt ;
 	else
 		state->vt = &sinc_multichan_state_vt ;
+	#endif
 
 	state->private_data = sinc_filter_new (converter_type, state->channels) ;
 	if (!state->private_data)
