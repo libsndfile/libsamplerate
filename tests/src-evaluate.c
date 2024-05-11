@@ -74,15 +74,15 @@ int
 main (int argc, char *argv [])
 {	static RESAMPLE_PROG resample_progs [] =
 	{	{	"sndfile-resample",
-			"examples/sndfile-resample --version",
+			"sndfile-resample --version",
 			"libsamplerate",
-			"examples/sndfile-resample --max-speed -c 0 -to %d source.wav destination.wav",
+			"sndfile-resample --max-speed -c 0 -to %d source.wav destination.wav",
 			SF_FORMAT_WAV | SF_FORMAT_PCM_32
 			},
 		{	"sox",
 			"sox -h 2>&1",
 			"sox",
-			"sox source.wav -r %d destination.wav resample 0.835",
+			"sox source.wav -r %d destination.wav",
 			SF_FORMAT_WAV | SF_FORMAT_PCM_32
 			},
 		{	"ResampAudio",
@@ -354,7 +354,7 @@ measure_snr (const RESAMPLE_PROG *prog, int *output_samples, int verbose)
 		if ((retval = system (command)) != 0)
 			printf ("system returned %d\n", retval) ;
 
-		snr = measure_destination_wav ("destination.wav", &sample_count, snr_test->pass_band_peaks) ;
+		snr = measure_destination_wav ("destination.wav", &sample_count, snr_test [k].pass_band_peaks) ;
 
 		*output_samples += sample_count ;
 
