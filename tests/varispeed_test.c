@@ -27,9 +27,9 @@
 
 #define	BUFFER_LEN		(1 << 14)
 
-static void varispeed_test (int converter, double target_snr) ;
+static void varispeed_test (int converter, fp_t target_snr) ;
 static void varispeed_bounds_test (int converter) ;
-static void set_ratio_test (int converter, int channels, double initial_ratio, double second_ratio) ;
+static void set_ratio_test (int converter, int channels, fp_t initial_ratio, fp_t second_ratio) ;
 
 int
 main (void)
@@ -77,9 +77,9 @@ main (void)
 } /* main */
 
 static void
-varispeed_test (int converter, double target_snr)
+varispeed_test (int converter, fp_t target_snr)
 {	static float input [BUFFER_LEN], output [BUFFER_LEN] ;
-	double sine_freq, snr ;
+	fp_t sine_freq, snr ;
 
 	SRC_STATE	*src_state ;
 	SRC_DATA	src_data ;
@@ -179,7 +179,7 @@ varispeed_test (int converter, double target_snr)
 
 static void
 varispeed_bounds_test (int converter)
-{	double ratios [] = { 0.1, 0.01, 20 } ;
+{	fp_t ratios [] = { 0.1, 0.01, 20 } ;
 	int chan, r1, r2 ;
 
 	for (chan = 1 ; chan <= 9 ; chan ++)
@@ -190,7 +190,7 @@ varispeed_bounds_test (int converter)
 } /* varispeed_bounds_test */
 
 static void
-set_ratio_test (int converter, int channels, double initial_ratio, double second_ratio)
+set_ratio_test (int converter, int channels, fp_t initial_ratio, fp_t second_ratio)
 {	const int total_input_frames = BUFFER_LEN ;
 	/* Maximum upsample ratio is 20, use a value beigger. */
 	const int total_output_frames = 25 * BUFFER_LEN ;

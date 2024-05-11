@@ -21,13 +21,13 @@
 
 #define	BUFFER_LEN		2048
 
-static void simple_test (int converter, double ratio) ;
-static void src_simple_produces_output (int converter, int channels, double src_ratio) ;
-static void src_simple_produces_output_test (int converter, double src_ratio) ;
+static void simple_test (int converter, fp_t ratio) ;
+static void src_simple_produces_output (int converter, int channels, fp_t src_ratio) ;
+static void src_simple_produces_output_test (int converter, fp_t src_ratio) ;
 
 int
 main (void)
-{	static double src_ratios [] =
+{	static fp_t src_ratios [] =
 	{	1.0001, 0.099, 0.1, 0.33333333, 0.789, 1.9, 3.1, 9.9, 256.0, 1.0 / 256.0
 	} ;
 
@@ -61,14 +61,14 @@ main (void)
 } /* main */
 
 static void
-src_simple_produces_output_test (int converter, double src_ratio)
+src_simple_produces_output_test (int converter, fp_t src_ratio)
 {
 	for (int channels = 1; channels <= 9; channels++)
 		src_simple_produces_output(converter, channels, src_ratio);
 }
 
 static void
-src_simple_produces_output (int converter, int channels, double src_ratio)
+src_simple_produces_output (int converter, int channels, fp_t src_ratio)
 {
 	// Choose a suitable number of frames.
 	// At least 256 so a conversion ratio of 1/256 can produce any output
@@ -108,7 +108,7 @@ src_simple_produces_output (int converter, int channels, double src_ratio)
 
 
 static void
-simple_test (int converter, double src_ratio)
+simple_test (int converter, fp_t src_ratio)
 {	static float input [BUFFER_LEN], output [BUFFER_LEN] ;
 
 	SRC_DATA	src_data ;

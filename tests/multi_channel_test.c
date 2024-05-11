@@ -33,13 +33,13 @@ fftw_cleanup (void)
 
 #define	MAX_CHANNELS	10
 
-static void simple_test (int converter, int channel_count, double target_snr) ;
-static void process_test (int converter, int channel_count, double target_snr) ;
-static void callback_test (int converter, int channel_count, double target_snr) ;
+static void simple_test (int converter, int channel_count, fp_t target_snr) ;
+static void process_test (int converter, int channel_count, fp_t target_snr) ;
+static void callback_test (int converter, int channel_count, fp_t target_snr) ;
 
 int
 main (void)
-{	double target ;
+{	fp_t target ;
 	int k ;
 
 	puts ("\n    Zero Order Hold interpolator :") ;
@@ -83,10 +83,10 @@ static float output_interleaved	[BUFFER_LEN * MAX_CHANNELS] ;
 static float output_serial		[BUFFER_LEN * MAX_CHANNELS] ;
 
 static void
-simple_test (int converter, int channel_count, double target_snr)
+simple_test (int converter, int channel_count, fp_t target_snr)
 {	SRC_DATA	src_data ;
 
-	double	freq, snr ;
+	fp_t	freq, snr ;
 	int		ch, error, frames ;
 
 	printf ("\t%-22s (%2d channel%c) ............ ", "simple_test", channel_count, channel_count > 1 ? 's' : ' ') ;
@@ -154,11 +154,11 @@ simple_test (int converter, int channel_count, double target_snr)
 */
 
 static void
-process_test (int converter, int channel_count, double target_snr)
+process_test (int converter, int channel_count, fp_t target_snr)
 {	SRC_STATE	*src_state ;
 	SRC_DATA	src_data ;
 
-	double	freq, snr ;
+	fp_t	freq, snr ;
 	int		ch, error, frames, current_in, current_out ;
 
 	printf ("\t%-22s (%2d channel%c) ............ ", "process_test", channel_count, channel_count > 1 ? 's' : ' ') ;
@@ -282,11 +282,11 @@ test_callback_func (void *cb_data, float **data)
 } /* test_callback_func */
 
 static void
-callback_test (int converter, int channel_count, double target_snr)
+callback_test (int converter, int channel_count, fp_t target_snr)
 {	TEST_CB_DATA test_callback_data ;
 	SRC_STATE	*src_state = NULL ;
 
-	double	freq, snr, src_ratio ;
+	fp_t	freq, snr, src_ratio ;
 	int		ch, error, frames, read_total, read_count ;
 
 	printf ("\t%-22s (%2d channel%c) ............ ", "callback_test", channel_count, channel_count > 1 ? 's' : ' ') ;

@@ -53,7 +53,7 @@ static SRC_STATE_VT linear_state_vt =
 static SRC_ERROR
 linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	LINEAR_DATA *priv ;
-	double		src_ratio, input_index, rem ;
+	fp_t		src_ratio, input_index, rem ;
 	int			ch ;
 
 	if (data->input_frames <= 0)
@@ -93,7 +93,7 @@ linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 
 		for (ch = 0 ; ch < state->channels ; ch++)
 		{	data->data_out [priv->out_gen] = (float) (priv->last_value [ch] + input_index *
-										((double) data->data_in [ch] - priv->last_value [ch])) ;
+										((fp_t) data->data_in [ch] - priv->last_value [ch])) ;
 			priv->out_gen ++ ;
 			} ;
 
@@ -120,7 +120,7 @@ linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 
 		for (ch = 0 ; ch < state->channels ; ch++)
 		{	data->data_out [priv->out_gen] = (float) (data->data_in [priv->in_used - state->channels + ch] + input_index *
-						((double) data->data_in [priv->in_used + ch] - data->data_in [priv->in_used - state->channels + ch])) ;
+						((fp_t) data->data_in [priv->in_used + ch] - data->data_in [priv->in_used - state->channels + ch])) ;
 			priv->out_gen ++ ;
 			} ;
 

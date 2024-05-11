@@ -155,7 +155,7 @@ callback_reset_test (int converter)
 
 	SRC_STATE *src_state ;
 
-	double src_ratio = 1.1 ;
+	fp_t src_ratio = 1.1 ;
 	long read_count, read_total ;
 	int k, error ;
 

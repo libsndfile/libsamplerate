@@ -29,7 +29,7 @@
 #define	LONG_BUFFER_LEN		(1 << 14)
 
 typedef struct
-{	double ratio ;
+{	fp_t ratio ;
 	int count ;
 } SRC_PAIR ;
 
@@ -69,7 +69,7 @@ callback_hang_test (int converter)
 
 	SRC_STATE	*src_state ;
 
-	double src_ratio = 1.0 ;
+	fp_t src_ratio = 1.0 ;
 	int k, error ;
 
 	printf ("\tcallback_hang_test  (%-28s) ....... ", src_get_name (converter)) ;
