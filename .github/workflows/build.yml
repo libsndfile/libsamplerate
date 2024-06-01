@@ -15,27 +15,46 @@ jobs:
         windows-cmake
         ]
         include:
+          - name: linux-cmake-debug
+            os: ubuntu-latest
+            build-system: cmake
+            build-type: Debug
+
           - name: linux-cmake
             os: ubuntu-latest
             build-system: cmake
+            build-type: Release
 
           - name: linux-autotools
             os: ubuntu-latest
             build-system: autotools
             configure-options: --enable-sndfile --enable-alsa
 
+          - name: macos-cmake-debug
+            os: macos-latest
+            build-system: cmake
+            build-type: Debug
+
           - name: macos-cmake
             os: macos-latest
             build-system: cmake
+            build-type: Release
 
           - name: macos-autotools
             os: macos-latest
             build-system: autotools
             configure-options: --enable-sndfile
 
+          - name: windows-cmake-debug
+            os: windows-latest
+            build-system: cmake
+            build-type: Debug
+            configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+
           - name: windows-cmake
             os: windows-latest
             build-system: cmake
+            build-type: Release
             configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
 
     runs-on: ${{ matrix.os }}
@@ -64,17 +83,17 @@ jobs:
     - name: Configure CMake
       if: startsWith(matrix.build-system,'cmake')
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=Release ${{matrix.configure-options}}
+      run: cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=${{matrix.build-type}} ${{matrix.configure-options}}
 
     - name: Build CMake
       if: startsWith(matrix.build-system,'cmake')
       working-directory: ${{runner.workspace}}/build
-      run: cmake --build . --config Release
+      run: cmake --build . --config ${{matrix.build-type}}
 
     - name: Test CMake
       if: startsWith(matrix.build-system,'cmake')
       working-directory: ${{runner.workspace}}/build
-      run: ctest -C Release
+      run: ctest -C ${{matrix.build-type}}
 
     - name: Bootstrap Autotools
       if: startsWith(matrix.build-system,'autotools')
