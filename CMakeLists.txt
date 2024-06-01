@@ -25,6 +25,7 @@ endif()
 
 option(LIBSAMPLERATE_EXAMPLES "Enable to generate examples" ${IS_ROOT_PROJECT})
 option(LIBSAMPLERATE_INSTALL "Enable to add install directives" ${IS_ROOT_PROJECT})
+option(LIBSAMPLERATE_ENABLE_WERROR "Fail compile if any warning is triggered" OFF)
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
@@ -127,6 +128,31 @@ if(BUILD_TESTING)
 endif()
 
 # Examples
+
+if(MSVC)
+	set(LIBSAMPLERATE_WARNINGS /W3)
+	if(LIBSAMPLERATE_ENABLE_WERROR)
+		list(APPEND LIBSAMPLERATE_WARNINGS /WX)
+	endif()
+else()
+	include(CheckCCompilerFlag)
+	set(LIBSAMPLERATE_WARNINGS "")
+	foreach(flag -Wall -Wextra -pedantic)
+		string(REGEX REPLACE "[^a-zA-Z0-9]" "_" resultVar "SRC_${flag}_SUPPORTED")
+		check_c_compiler_flag(${flag} ${resultVar})
+		if(${resultVar})
+			list(APPEND LIBSAMPLERATE_WARNINGS ${flag})
+		endif()
+	endforeach()
+	if(LIBSAMPLERATE_ENABLE_WERROR)
+		check_c_compiler_flag(-Werror SRC_Werror_SUPPORTED)
+		if(SRC_Werror_SUPPORTED)
+			list(APPEND LIBSAMPLERATE_WARNINGS -Werror)
+		endif()
+	endif()
+endif()
+
+target_compile_options(samplerate PRIVATE ${LIBSAMPLERATE_WARNINGS})
 
 if(LIBSAMPLERATE_EXAMPLES)
   add_subdirectory(examples)
