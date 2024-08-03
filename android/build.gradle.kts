@@ -29,9 +29,8 @@ android {
             cmake {
                 cppFlags += "-std=c++17"
                 arguments += "-DANDROID_STL=c++_shared"
-                arguments += "-DBUILD_SHARED_LIBS=$buildSharedLibs"
-                arguments += "-DBUILD_TESTING=ON"
 
+                arguments += "-DBUILD_SHARED_LIBS=$buildSharedLibs"
                 arguments += "-DBUILD_TESTING=$buildTesting"
                 arguments += "-DLIBSAMPLERATE_INSTALL=OFF"
                 arguments += "-DLIBSAMPLERATE_EXAMPLES=OFF"
