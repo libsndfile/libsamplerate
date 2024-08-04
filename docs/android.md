@@ -40,6 +40,15 @@ dependencies {
 }
 ```
 
+Enable `prefab` support in your `build.gradle.kts`:
+```
+android {
+    buildFeatures {
+        prefab = true
+    }
+}
+```
+
 Update your `CMakeLists.txt` to find and link the prefab package, which will be
 extracted from the `aar` by the build system:
 
