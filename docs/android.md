@@ -10,9 +10,11 @@ build system to generate a [prefab](https://google.github.io/prefab/) NDK packag
 ## Building the prefab package / .aar
 The following commands will build `libsamplerate` as a prefab NDK package and place
 it into an [.aar](https://developer.android.com/studio/projects/android-library) library.
+
+You will need `gradle` version 8.7+ installed in in your path.
 ```
 cd android/
-./gradlew assembleRelease
+gradle assembleRelease
 ```
 
 The resulting `.aar` will be located at:
@@ -26,8 +28,8 @@ script located at:
 
 ## Using as a dependency
 After building the `.aar`, do one of the following:
-1. `./gradlew publishToMavenLocal` is already supported in the build script
-2. `./gradlew publishToMavenRepository` is not setup, but you can edit `android/build.gradle.kts`
+1. `gradle publishToMavenLocal` is already supported in the build script
+2. `gradle publishToMavenRepository` is not setup, but you can edit `android/build.gradle.kts`
    to add your own maven repository to publish to
 3. Copy the `.aar` directly to the `libs/` directory of your project (not recommended)
 
@@ -60,10 +62,10 @@ notify you with an error.
 Run the following commands:
 ```
 cd android/
-./gradlew ndkTest
+gradle ndkTest
 ```
 
-The test task `:ndkTest` will run `./gradlew clean assembleRelease` with the following
+The test task `:ndkTest` will run `gradle clean assembleRelease` with the following
 options set for testing:
 * `-DBUILD_SHARED_LIBS=OFF`
 * `-DBUILD_TESTING=ON`
