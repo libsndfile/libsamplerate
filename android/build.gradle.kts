@@ -97,7 +97,10 @@ afterEvaluate {
         dependsOn("clean", "assembleRelease")
     }
 
-    tasks.named("publish${project.name.cap()}PublicationToMavenLocal").configure {
+    tasks.named("generatePomFileFor${project.name.cap()}Publication") {
+        mustRunAfter("assembleRelease")
+    }
+    tasks.named("publishToMavenLocal") {
         dependsOn("clean", "assembleRelease")
     }
 
