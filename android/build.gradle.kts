@@ -11,7 +11,7 @@ plugins {
 
 // project.name ("samplerate") defined in settings.gradle.kts
 project.group = "com.meganerd"
-project.version = "0.2.2-android-rc1"
+project.version = "0.2.2-android-rc2"
 
 android {
     namespace = "${project.group}.${project.name}"
