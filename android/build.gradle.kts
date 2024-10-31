@@ -1,5 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
+require(gradle.gradleVersion == "8.9") {
+    "Gradle version 8.9 required (current version: ${gradle.gradleVersion})"
+}
+
 plugins {
     alias(libs.plugins.library)
     id("maven-publish")
