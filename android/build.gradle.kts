@@ -67,8 +67,8 @@ tasks.register<Exec>(getTestTaskName()) {
     commandLine("./ndk-test.sh")
 }
 
-tasks.register<Delete>("cleanCxxDir") {
-    delete(".cxx")
+tasks.named<Delete>("clean") {
+    delete.add(".cxx")
 }
 
 publishing {
@@ -85,7 +85,7 @@ publishing {
 }
 
 afterEvaluate {
-    tasks.named("assembleRelease") {
+    tasks.named("preBuild") {
         mustRunAfter("clean")
     }
     tasks.named(getTestTaskName()) {
@@ -111,10 +111,6 @@ afterEvaluate {
                 println(":$it task not supported; use :${getTestTaskName()} to run tests via adb")
             }
         }
-    }
-
-    tasks.named("clean") {
-        finalizedBy("cleanCxxDir")
     }
 }
 
