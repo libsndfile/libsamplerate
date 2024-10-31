@@ -33,6 +33,7 @@ android {
             cmake {
                 cppFlags += "-std=c++17"
                 arguments += "-DANDROID_STL=c++_shared"
+                arguments += "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
 
                 arguments += "-DBUILD_SHARED_LIBS=$buildSharedLibs"
                 arguments += "-DBUILD_TESTING=$buildTesting"
