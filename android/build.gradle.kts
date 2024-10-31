@@ -114,7 +114,7 @@ afterEvaluate {
     }
 
     tasks.named("clean") {
-        dependsOn("cleanCxxDir")
+        finalizedBy("cleanCxxDir")
     }
 }
 
