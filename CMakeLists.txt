@@ -1,17 +1,4 @@
-cmake_minimum_required(VERSION 3.1..3.18)
-
-# Policies
-
-# Include file check macros honor CMAKE_REQUIRED_LIBRARIES, CMake >= 3.12
-if(POLICY CMP0075)
-  cmake_policy(SET CMP0075 NEW)
-endif()
-
-# MSVC runtime library flags are selected by an abstraction, CMake >= 3.15
-# This policy still need to be set even with cmake_minimum_required() command above.
-if(POLICY CMP0091)
-  cmake_policy(SET CMP0091 NEW)
-endif()
+cmake_minimum_required(VERSION 3.16..3.20)
 
 project(libsamplerate VERSION 0.2.2 LANGUAGES C)
 
@@ -139,12 +126,5 @@ if(LIBSAMPLERATE_INSTALL)
 endif()
 
 # Packaging support
-
-# See https://cmake.org/cmake/help/v3.12/release/3.12.html#cpack
-if(CMAKE_VERSION VERSION_LESS 3.12)
-  set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
-  set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
-  set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
-endif()
 
 include(CPack)
