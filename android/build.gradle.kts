@@ -1,7 +1,9 @@
 @file:Suppress("UnstableApiUsage")
 
-require(gradle.gradleVersion == "8.9") {
-    "Gradle version 8.9 required (current version: ${gradle.gradleVersion})"
+val requiredGradleVersion = "8.9"
+
+require(gradle.gradleVersion == requiredGradleVersion) {
+    "Gradle version $requiredGradleVersion required (current version: ${gradle.gradleVersion})"
 }
 
 plugins {
@@ -11,7 +13,9 @@ plugins {
 
 // project.name ("samplerate") defined in settings.gradle.kts
 project.group = "com.meganerd"
-project.version = "0.2.2-android-rc2"
+project.version = "0.2.2-android-r1"
+
+val abis = listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
 
 android {
     namespace = "${project.group}.${project.name}"
@@ -23,7 +27,7 @@ android {
         buildToolsVersion = libs.versions.buildtools.get()
         ndkVersion = libs.versions.ndk.get()
         ndk {
-            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+            abiFilters += abis
         }
         externalNativeBuild {
             // build static libs and testing binaries only when running :ndkTest
@@ -31,8 +35,6 @@ android {
             val buildTesting = if (isTestBuild()) "ON" else "OFF"
 
             cmake {
-                cppFlags += "-std=c++17"
-                arguments += "-DANDROID_STL=c++_shared"
                 arguments += "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
 
                 arguments += "-DBUILD_SHARED_LIBS=$buildSharedLibs"
@@ -49,21 +51,21 @@ android {
             version = libs.versions.cmake.get()
         }
     }
+}
 
-    buildFeatures {
-        prefabPublishing = true
+tasks.register<Zip>("prefabAar") {
+    archiveFileName = "${project.name}-release.aar"
+    destinationDirectory = file("build/outputs/prefab-aar")
+
+    from("aar-template")
+    from("${projectDir.parentFile}/include") {
+        include("**/*.h")
+        into("prefab/modules/${project.name}/include")
     }
-
-    prefab {
-        create(project.name) {
-            headers = "${project.projectDir.parentFile}/include"
-        }
-    }
-
-    packaging {
-        // avoids duplicating libs in .aar due to using prefab
-        jniLibs {
-            excludes += "**/*"
+    abis.forEach { abi ->
+        from("build/intermediates/cmake/release/obj/$abi") {
+            include("lib${project.name}.so")
+            into("prefab/modules/${project.name}/libs/android.$abi")
         }
     }
 }
@@ -76,50 +78,57 @@ tasks.named<Delete>("clean") {
     delete.add(".cxx")
 }
 
-publishing {
-    repositories {
-        mavenLocal()
-    }
-
-    publications {
-        create<MavenPublication>(project.name) {
-            artifact("${project.projectDir}/build/outputs/aar/${project.name}-release.aar")
-            artifactId = "${project.name}-android"
-        }
-    }
-}
-
 afterEvaluate {
     tasks.named("preBuild") {
         mustRunAfter("clean")
     }
-    tasks.named(getTestTaskName()) {
-        dependsOn("clean", "assembleRelease")
+
+    tasks.named("prefabAar") {
+        dependsOn("externalNativeBuildRelease")
     }
 
     tasks.named("generatePomFileFor${project.name.cap()}Publication") {
-        mustRunAfter("assembleRelease")
-    }
-    tasks.named("publishToMavenLocal") {
-        dependsOn("clean", "assembleRelease")
+        mustRunAfter("prefabAar")
     }
 
-    // suggests running ":ndkTest" task instead of default testing tasks
-    listOf(
-        "check",
-        "test",
-        "testDebugUnitTest",
-        "testReleaseUnitTest",
-        "connectedCheck",
-        "connectedAndroidTest",
-        "connectedDebugAndroidTest",
-    ).forEach {
-        tasks.named(it) {
-            doLast {
-                println(":$it task not supported; use :${getTestTaskName()} to run tests via adb")
+    tasks.named("publish") {
+        dependsOn("clean", "prefabAar")
+    }
+
+    tasks.named(getTestTaskName()) {
+        dependsOn("clean", "externalNativeBuildRelease")
+    }
+}
+
+publishing {
+    val githubPackagesUrl = "https://maven.pkg.github.com/jg-hot/libsamplerate-android"
+
+    repositories {
+        maven {
+            url = uri(githubPackagesUrl)
+            credentials {
+                username = properties["gpr.user"]?.toString()
+                password = properties["gpr.key"]?.toString()
             }
         }
     }
+
+    publications {
+        create<MavenPublication>(project.name) {
+            artifact("build/outputs/prefab-aar/${project.name}-release.aar")
+            artifactId = "${project.name}-android"
+
+            pom {
+                distributionManagement {
+                    downloadUrl = githubPackagesUrl
+                }
+            }
+        }
+    }
+}
+
+tasks.named<Wrapper>("wrapper") {
+    gradleVersion = requiredGradleVersion
 }
 
 fun getTestTaskName(): String = "ndkTest"

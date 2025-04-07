@@ -4,4 +4,6 @@ build/
 .gradle/
 .cxx/
 .idea/
-
+gradle/wrapper/
+gradlew
+gradlew.bat
