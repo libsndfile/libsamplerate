@@ -32,9 +32,7 @@ static void linear_close (SRC_STATE *state) ;
 
 typedef struct
 {	int		linear_magic_marker ;
-	bool	dirty ;
-	long	in_count, in_used ;
-	long	out_count, out_gen ;
+	bool	initialized ;
 	float	*last_value ;
 } LINEAR_DATA ;
 
@@ -54,7 +52,6 @@ static SRC_ERROR
 linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	LINEAR_DATA *priv ;
 	double		src_ratio, input_index, rem ;
-	int			ch ;
 
 	if (data->input_frames <= 0)
 		return SRC_ERR_NO_ERROR ;
@@ -64,16 +61,14 @@ linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 
 	priv = (LINEAR_DATA*) state->private_data ;
 
-	if (!priv->dirty)
+	if (!priv->initialized)
 	{	/* If we have just been reset, set the last_value data. */
-		for (ch = 0 ; ch < state->channels ; ch++)
+		for (int ch = 0 ; ch < state->channels ; ch++)
 			priv->last_value [ch] = data->data_in [ch] ;
-		priv->dirty = true ;
+		priv->initialized = true ;
 		} ;
 
-	priv->in_count = data->input_frames * state->channels ;
-	priv->out_count = data->output_frames * state->channels ;
-	priv->in_used = priv->out_gen = 0 ;
+	data->input_frames_used = data->output_frames_gen = 0 ;
 
 	src_ratio = state->last_ratio ;
 
@@ -83,71 +78,69 @@ linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 	input_index = state->last_position ;
 
 	/* Calculate samples before first sample in input array. */
-	while (input_index < 1.0 && priv->out_gen < priv->out_count)
+	float* current_out = data->data_out;
+	while (input_index < 1.0 && data->output_frames_gen < data->output_frames)
 	{
-		if (priv->in_used + state->channels * (1.0 + input_index) >= priv->in_count)
-			break ;
+		if (data->output_frames > 0 && fabs (state->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
+			src_ratio = state->last_ratio + data->output_frames_gen * (data->src_ratio - state->last_ratio) / data->output_frames ;
 
-		if (priv->out_count > 0 && fabs (state->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
-			src_ratio = state->last_ratio + priv->out_gen * (data->src_ratio - state->last_ratio) / priv->out_count ;
-
-		for (ch = 0 ; ch < state->channels ; ch++)
-		{	data->data_out [priv->out_gen] = (float) (priv->last_value [ch] + input_index *
+		for (int ch = 0 ; ch < state->channels ; ch++)
+		{	*current_out++ = (float) (priv->last_value [ch] + input_index *
 										((double) data->data_in [ch] - priv->last_value [ch])) ;
-			priv->out_gen ++ ;
 			} ;
+		data->output_frames_gen ++ ;
 
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
 		} ;
 
 	rem = fmod_one (input_index) ;
-	priv->in_used += state->channels * psf_lrint (input_index - rem) ;
+	data->input_frames_used += psf_lrint (input_index - rem) ;
 	input_index = rem ;
 
 	/* Main processing loop. */
-	while (priv->out_gen < priv->out_count && priv->in_used + state->channels * input_index < priv->in_count)
-	{
-		if (priv->out_count > 0 && fabs (state->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
-			src_ratio = state->last_ratio + priv->out_gen * (data->src_ratio - state->last_ratio) / priv->out_count ;
-
 #if SRC_DEBUG
-		if (priv->in_used < state->channels && input_index < 1.0)
-		{	printf ("Whoops!!!!   in_used : %ld     channels : %d     input_index : %f\n", priv->in_used, state->channels, input_index) ;
-			exit (1) ;
-			} ;
+	assert(data->output_frames_gen >= data->output_frames || data->input_frames_used > 0);
 #endif
+	while (data->output_frames_gen < data->output_frames && data->input_frames_used + input_index < data->input_frames)
+	{
+		if (data->output_frames > 0 && fabs (state->last_ratio - data->src_ratio) > SRC_MIN_RATIO_DIFF)
+			src_ratio = state->last_ratio + data->output_frames_gen * (data->src_ratio - state->last_ratio) / data->output_frames ;
 
-		for (ch = 0 ; ch < state->channels ; ch++)
-		{	data->data_out [priv->out_gen] = (float) (data->data_in [priv->in_used - state->channels + ch] + input_index *
-						((double) data->data_in [priv->in_used + ch] - data->data_in [priv->in_used - state->channels + ch])) ;
-			priv->out_gen ++ ;
-			} ;
+		const float* current_in = data->data_in + data->input_frames_used * state->channels;
+		const float* prev_in = current_in - state->channels;
+		for (int ch = 0 ; ch < state->channels ; ch++)
+		{
+		  *current_out++ = (float) (prev_in[ch] + input_index *
+						((double) current_in[ch] - prev_in[ch])) ;
+		}
+		data->output_frames_gen ++ ;
 
 		/* Figure out the next index. */
 		input_index += 1.0 / src_ratio ;
 		rem = fmod_one (input_index) ;
 
-		priv->in_used += state->channels * psf_lrint (input_index - rem) ;
+		const int num_frame_used = psf_lrint (input_index - rem);
+		data->input_frames_used += num_frame_used ;
 		input_index = rem ;
-		} ;
+        }
 
-	if (priv->in_used > priv->in_count)
-	{	input_index += (priv->in_used - priv->in_count) / state->channels ;
-		priv->in_used = priv->in_count ;
-		} ;
+	if (data->input_frames_used > data->input_frames)
+	{
+          input_index += (data->input_frames_used - data->input_frames) ;
+          data->input_frames_used = data->input_frames ;
+        }
 
 	state->last_position = input_index ;
 
-	if (priv->in_used > 0)
-		for (ch = 0 ; ch < state->channels ; ch++)
-			priv->last_value [ch] = data->data_in [priv->in_used - state->channels + ch] ;
+	if (data->input_frames_used > 0) {
+          const float *last_value = data->data_in + (data->input_frames_used - 1) * state->channels;
+          for (int ch = 0 ; ch < state->channels ; ch++)
+            priv->last_value [ch] = last_value[ch];
+        }
 
 	/* Save current ratio rather then target ratio. */
 	state->last_ratio = src_ratio ;
-
-	data->input_frames_used = priv->in_used / state->channels ;
-	data->output_frames_gen = priv->out_gen / state->channels ;
 
 	return SRC_ERR_NO_ERROR ;
 } /* linear_vari_process */
@@ -237,7 +230,7 @@ linear_reset (SRC_STATE *state)
 	if (priv == NULL)
 		return ;
 
-	priv->dirty = false ;
+	priv->initialized = false ;
 	memset (priv->last_value, 0, sizeof (priv->last_value [0]) * state->channels) ;
 
 	return ;
