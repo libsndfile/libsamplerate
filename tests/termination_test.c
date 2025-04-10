@@ -24,14 +24,14 @@
 #ifdef ENABLE_SINC_FAST_CONVERTER
 static void simple_test (int converter) ;
 #endif
-static void stream_test (int converter, double ratio) ;
-static void init_term_test (int converter, double ratio) ;
+static void stream_test (int converter, fp_t ratio) ;
+static void init_term_test (int converter, fp_t ratio) ;
 
 static int	next_block_length (int reset) ;
 
 int
 main (void)
-{	static double src_ratios [] =
+{	static fp_t src_ratios [] =
 	{	0.999900, 1.000100, 0.789012, 1.200000, 0.333333, 3.100000,
 		0.125000, 8.000000, 0.099900, 9.990000, 0.100000, 10.00000
 	} ;
@@ -83,7 +83,7 @@ simple_test (int converter)
 	{
 		float in [ilen] ;
 		float out [olen] ;
-		double ratio = (1.0 * olen) / ilen ;
+		fp_t ratio = (1.0 * olen) / ilen ;
 		SRC_DATA src_data =
 		{	in, out,
 			ilen, olen,
@@ -103,7 +103,7 @@ simple_test (int converter)
 #endif
 
 static void
-init_term_test (int converter, double src_ratio)
+init_term_test (int converter, fp_t src_ratio)
 {	static float input [SHORT_BUFFER_LEN], output [SHORT_BUFFER_LEN] ;
 
 	SRC_DATA	src_data ;
@@ -179,7 +179,7 @@ init_term_test (int converter, double src_ratio)
 } /* init_term_test */
 
 static void
-stream_test (int converter, double src_ratio)
+stream_test (int converter, fp_t src_ratio)
 {	static float input [LONG_BUFFER_LEN], output [LONG_BUFFER_LEN] ;
 
 	SRC_STATE	*src_state ;

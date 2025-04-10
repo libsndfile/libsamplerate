@@ -26,7 +26,7 @@
 #define MAKE_INCREMENT_T(x) 	((increment_t) (x))
 
 #define	SHIFT_BITS				12
-#define	FP_ONE					((double) (((increment_t) 1) << SHIFT_BITS))
+#define	FP_ONE					((fp_t) (((increment_t) 1) << SHIFT_BITS))
 #define	INV_FP_ONE				(1.0 / FP_ONE)
 
 /* Customixe max channls from Kconfig. */
@@ -61,14 +61,14 @@ typedef struct
 
 	int		coeff_half_len, index_inc ;
 
-	double	src_ratio, input_index ;
+	fp_t	src_ratio, input_index ;
 
 	coeff_t const	*coeffs ;
 
 	int		b_current, b_end, b_real_end, b_len ;
 
 	/* Sure hope noone does more than 128 channels at once. */
-	double left_calc [MAX_CHANNELS], right_calc [MAX_CHANNELS] ;
+	fp_t left_calc [MAX_CHANNELS], right_calc [MAX_CHANNELS] ;
 
 	float	*buffer ;
 } SINC_FILTER ;
@@ -131,7 +131,7 @@ static SRC_STATE_VT sinc_mono_state_vt =
 } ;
 
 static inline increment_t
-double_to_fp (double x)
+double_to_fp (fp_t x)
 {	return (increment_t) (psf_lrint ((x) * FP_ONE)) ;
 } /* double_to_fp */
 
@@ -150,7 +150,7 @@ fp_fraction_part (increment_t x)
 {	return ((x) & ((((increment_t) 1) << SHIFT_BITS) - 1)) ;
 } /* fp_fraction_part */
 
-static inline double
+static inline fp_t
 fp_to_double (increment_t x)
 {	return fp_fraction_part (x) * INV_FP_ONE ;
 } /* fp_to_double */
@@ -367,9 +367,9 @@ sinc_copy (SRC_STATE *state)
 **	Beware all ye who dare pass this point. There be dragons here.
 */
 
-static inline double
+static inline fp_t
 calc_output_single (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index)
-{	double		fraction, left, right, icoeff ;
+{	fp_t		fraction, left, right, icoeff ;
 	increment_t	filter_index, max_filter_index ;
 	int			data_index, coeff_count, indx ;
 
@@ -430,7 +430,7 @@ calc_output_single (SINC_FILTER *filter, increment_t increment, increment_t star
 static SRC_ERROR
 sinc_mono_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
-	double		input_index, src_ratio, count, float_increment, terminate, rem ;
+	fp_t		input_index, src_ratio, count, float_increment, terminate, rem ;
 	increment_t	increment, start_filter_index ;
 	int			half_filter_chan_len, samples_in_hand ;
 
@@ -521,8 +521,8 @@ sinc_mono_vari_process (SRC_STATE *state, SRC_DATA *data)
 } /* sinc_mono_vari_process */
 
 static inline void
-calc_output_stereo (SINC_FILTER *filter, int channels, increment_t increment, increment_t start_filter_index, double scale, float * output)
-{	double		fraction, left [2], right [2], icoeff ;
+calc_output_stereo (SINC_FILTER *filter, int channels, increment_t increment, increment_t start_filter_index, fp_t scale, float * output)
+{	fp_t		fraction, left [2], right [2], icoeff ;
 	increment_t	filter_index, max_filter_index ;
 	int			data_index, coeff_count, indx ;
 
@@ -586,7 +586,7 @@ calc_output_stereo (SINC_FILTER *filter, int channels, increment_t increment, in
 SRC_ERROR
 sinc_stereo_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
-	double		input_index, src_ratio, count, float_increment, terminate, rem ;
+	fp_t		input_index, src_ratio, count, float_increment, terminate, rem ;
 	increment_t	increment, start_filter_index ;
 	int			half_filter_chan_len, samples_in_hand ;
 
@@ -676,8 +676,8 @@ sinc_stereo_vari_process (SRC_STATE *state, SRC_DATA *data)
 } /* sinc_stereo_vari_process */
 
 static inline void
-calc_output_quad (SINC_FILTER *filter, int channels, increment_t increment, increment_t start_filter_index, double scale, float * output)
-{	double		fraction, left [4], right [4], icoeff ;
+calc_output_quad (SINC_FILTER *filter, int channels, increment_t increment, increment_t start_filter_index, fp_t scale, float * output)
+{	fp_t		fraction, left [4], right [4], icoeff ;
 	increment_t	filter_index, max_filter_index ;
 	int			data_index, coeff_count, indx ;
 
@@ -742,7 +742,7 @@ calc_output_quad (SINC_FILTER *filter, int channels, increment_t increment, incr
 SRC_ERROR
 sinc_quad_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
-	double		input_index, src_ratio, count, float_increment, terminate, rem ;
+	fp_t		input_index, src_ratio, count, float_increment, terminate, rem ;
 	increment_t	increment, start_filter_index ;
 	int			half_filter_chan_len, samples_in_hand ;
 
@@ -832,8 +832,8 @@ sinc_quad_vari_process (SRC_STATE *state, SRC_DATA *data)
 } /* sinc_quad_vari_process */
 
 static inline void
-calc_output_hex (SINC_FILTER *filter, int channels, increment_t increment, increment_t start_filter_index, double scale, float * output)
-{	double		fraction, left [6], right [6], icoeff ;
+calc_output_hex (SINC_FILTER *filter, int channels, increment_t increment, increment_t start_filter_index, fp_t scale, float * output)
+{	fp_t		fraction, left [6], right [6], icoeff ;
 	increment_t	filter_index, max_filter_index ;
 	int			data_index, coeff_count, indx ;
 
@@ -897,7 +897,7 @@ calc_output_hex (SINC_FILTER *filter, int channels, increment_t increment, incre
 SRC_ERROR
 sinc_hex_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
-	double		input_index, src_ratio, count, float_increment, terminate, rem ;
+	fp_t		input_index, src_ratio, count, float_increment, terminate, rem ;
 	increment_t	increment, start_filter_index ;
 	int			half_filter_chan_len, samples_in_hand ;
 
@@ -987,10 +987,10 @@ sinc_hex_vari_process (SRC_STATE *state, SRC_DATA *data)
 } /* sinc_hex_vari_process */
 
 static inline void
-calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index, int channels, double scale, float * output)
-{	double		fraction, icoeff ;
+calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start_filter_index, int channels, fp_t scale, float * output)
+{	fp_t		fraction, icoeff ;
 	/* The following line is 1999 ISO Standard C. If your compiler complains, get a better compiler. */
-	double		*left, *right ;
+	fp_t		*left, *right ;
 	increment_t	filter_index, max_filter_index ;
 	int			data_index, coeff_count, indx ;
 
@@ -1062,7 +1062,7 @@ calc_output_multi (SINC_FILTER *filter, increment_t increment, increment_t start
 static SRC_ERROR
 sinc_multichan_vari_process (SRC_STATE *state, SRC_DATA *data)
 {	SINC_FILTER *filter ;
-	double		input_index, src_ratio, count, float_increment, terminate, rem ;
+	fp_t		input_index, src_ratio, count, float_increment, terminate, rem ;
 	increment_t	increment, start_filter_index ;
 	int			half_filter_chan_len, samples_in_hand ;
 

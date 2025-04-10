@@ -23,9 +23,9 @@
 #endif
 
 void
-gen_windowed_sines (int freq_count, const double *freqs, double max, float *output, int output_len)
+gen_windowed_sines (int freq_count, const fp_t *freqs, fp_t max, float *output, int output_len)
 {	int 	k, freq ;
-	double	amplitude, phase ;
+	fp_t	amplitude, phase ;
 
 	amplitude = max / freq_count ;
 
@@ -89,7 +89,7 @@ save_oct_float (char *filename, float *input, int in_len, float *output, int out
 } /* save_oct_float */
 
 void
-save_oct_double (char *filename, double *input, int in_len, double *output, int out_len)
+save_oct_double (char *filename, fp_t *input, int in_len, fp_t *output, int out_len)
 {	FILE 	*file ;
 	int		k ;
 

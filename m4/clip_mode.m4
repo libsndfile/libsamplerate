@@ -38,7 +38,7 @@ if test $ac_cv_c_clip_positive = unknown ; then
 	#define __USE_ISOC9X	1
 	#include <math.h>
 	int main (void)
-	{	double	fval ;
+	{	fp_t	fval ;
 		int k, ival ;
 
 		fval = 1.0 * 0x7FFFFFFF ;
@@ -66,7 +66,7 @@ if test $ac_cv_c_clip_positive = unknown ; then
 	#define __USE_ISOC9X	1
 	#include <math.h>
 	int main (void)
-	{	double	fval ;
+	{	fp_t	fval ;
 		int k, ival ;
 
 		fval = -8.0 * 0x10000000 ;
