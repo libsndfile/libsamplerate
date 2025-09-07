@@ -71,6 +71,14 @@ SRC_STATE* src_clone (SRC_STATE* orig, int *error) ;
 SRC_STATE* src_callback_new (src_callback_t func, int converter_type, int channels,
 				int *error, void* cb_data) ;
 
+
+/**
+ * Double-precision getters: Fractional used-frame 
+ * tracking while using the callback API. 
+ */
+double src_get_last_position(SRC_STATE* state);
+double src_get_saved_frames(SRC_STATE* state);
+
 /*
 **	Cleanup all internal allocations.
 **	Always returns NULL.
