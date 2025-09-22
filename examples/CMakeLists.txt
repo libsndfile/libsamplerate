@@ -16,6 +16,7 @@ target_link_libraries(timewarp-file
   PRIVATE
     samplerate
     $<$<BOOL:${SndFile_FOUND}>:${SNDFILE_TARGET}>)
+target_compile_options(timewarp-file PRIVATE ${LIBSAMPLERATE_WARNINGS})
 
 add_executable(varispeed-play varispeed-play.c audio_out.c audio_out.h)
 target_link_libraries(varispeed-play
