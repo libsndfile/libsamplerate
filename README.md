@@ -35,6 +35,10 @@ There are detailed instructions for building libsamplerate on Win32 in the file 
 
 Building on macOS should be the same as building it on any other Unix platform.
 
+## Android
+
+To build for Android using the Android NDK, see the instructions in the file [`docs/android.md`]
+
 ## Other Platforms
 
 To compile libsamplerate on platforms which have a Bourne compatible shell, an ANSI C compiler and a make utility should require no more that the following three commands:
