@@ -7,13 +7,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        name: [
-        linux-cmake,
-        linux-autotools,
-        macos-cmake,
-        macos-autotools,
-        windows-cmake
-        ]
         include:
           - name: linux-cmake
             os: ubuntu-latest
@@ -37,6 +30,11 @@ jobs:
             os: windows-latest
             build-system: cmake
             configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows
+
+          - name: windows-cmake-shared
+            os: windows-latest
+            build-system: cmake
+            configure-options: -DCMAKE_TOOLCHAIN_FILE=c:/vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows -DBUILD_SHARED_LIBS=ON
 
     runs-on: ${{ matrix.os }}
     steps:

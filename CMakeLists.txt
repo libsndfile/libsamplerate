@@ -100,6 +100,12 @@ if(LIBSAMPLERATE_EXAMPLES OR BUILD_TESTING)
   endif()
 
   set(HAVE_SNDFILE ${SndFile_FOUND})
+
+  # Windows DLLs need to be in the same folder as the executable to be found
+  if(WIN32 AND NOT DEFINED CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+    set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR})
+  endif()
+
 endif()
 
 # SampleRate library
