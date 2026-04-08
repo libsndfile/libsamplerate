@@ -72,11 +72,6 @@ if(CMAKE_C_COMPILER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID MATCHES "Clang")
 endif()
 
 test_big_endian(CPU_IS_BIG_ENDIAN)
-if(CPU_IS_BIG_ENDIAN)
-  set(CPU_IS_LITTLE_ENDIAN 0)
-else()
-  set(CPU_IS_LITTLE_ENDIAN 1)
-endif()
 
 check_include_file(stdbool.h HAVE_STDBOOL_H)
 check_include_file(unistd.h HAVE_UNISTD_H)

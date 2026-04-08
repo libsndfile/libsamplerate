@@ -15,9 +15,6 @@
 /* Target processor is big endian. */
 #cmakedefine01 CPU_IS_BIG_ENDIAN
 
-/* Target processor is little endian. */
-#cmakedefine01 CPU_IS_LITTLE_ENDIAN
-
 /* Define to 1 if you have the `alarm' function. */
 #cmakedefine01 HAVE_ALARM
 
@@ -26,12 +23,6 @@
 
 /* Set to 1 if you have libfftw3. */
 #cmakedefine01 HAVE_FFTW3
-
-/* Define if you have C99's lrint function. */
-#cmakedefine01 HAVE_LRINT
-
-/* Define if you have C99's lrintf function. */
-#cmakedefine01 HAVE_LRINTF
 
 /* Define to 1 if you have the <immintrin.h> header file. */
 #cmakedefine HAVE_IMMINTRIN_H
@@ -47,9 +38,6 @@
 
 /* Define to 1 if you have the <stdbool.h> header file. */
 #cmakedefine HAVE_STDBOOL_H
-
-/* Define to 1 if you have the <stdint.h> header file. */
-#cmakedefine01 HAVE_STDINT_H
 
 /* Define to 1 if you have the <sys/times.h> header file. */
 #cmakedefine01 HAVE_SYS_TIMES_H
@@ -69,8 +57,3 @@
 /* define best samplerate convertor */
 #cmakedefine ENABLE_SINC_BEST_CONVERTER
 
-/* The size of `int', as computed by sizeof. */
-#define SIZEOF_INT ${SIZEOF_INT}
-
-/* The size of `long', as computed by sizeof. */
-#define SIZEOF_LONG ${SIZEOF_LONG}
