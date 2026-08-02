@@ -36,6 +36,10 @@
 #   endif
 #endif
 
+#if defined(__aarch64__) || defined(_M_ARM64)
+#	define HAVE_NEON_INTRINSICS
+#endif
+
 #ifdef HAVE_SSE2_INTRINSICS
 #ifdef HAVE_IMMINTRIN_H
 #include <immintrin.h>
@@ -43,6 +47,10 @@
 #include <emmintrin.h>
 #endif
 #endif /* HAVE_SSE2_INTRINSICS */
+
+#if defined(HAVE_NEON_INTRINSICS)
+#include <arm_neon.h>
+#endif /* HAVE_NEON_INTRINSICS */
 
 #include <math.h>
 
@@ -213,6 +221,18 @@ psf_lrint (double x)
 {
 	return _mm_cvtsd_si32 (_mm_load_sd (&x)) ;
 }
+
+#elif defined(HAVE_NEON_INTRINSICS)
+
+static inline int psf_lrintf (float x)
+{
+	return vcvts_s32_f32(x);
+} /* psf_lrintf */
+
+static inline int psf_lrint (double x)
+{
+	return (int) vcvtd_s64_f64(x);
+} /* psf_lrint */
 
 #else
 
