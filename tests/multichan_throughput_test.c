@@ -42,7 +42,7 @@ static void
 throughput_test (int converter, int channels, long *best_throughput)
 {	SRC_DATA src_data ;
 	clock_t start_time, clock_time ;
-	double duration ;
+	fp_t duration ;
 	long total_frames = 0, throughput ;
 	int error ;
 
@@ -230,7 +230,7 @@ usage_exit (const char * argv0)
 
 int
 main (int argc, char ** argv)
-{	double freq ;
+{	fp_t freq ;
 
 	memset (input, 0, sizeof (input)) ;
 	freq = 0.01 ;

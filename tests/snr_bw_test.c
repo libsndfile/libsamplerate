@@ -40,13 +40,13 @@ enum
 
 typedef struct
 {	int		freq_count ;
-	double	freqs [MAX_FREQS] ;
+	fp_t	freqs [MAX_FREQS] ;
 
-	double	src_ratio ;
+	fp_t	src_ratio ;
 	int		pass_band_peaks ;
 
-	double	snr ;
-	double	peak_value ;
+	fp_t	snr ;
+	fp_t	peak_value ;
 } SINGLE_TEST ;
 
 typedef struct
@@ -56,9 +56,9 @@ typedef struct
 	SINGLE_TEST	test_data [10] ;
 } CONVERTER_TEST ;
 
-static double snr_test (SINGLE_TEST *snr_test_data, int number, int converter, int verbose) ;
-static double find_peak (float *output, int output_len) ;
-static double bandwidth_test (int converter, int verbose) ;
+static fp_t snr_test (SINGLE_TEST *snr_test_data, int number, int converter, int verbose) ;
+static fp_t find_peak (float *output, int output_len) ;
+static fp_t bandwidth_test (int converter, int verbose) ;
 
 int
 main (int argc, char *argv [])
@@ -145,7 +145,7 @@ main (int argc, char *argv [])
 
 		} ; /* snr_test_data */
 
-	double	best_snr, snr, freq3dB ;
+	fp_t	best_snr, snr, freq3dB ;
 	int 	j, k, converter, verbose = 0 ;
 
 	if (argc == 2 && strcmp (argv [1], "--verbose") == 0)
@@ -187,7 +187,7 @@ main (int argc, char *argv [])
 /*==============================================================================
 */
 
-static double
+static fp_t
 snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose)
 {	static float data [BUFFER_LEN + 1] ;
 	static float output [MAX_SPEC_LEN] ;
@@ -195,7 +195,7 @@ snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose)
 	SRC_STATE	*src_state ;
 	SRC_DATA	src_data ;
 
-	double		output_peak, snr ;
+	fp_t		output_peak, snr ;
 	int 		k, output_len, input_len, error ;
 
 	if (verbose != 0)
@@ -301,9 +301,9 @@ snr_test (SINGLE_TEST *test_data, int number, int converter, int verbose)
 	return snr ;
 } /* snr_test */
 
-static double
+static fp_t
 find_peak (float *data, int len)
-{	double 	peak = 0.0 ;
+{	fp_t 	peak = 0.0 ;
 	int		k = 0 ;
 
 	for (k = 0 ; k < len ; k++)
@@ -314,13 +314,13 @@ find_peak (float *data, int len)
 } /* find_peak */
 
 
-static double
-find_attenuation (double freq, int converter, int verbose)
+static fp_t
+find_attenuation (fp_t freq, int converter, int verbose)
 {	static float input	[BUFFER_LEN] ;
 	static float output [2 * BUFFER_LEN] ;
 
 	SRC_DATA	src_data ;
-	double 		output_peak ;
+	fp_t 		output_peak ;
 	int			error ;
 
 	gen_windowed_sines (1, &freq, 1.0, input, BUFFER_LEN) ;
@@ -349,10 +349,10 @@ find_attenuation (double freq, int converter, int verbose)
 	return 20.0 * log10 (1.0 / output_peak) ;
 } /* find_attenuation */
 
-static double
+static fp_t
 bandwidth_test (int converter, int verbose)
-{	double	f1, f2, a1, a2 ;
-	double	freq, atten ;
+{	fp_t	f1, f2, a1, a2 ;
+	fp_t	freq, atten ;
 
 	f1 = 0.35 ;
 	a1 = find_attenuation (f1, converter, verbose) ;

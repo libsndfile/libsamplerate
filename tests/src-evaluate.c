@@ -46,12 +46,12 @@
 
 typedef struct
 {	int		freq_count ;
-	double	freqs [MAX_FREQS] ;
+	fp_t	freqs [MAX_FREQS] ;
 
 	int		output_samplerate ;
 	int		pass_band_peaks ;
 
-	double	peak_value ;
+	fp_t	peak_value ;
 } SNR_TEST ;
 
 typedef struct
@@ -65,7 +65,7 @@ typedef struct
 static char *get_progname (char *) ;
 static void usage_exit (const char *, const RESAMPLE_PROG *prog, int count) ;
 static void measure_program (const RESAMPLE_PROG *prog, int verbose) ;
-static void generate_source_wav (const char *filename, const double *freqs, int freq_count, int format) ;
+static void generate_source_wav (const char *filename, const fp_t *freqs, int freq_count, int format) ;
 static const char* get_machine_details (void) ;
 
 static char	version_string [512] ;
@@ -253,7 +253,7 @@ get_version_string (const RESAMPLE_PROG *prog)
 } /* get_version_string */
 
 static void
-generate_source_wav (const char *filename, const double *freqs, int freq_count, int format)
+generate_source_wav (const char *filename, const fp_t *freqs, int freq_count, int format)
 {	static float buffer [BUFFER_LEN] ;
 
 	SNDFILE *sndfile ;
@@ -280,13 +280,13 @@ generate_source_wav (const char *filename, const double *freqs, int freq_count, 
 	sf_close (sndfile) ;
 } /* generate_source_wav */
 
-static double
+static fp_t
 measure_destination_wav (char *filename, int *output_samples, int expected_peaks)
 {	static float buffer [250000] ;
 
 	SNDFILE *sndfile ;
 	SF_INFO sfinfo ;
-	double snr ;
+	fp_t snr ;
 
 	if ((sndfile = sf_open (filename, SFM_READ, &sfinfo)) == NULL)
 	{	printf ("Line %d : Cound not open '%s' : %s\n", __LINE__, filename, sf_strerror (NULL)) ;
@@ -317,7 +317,7 @@ measure_destination_wav (char *filename, int *output_samples, int expected_peaks
 	return snr ;
 } /* measure_desination_wav */
 
-static double
+static fp_t
 measure_snr (const RESAMPLE_PROG *prog, int *output_samples, int verbose)
 {	static SNR_TEST snr_test [] =
 	{
@@ -335,7 +335,7 @@ measure_snr (const RESAMPLE_PROG *prog, int *output_samples, int verbose)
 		} ; /* snr_test */
 	static char command [256] ;
 
-	double snr, worst_snr = 500.0 ;
+	fp_t snr, worst_snr = 500.0 ;
 	int k , retval, sample_count ;
 
 	*output_samples = 0 ;
@@ -371,12 +371,12 @@ measure_snr (const RESAMPLE_PROG *prog, int *output_samples, int verbose)
 /*------------------------------------------------------------------------------
 */
 
-static double
+static fp_t
 measure_destination_peak (const char *filename)
 {	static float data [2 * BUFFER_LEN] ;
 	SNDFILE		*sndfile ;
 	SF_INFO		sfinfo ;
-	double		peak = 0.0 ;
+	fp_t		peak = 0.0 ;
 	int			k = 0 ;
 
 	if ((sndfile = sf_open (filename, SFM_READ, &sfinfo)) == NULL)
@@ -408,10 +408,10 @@ measure_destination_peak (const char *filename)
 	return peak ;
 } /* measure_destination_peak */
 
-static double
-find_attenuation (double freq, const RESAMPLE_PROG *prog, int verbose)
+static fp_t
+find_attenuation (fp_t freq, const RESAMPLE_PROG *prog, int verbose)
 {	static char	command [256] ;
-	double	output_peak ;
+	fp_t	output_peak ;
 	int		retval ;
 	char	*filename ;
 
@@ -434,10 +434,10 @@ find_attenuation (double freq, const RESAMPLE_PROG *prog, int verbose)
 	return fabs (20.0 * log10 (output_peak)) ;
 } /* find_attenuation */
 
-static double
+static fp_t
 bandwidth_test (const RESAMPLE_PROG *prog, int verbose)
-{	double	f1, f2, a1, a2 ;
-	double	freq, atten ;
+{	fp_t	f1, f2, a1, a2 ;
+	fp_t	freq, atten ;
 
 	f1 = 0.35 ;
 	a1 = find_attenuation (f1, prog, verbose) ;
@@ -475,7 +475,7 @@ bandwidth_test (const RESAMPLE_PROG *prog, int verbose)
 
 static void
 measure_program (const RESAMPLE_PROG *prog, int verbose)
-{	double	snr, bandwidth, conversion_rate ;
+{	fp_t	snr, bandwidth, conversion_rate ;
 	int		output_samples ;
 	struct	tms	time_data ;
 	time_t	time_now ;

@@ -24,21 +24,21 @@
 #define	MAX_SPEC_LEN	(1<<18)
 #define	MAX_PEAKS		10
 
-static void log_mag_spectrum (double *input, int len, double *magnitude) ;
-static void smooth_mag_spectrum (double *magnitude, int len) ;
-static double find_snr (const double *magnitude, int len, int expected_peaks) ;
+static void log_mag_spectrum (fp_t *input, int len, fp_t *magnitude) ;
+static void smooth_mag_spectrum (fp_t *magnitude, int len) ;
+static fp_t find_snr (const fp_t *magnitude, int len, int expected_peaks) ;
 
 typedef struct
-{	double	peak ;
+{	fp_t	peak ;
 	int		index ;
 } PEAK_DATA ;
 
-double
+fp_t
 calculate_snr (float *data, int len, int expected_peaks)
-{	static double magnitude [MAX_SPEC_LEN] ;
-	static double datacopy [MAX_SPEC_LEN] ;
+{	static fp_t magnitude [MAX_SPEC_LEN] ;
+	static fp_t datacopy [MAX_SPEC_LEN] ;
 
-	double snr = 200.0 ;
+	fp_t snr = 200.0 ;
 	int k ;
 
 	if (len > MAX_SPEC_LEN)
@@ -71,10 +71,10 @@ calculate_snr (float *data, int len, int expected_peaks)
 ** This removes side lobe peaks without affecting noise/aliasing peaks.
 */
 
-static void linear_smooth (double *mag, PEAK_DATA *larger, PEAK_DATA *smaller) ;
+static void linear_smooth (fp_t *mag, PEAK_DATA *larger, PEAK_DATA *smaller) ;
 
 static void
-smooth_mag_spectrum (double *mag, int len)
+smooth_mag_spectrum (fp_t *mag, int len)
 {	PEAK_DATA peaks [2] ;
 
 	int k ;
@@ -107,7 +107,7 @@ smooth_mag_spectrum (double *mag, int len)
 } /* smooth_mag_spectrum */
 
 static void
-linear_smooth (double *mag, PEAK_DATA *larger, PEAK_DATA *smaller)
+linear_smooth (fp_t *mag, PEAK_DATA *larger, PEAK_DATA *smaller)
 {	int k ;
 
 	if (smaller->index < larger->index)
@@ -134,12 +134,12 @@ peak_compare (const void *vp1, const void *vp2)
 	return (peak1->peak < peak2->peak) ? 1 : -1 ;
 } /* peak_compare */
 
-static double
-find_snr (const double *magnitude, int len, int expected_peaks)
+static fp_t
+find_snr (const fp_t *magnitude, int len, int expected_peaks)
 {	PEAK_DATA peaks [MAX_PEAKS] ;
 
 	int		k, peak_count = 0 ;
-	double	snr ;
+	fp_t	snr ;
 
 	memset (peaks, 0, sizeof (peaks)) ;
 
@@ -177,10 +177,10 @@ find_snr (const double *magnitude, int len, int expected_peaks)
 } /* find_snr */
 
 static void
-log_mag_spectrum (double *input, int len, double *magnitude)
+log_mag_spectrum (fp_t *input, int len, fp_t *magnitude)
 {	fftw_plan plan = NULL ;
 
-	double	maxval ;
+	fp_t	maxval ;
 	int		k ;
 
 	if (input == NULL || magnitude == NULL)
@@ -206,8 +206,8 @@ log_mag_spectrum (double *input, int len, double *magnitude)
 		**
 		**      r0, r1, r2, ..., rn/2, i(n+1)/2-1, ..., i2, i1
 		*/
-		double re = magnitude [k] ;
-		double im = magnitude [len - k] ;
+		fp_t re = magnitude [k] ;
+		fp_t im = magnitude [len - k] ;
 		magnitude [k] = sqrt (re * re + im * im) ;
 		maxval = (maxval < magnitude [k]) ? magnitude [k] : maxval ;
 		} ;
@@ -228,9 +228,9 @@ log_mag_spectrum (double *input, int len, double *magnitude)
 
 #else /* ! (HAVE_LIBFFTW && HAVE_LIBRFFTW) */
 
-double
+fp_t
 calculate_snr (float *data, int len, int expected_peaks)
-{	double snr = 200.0 ;
+{	fp_t snr = 200.0 ;
 
 	data = data ;
 	len = len ;

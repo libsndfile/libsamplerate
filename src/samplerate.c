@@ -143,7 +143,7 @@ src_process (SRC_STATE *state, SRC_DATA *data)
 } /* src_process */
 
 long
-src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
+src_callback_read (SRC_STATE *state, fp_t src_ratio, long frames, float *data)
 {
 	SRC_DATA	src_data ;
 
@@ -238,7 +238,7 @@ src_callback_read (SRC_STATE *state, double src_ratio, long frames, float *data)
 */
 
 int
-src_set_ratio (SRC_STATE *state, double new_ratio)
+src_set_ratio (SRC_STATE *state, fp_t new_ratio)
 {
 	if (state == NULL)
 		return SRC_ERR_BAD_STATE ;
@@ -321,7 +321,7 @@ src_get_version (void)
 } /* src_get_version */
 
 int
-src_is_valid_ratio (double ratio)
+src_is_valid_ratio (fp_t ratio)
 {
 	if (is_bad_src_ratio (ratio))
 		return SRC_FALSE ;
@@ -461,7 +461,7 @@ src_int_to_float_array (const int *in, float *out, int len)
 
 void
 src_float_to_int_array (const float *in, int *out, int len)
-{	double scaled_value ;
+{	fp_t scaled_value ;
 
 	for (int i = 0 ; i < len ; i++)
 	{	scaled_value = in [i] * (8.0 * 0x10000000) ;

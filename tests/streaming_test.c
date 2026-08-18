@@ -22,11 +22,11 @@
 
 #define BLOCK_LEN		100
 
-static void stream_test (int converter, double ratio) ;
+static void stream_test (int converter, fp_t ratio) ;
 
 int
 main (void)
-{	static double src_ratios [] =
+{	static fp_t src_ratios [] =
 	{	0.3, 0.9, 1.1, 3.0
 	} ;
 
@@ -50,7 +50,7 @@ main (void)
 } /* main */
 
 static void
-stream_test (int converter, double src_ratio)
+stream_test (int converter, fp_t src_ratio)
 {	static float input [BUFFER_LEN], output [BUFFER_LEN] ;
 
 	SRC_STATE	*src_state ;
