@@ -24,15 +24,14 @@ factors to consider:
 There are a number of sample rate converters available for downloading but I
 will limit the comparison of Secret Rabbit Code to the following:
 
-- [sndfile-resample](http://libsndfile.github.io/libsamplerate/download.html)
-  which is a program (which uses libsamplerate) from the **examples/** directory
-  of the Secret Rabbit Code source code distribution.
+- sndfile-resample which is a program (which uses libsamplerate) from the
+  [sndfile-tools](https://github.com/libsndfile/sndfile-tools) package.
 - [Resample](https://ccrma.stanford.edu/~jos/resample/) by Julius O Smiths which
   seems to have been the first high quality converter available as source code.
-- [ResampAudio](http://www.tsp.ece.mcgill.ca/MMSP/Documents/Software/AFsp/ResampAudio.html)
-  which is part of [Audio File Programs and Routines](http://www.tsp.ece.mcgill.ca/MMSP/Documents/Software/AFsp/AFsp.html)
+- [ResampAudio](https://www.mmsp.ece.mcgill.ca/Documents/Software/Packages/AFsp/AFsp/ResampAudio.html)
+  which is part of the [AFsp Package](https://www-mmsp.ece.mcgill.ca/Documents/Downloads/AFsp/)
   by Peter Kabal.
-- [SoX](http://home.sprynet.com/~cbagwell/sox.html) which is maintained by Chris
+- [SoX](https://sourceforge.net/projects/sox/) which is maintained by Chris
   Bagwell. SoX is also able to perform some low quality sample rate conversions
   but these will not be investigated.
 - [Shibatch](http://shibatch.sourceforge.net/) which seems to be a frequency
