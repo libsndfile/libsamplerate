@@ -49,6 +49,10 @@ add_executable(clone_test clone_test.c util.c util.h)
 target_link_libraries(clone_test PRIVATE samplerate)
 add_test(NAME clone_test COMMAND clone_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
 
+add_executable(linear_first_frame_test linear_first_frame_test.c util.c util.h)
+target_link_libraries(linear_first_frame_test PRIVATE samplerate)
+add_test(NAME linear_first_frame_test COMMAND linear_first_frame_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
+
 add_executable(nullptr_test nullptr_test.c util.c util.h)
 target_link_libraries(nullptr_test PRIVATE samplerate)
 add_test(NAME nullptr_test COMMAND nullptr_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)

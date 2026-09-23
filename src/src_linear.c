@@ -119,8 +119,17 @@ linear_vari_process (SRC_STATE *state, SRC_DATA *data)
 #endif
 
 		for (ch = 0 ; ch < state->channels ; ch++)
-		{	data->data_out [priv->out_gen] = (float) (data->data_in [priv->in_used - state->channels + ch] + input_index *
-						((double) data->data_in [priv->in_used + ch] - data->data_in [priv->in_used - state->channels + ch])) ;
+		{	/* The main loop interpolates between the previous input frame and the
+			 * current one.  On the first call priv->in_used can still be 0 here (the
+			 * pre-roll loop above produced no output when only a single input frame
+			 * was passed), so there is no previous frame to read and
+			 * data_in [in_used - channels + ch] is a negative index.  Fall back to
+			 * last_value, exactly as the pre-roll loop does. */
+			const float prev = (priv->in_used >= state->channels)
+				? data->data_in [priv->in_used - state->channels + ch]
+				: priv->last_value [ch] ;
+			data->data_out [priv->out_gen] = (float) (prev + input_index *
+							((double) data->data_in [priv->in_used + ch] - prev)) ;
 			priv->out_gen ++ ;
 			} ;
 
