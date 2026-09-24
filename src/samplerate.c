@@ -72,6 +72,15 @@ src_callback_new (src_callback_t func, int converter_type, int channels, int *er
 	return state ;
 } /* src_callback_new */
 
+
+double src_get_last_postion(SRC_STATE* state) {
+	return state->last_position;
+}
+
+double src_get_saved_frames(SRC_STATE* state) {
+	return state->saved_frames;
+}
+
 SRC_STATE *
 src_delete (SRC_STATE *state)
 {
