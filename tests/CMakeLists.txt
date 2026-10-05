@@ -17,6 +17,16 @@ endif()
 
 set(HAVE_FFTW3 ${FFTW3_FOUND} PARENT_SCOPE)
 
+if(UNIX AND NOT CMAKE_CROSSCOMPILING)
+  add_test(NAME cmake_pkgconfig_test
+    COMMAND ${CMAKE_COMMAND}
+      "-DSOURCE_DIR=${PROJECT_SOURCE_DIR}"
+      "-DBINARY_DIR=${PROJECT_BINARY_DIR}/pkgconfig-test"
+      "-DGENERATOR=${CMAKE_GENERATOR}"
+      "-DC_COMPILER=${CMAKE_C_COMPILER}"
+      -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake_pkgconfig_test.cmake")
+endif()
+
 add_executable(misc_test misc_test.c util.c util.h)
 target_link_libraries(misc_test PRIVATE samplerate)
 add_test(NAME misc_test COMMAND misc_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
