@@ -64,7 +64,7 @@ jobs:
     - name: Configure CMake
       if: startsWith(matrix.build-system,'cmake')
       working-directory: ${{runner.workspace}}/build
-      run: cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=Release ${{matrix.configure-options}}
+      run: cmake ${{github.workspace}} -DCMAKE_BUILD_TYPE=Release -DLIBSAMPLERATE_ENABLE_WERROR=ON ${{matrix.configure-options}}
 
     - name: Build CMake
       if: startsWith(matrix.build-system,'cmake')
