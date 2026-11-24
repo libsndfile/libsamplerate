@@ -53,6 +53,10 @@ add_executable(nullptr_test nullptr_test.c util.c util.h)
 target_link_libraries(nullptr_test PRIVATE samplerate)
 add_test(NAME nullptr_test COMMAND nullptr_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
 
+add_executable(nan_ratio_test nan_ratio_test.c util.c util.h)
+target_link_libraries(nan_ratio_test PRIVATE samplerate)
+add_test(NAME nan_ratio_test COMMAND nan_ratio_test WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/src)
+
 add_executable(multi_channel_test multi_channel_test.c calc_snr.c util.c util.h)
 target_link_libraries(multi_channel_test
   PRIVATE
